@@ -7,15 +7,16 @@
   "module": "build/module/index.js",
   "repository": "https://github.com/stepanzabelin/clirio",
   "license": "MIT",
-  "keywords": [ 
-    "commander",
+  "keywords": [
+    "cli",
+    "console", 
     "command",
     "option",
     "parser",
-    "cli",
     "argument",
     "args",
-    "argv"
+    "argv",
+    "engine"
   ],
   "author": "Stepan Zabelin",
   "scripts": {
