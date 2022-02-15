@@ -1,6 +1,6 @@
 {
   "name": "clirio",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Clirio - mini engine for node.js command-line interfaces",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -16,7 +16,7 @@
     "argument",
     "args",
     "argv",
-    "engine"
+    "dto"
   ],
   "author": "Stepan Zabelin",
   "scripts": {

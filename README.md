@@ -1,10 +1,10 @@
 # Clirio
 
-A mini framework for node.js command-line interfaces based on ts, decorators, DTOs
+A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
 > **NOTE**
-> This lib is _alpha quality_. There is no guarantee it will be reliably
-> The documentation also needs to be corrected
+> This lib is _alpha quality_. There is no guarantee it will be reliably.
+> The documentation also needs to be corrected, feel free to do it
 
 - [Clirio.js](#clirio)
   - [Installation](#installation)
