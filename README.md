@@ -50,6 +50,8 @@ For example to emulate `git status` cli command with options - 3 easy steps to b
 1. Create Dto
 
 ```ts
+import { Option } from 'clirio';
+
 class GitStatusDto {
   @Option('--branch, -b')
   readonly branch?: string;
@@ -65,6 +67,8 @@ class GitStatusDto {
 2. Create module
 
 ```ts
+import { Module, Command, Options } from 'clirio';
+
 @Module()
 export class GitModule {
   @Command('git status')
@@ -77,6 +81,8 @@ export class GitModule {
 3. Configure a base class
 
 ```ts
+import { Clirio } from 'clirio';
+
 const clirio = new Clirio();
 clirio.addModule(GitModule);
 clirio.build();
@@ -719,6 +725,8 @@ To validate and convert to the desired type - use [Joi](https://www.npmjs.com/pa
 ##### Joi options validation
 
 ```ts
+import { Module, Command, Options } from 'clirio';
+
 @Module()
 export class GitModule {
   @Command('git status')
@@ -729,6 +737,10 @@ export class GitModule {
 ```
 
 ```ts
+import Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
+import { Option } from 'clirio';
+
 class GitStatusDto {
   @Option('--branch, -b')
   @JoiSchema(Joi.string().required())
@@ -986,6 +998,8 @@ The `helper.describeAllModules()` method will not provide description of the `de
 #### Version
 
 ```ts
+import { Module, Command } from 'clirio';
+
 @Module()
 export class CommonModule {
   @Command('-v, --version')
@@ -1008,6 +1022,8 @@ $ cli --version
 #### Array of values in options
 
 ```ts
+import { Module, Command, Options } from 'clirio';
+
 @Module()
 export class Module {
   @Command('model')
@@ -1018,6 +1034,10 @@ export class Module {
 ```
 
 ```ts
+import Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
+import { Option } from 'clirio';
+
 class ModelOptionsDto {
   @Option('--name, -n', {
     isArray: true,
@@ -1030,6 +1050,8 @@ class ModelOptionsDto {
 #### Variable values in options
 
 ```ts
+import { Module, Command, Options } from 'clirio';
+
 @Module()
 export class Module {
   @Command('connect')
@@ -1040,6 +1062,10 @@ export class Module {
 ```
 
 ```ts
+import Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
+import { Option } from 'clirio';
+
 class DbConnectOptionsDto {
   @Option('--env, -e', {
     variable: true,
@@ -1052,6 +1078,8 @@ class DbConnectOptionsDto {
 #### Example with rest values mask
 
 ```ts
+import { Module, Command, Params } from 'clirio';
+
 @Module()
 export class GitModule {
   @Command('git add <...all-files>')
@@ -1062,6 +1090,10 @@ export class GitModule {
 ```
 
 ```ts
+import Joi from 'joi';
+import { JoiSchema } from 'joi-class-decorators';
+import { Param } from 'clirio';
+
 class AddParamsDto {
   @Param('all-files')
   @JoiSchema(Joi.array().items(Joi.string()).required())
