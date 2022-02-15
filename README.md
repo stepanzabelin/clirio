@@ -925,6 +925,8 @@ Of course you can use other options and params
 The `@Helper()` decorator provided to handle help mode
 
 ```ts
+import { Module, Command, Description, ClirioHelper } from 'clirio';
+
 @Module()
 export class CommonModule {
   @Command('hello there')
