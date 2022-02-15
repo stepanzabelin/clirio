@@ -66,7 +66,7 @@ export class Clirio extends ClirioCore {
     if (this.successCallback) {
       this.successCallback();
     } else {
-      process.exit(5);
+      process.exit(0);
     }
   }
 
@@ -74,9 +74,8 @@ export class Clirio extends ClirioCore {
     if (this.errorCallback) {
       this.errorCallback(err);
     } else {
-      console.log(err);
       console.log('\x1b[31m%s\x1b[0m', err.message);
-      process.exit(0);
+      process.exit(9);
     }
   }
 }

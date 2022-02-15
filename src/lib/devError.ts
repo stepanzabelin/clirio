@@ -34,5 +34,5 @@ export const devError = (
     console.log('\x1b[33m%s\x1b[0m', formatParam('decorator', decorator));
   }
 
-  process.exit(0);
+  process.exit(5);
 };

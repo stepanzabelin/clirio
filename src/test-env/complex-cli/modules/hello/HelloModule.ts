@@ -25,6 +25,12 @@ export class HelloModule {
     this.helloThereService.entry();
   }
 
+  @Command('hello world|mars')
+  @Description('Say hello there')
+  public helloWorld() {
+    this.helloThereService.entry();
+  }
+
   @Command('hello')
   @Description('Say hello in person using options')
   public hello(@Options() options: HelloOptionsDto) {

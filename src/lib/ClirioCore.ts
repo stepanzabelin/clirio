@@ -180,7 +180,7 @@ export class ClirioCore {
 
       const isActionMask =
         links.findIndex((link) =>
-          [LinkType.SpreadMask, LinkType.Mask].includes(link.type)
+          [LinkType.RestMask, LinkType.Mask].includes(link.type)
         ) > -1;
 
       const inputArguments = Array.from(
@@ -240,7 +240,7 @@ export class ClirioCore {
             params[paramName] = attributes.value!;
           }
           break;
-        case this.compareSpreadMask(link, attributes):
+        case this.compareRestMask(link, attributes):
           {
             const values: string[] = [];
 
@@ -317,7 +317,7 @@ export class ClirioCore {
           break;
         case this.compareMask(link, attributes):
           break;
-        case this.compareSpreadMask(link, attributes):
+        case this.compareRestMask(link, attributes):
           for (let index = actionIndex; index < parsedArgs.length; index++) {
             const parsedArg = parsedArgs[index];
             if (parsedArg.type === ArgType.Action) {
@@ -359,9 +359,9 @@ export class ClirioCore {
     return link.type === LinkType.Mask && attributes.type === ArgType.Action;
   }
 
-  private compareSpreadMask(link: Link, attributes: ParsedArg): boolean {
+  private compareRestMask(link: Link, attributes: ParsedArg): boolean {
     return (
-      link.type === LinkType.SpreadMask && attributes.type === ArgType.Action
+      link.type === LinkType.RestMask && attributes.type === ArgType.Action
     );
   }
 

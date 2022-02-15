@@ -7,8 +7,8 @@ import { ActionType, Constructor, InputTypeEnum } from '../types';
 type OptionsData = {
   options: string[];
   description: string;
-  type: string;
-  itemType: string;
+  type: string | null;
+  itemType: string | null;
 };
 
 type ModuleData = {
@@ -72,8 +72,11 @@ export class ClirioHelper {
     return results;
   }
 
-  private describeActionOptions(module: Constructor, propertyKey: string): any {
-    const optionDescription = [];
+  private describeActionOptions(
+    module: Constructor,
+    propertyKey: string
+  ): OptionsData[] {
+    const optionDescription: OptionsData[] = [];
 
     const inputArguments = Array.from(
       md.input.get(module.prototype, propertyKey)
@@ -155,12 +158,6 @@ export class ClirioHelper {
     }
     return '';
   }
-
-  // TODO implement
-  //   public describeCommandOptions(command: string | string[]): OptionsData | any {
-  //     const args = Array.isArray(command) ? command : [command];
-  //     const navigationData = matchModulesNavigation(this.modules, args);
-  //   }
 
   public static formatActionDescription(
     optionDescription: OptionsData[],

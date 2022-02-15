@@ -1,6 +1,6 @@
 export enum LinkType {
   Action = 'ACTION',
   Mask = 'MASK',
-  SpreadMask = 'SPREAD_MASK',
+  RestMask = 'REST_MASK',
   Option = 'OPTION',
 }

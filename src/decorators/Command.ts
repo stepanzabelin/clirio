@@ -24,7 +24,7 @@ export const Command = function (rawCommand: string) {
         throw devError('Command value is not correct', devErrorData);
       }
 
-      const { action, option, spread, mask } = argMatch!.groups!;
+      const { action, option, rest, mask } = argMatch!.groups!;
 
       if (action) {
         const values = action.split(/\s*\|\s*/);
@@ -41,7 +41,7 @@ export const Command = function (rawCommand: string) {
 
       if (mask) {
         links.push({
-          type: spread ? LinkType.SpreadMask : LinkType.Mask,
+          type: rest ? LinkType.RestMask : LinkType.Mask,
           values: [mask],
         });
       }
