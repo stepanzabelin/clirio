@@ -4,12 +4,25 @@ A mini framework for node.js command-line interfaces based on ts, decorators, DT
 
 > **NOTE**
 > This lib is _alpha quality_. There is no guarantee it will be reliably
-> Documentation also needs to be corrected
+> The documentation also needs to be corrected
 
 - [Clirio.js](#clirio)
   - [Installation](#installation)
     - [Peer dependencies](#peer-dependencies)
   - [Quick Start](#quick-start)
+  - [Docs](#docs)
+    - [The base class](#the-base-class)
+    - [Modules](#modules)
+    - [Actions](#actions)
+      - [Command pattern](#decorator-for-command-pattern)
+      - [Empty input](#decorator-for-empty-input)
+      - [Failure input](#decorator-for-failure-input)
+    - [Injecting data](#injecting-data)
+    - [Using Joi](#using-joi)
+    - [Special cases](#special-cases)
+      - [Help mode](#help-mode)
+      - [Version](#version)
+    - [Receipts](#receipts)
 
 ## Installation
 
@@ -30,7 +43,7 @@ reflect-metadata@^0.1 joi@^17 joi-class-decorators@^1
 
 ```
 
-### Quick Start
+## Quick Start
 
 For example to emulate `git status` cli command with options - 3 easy steps to build an app
 
@@ -85,17 +98,17 @@ $ cli git status -b master --ignore-submodules  all --short
 
 The application structure should consist of the following parts:
 
-1. a base class - `Clirio`
+1. the base class - `Clirio`
 2. modules (custom classes)
 3. actions (methods in class-modules with decorators )
 
-Example [here](https://github.com/stepanzabelin/clirio/tree/master/src/test-env/complex-cli)
+Examples [here](https://github.com/stepanzabelin/clirio/tree/master/src/test-env/complex-cli)
 
 A starter kit is in progress
 
-### A base class
+### The base class
 
-`Clirio` - is a base class which configures the application and links modules
+`Clirio` - is the base class which configures the application and links modules
 
 ```ts
 const cli = new Clirio();
@@ -118,8 +131,7 @@ cli.setConfig({
 
 | Param                     |                                                              Description                                                              | Default |
 | ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | ------: |
-| nullableOptionValue       | value conversion of command line options that have no value e.g. `--verbose` - initially it is `null` after conversion will be `true` |
-| true                      |
+| nullableOptionValue       | value conversion of command line options that have no value e.g. `--verbose` - initially it is `null` after conversion will be `true` |    true |
 | validateOptionsWithoutDto |           if dto options are not specified but options will be passed in the command, then there may be a validation error            |   false |
 
 ##### addModule
@@ -130,7 +142,7 @@ Adding one module
 cli.addModule(PingModule);
 ```
 
-#### setModules
+##### setModules
 
 Setting several modules
 
@@ -138,7 +150,7 @@ Setting several modules
 cli.setModules([HelloModule, CommonModule]);
 ```
 
-#### setArgs
+##### setArgs
 
 Arguments will be determined automatically but it is possible to set them manually
 
@@ -146,7 +158,7 @@ Arguments will be determined automatically but it is possible to set them manual
 cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
 
-#### onError
+##### onError
 
 Callback for handling error messages
 
@@ -157,7 +169,7 @@ cli.onError((err) => {
 });
 ```
 
-#### onSuccess
+##### onSuccess
 
 Callback for handling success messages
 
@@ -168,7 +180,7 @@ cli.onSuccess(() => {
 });
 ```
 
-#### onSuccess
+##### onSuccess
 
 Callback after any result
 
@@ -181,7 +193,7 @@ cli.onComplete(() => {
 ### Modules
 
 Modules are custom classes with the `@Module()` decorator (they can be considered as controllers)
-An application can have either one or many modules. Each module contains actions (routers for commands)
+An application can have either one or many modules. Each module contains actions (patterns for commands)
 
 ###### Example of common module
 
@@ -229,7 +241,7 @@ export class MigrationModule {
 
 ### Actions
 
-Actions are methods in class-modules with decorators
+The actions are methods in class-modules with decorators
 
 ```ts
 @Module()
@@ -241,7 +253,7 @@ export class HelloModule {
 
   @Command('bye')
   public help() {
-    console.log('Bye! see you later');
+    console.log('Bye! See you later');
   }
 
   @Empty()
@@ -339,7 +351,7 @@ This pattern is designed for special cases like "help" and "version". This is an
 @Command('--mode=check')
 ```
 
-#### Decorator for empty case
+#### Decorator for empty input
 
 The `@Empty()` action decorator is a way to catch the case when nothing is entered
 Each module can have its own `@Empty()` decorator in an action
@@ -375,7 +387,9 @@ export class MigrationModule {
 
   @Empty()
   public empty() {
-    console.log('Migration requires additional instruction. Type --help');
+    console.log(
+      'The migration module requires additional instruction. Type --help'
+    );
   }
 }
 ```
@@ -385,12 +399,12 @@ $ cli migration
 ```
 
 ```console
-Migration requires additional instruction. Type --help
+The migration module requires additional instruction. Type --help
 ```
 
-#### Decorator for failure case
+#### Decorator for failure input
 
-The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match
+The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match.
 Each module can have its own `@Failure()` decorator in an action
 if this decorator is not specified, then a default error will be displayed
 
@@ -438,7 +452,7 @@ $ cli migration stop
 The migration module got the wrong instruction
 ```
 
-### Passing data in arguments
+### Injecting data
 
 Using special decorators to pass input data
 
@@ -557,7 +571,7 @@ $ cli git add test.txt logo.png
 #### Passing command options
 
 The "Options" term mean arguments starting with a dash.
-Each option is either a key-value or a key. if in the beginning 2 types is a long key if one dash is a short key which must be 1 character long: `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
+Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long: `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
 
 The `@Options()` decorator provided
 
@@ -573,7 +587,7 @@ export class GitModule {
 
 ##### Options Dto
 
-The `@Option()` decorator for dto properties provided. it can accept key aliases (comma separated) to map DTO properties
+The `@Option()` decorator for dto properties provided. It can accept key aliases (comma separated) to map DTO properties
 
 ```ts
 class GitStatusOptionsDto {
@@ -626,7 +640,7 @@ $ cli git status --branch=master --ignore-submodules=all --short
 { branch: 'master', "ignore-submodule": 'all', short: true }
 ```
 
-###### Array of values in options
+##### Array of values in options
 
 By default, the command parser cannot determine whether an option is an array. You can specify this, in which case the same option names will be collected in an array, even if there is only one option
 
@@ -665,7 +679,7 @@ $ cli model --name Ford -n Tesla
 { names: ['Ford', 'Tesla'] }
 ```
 
-###### Variable values in options
+##### Variable values in options
 
 There is a special case for using variables. All variables will be collected in an object
 
@@ -697,7 +711,7 @@ $ cli connect -e DB_NAME=db-name -e DB_USER=db-user
 
 ```
 
-#### Using Dto with Joi
+### Using Joi
 
 All values that come out as a results of parsing the command are either strings or booleans
 To validate and convert to the desired type - use [Joi](https://www.npmjs.com/package/joi) and [DTO type annotations](https://www.npmjs.com/package/joi-class-decorators)
@@ -747,7 +761,7 @@ $ cli git status --log=true
 ```
 
 ```console
-"log" is not allowed
+"log" is an unknown key
 ```
 
 ```bash
@@ -786,6 +800,10 @@ $ cli git checkout develop
 {  branch: 'develop' }
 ```
 
+##### Joi validating and converting
+
+Joi validates and converts input values that are originally string
+
 ###### Summation and concatenation examples
 
 ```ts
@@ -797,6 +815,8 @@ export class SumModule {
   }
 }
 ```
+
+###### Without Joi
 
 ```ts
 class SumParamsDto {
@@ -824,7 +844,7 @@ $ cli sum 5 rabbits
 '5rabbits'
 ```
 
-Joi validates and converts input values that are originally string
+###### With Joi
 
 ```ts
 class SumParamsDto {
@@ -853,6 +873,8 @@ $ cli sum 5 rabbits
 ```console
 "second" is not a number
 ```
+
+### Special cases
 
 #### Help mode
 
@@ -915,7 +937,7 @@ The `ClirioHelper` class provides methods for getting descriptions of commands a
 
 The `helper.describeAllModules()` method provides description for all commands
 
-###### helper.describeAllModules
+##### helper.describeAllModules
 
 The method returns array of objects
 
@@ -981,9 +1003,9 @@ $ cli --version
 1.3.1
 ```
 
-#### Receipts
+### Receipts
 
-###### Array of values in options
+#### Array of values in options
 
 ```ts
 @Module()
@@ -1005,7 +1027,7 @@ class ModelOptionsDto {
 }
 ```
 
-###### Variable values in options
+#### Variable values in options
 
 ```ts
 @Module()
@@ -1027,7 +1049,7 @@ class DbConnectOptionsDto {
 }
 ```
 
-###### Example with rest values mask
+#### Example with rest values mask
 
 ```ts
 @Module()
