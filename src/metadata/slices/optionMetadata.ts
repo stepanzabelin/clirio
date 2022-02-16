@@ -24,6 +24,6 @@ export const optionMetadata = {
   },
 
   get(target: Constructor['prototype']): Map<string, OptionMetadataData> {
-    return Reflect.getOwnMetadata(METADATA_OPTION_KEY, target) ?? new Map();
+    return Reflect.getMetadata(METADATA_OPTION_KEY, target) ?? new Map();
   },
 };

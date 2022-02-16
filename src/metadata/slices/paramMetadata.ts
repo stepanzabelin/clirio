@@ -22,6 +22,6 @@ export const paramMetadata = {
   },
 
   get(target: Constructor['prototype']): Map<string, ParamMetadataData> {
-    return Reflect.getOwnMetadata(METADATA_PARAM_KEY, target) ?? new Map();
+    return Reflect.getMetadata(METADATA_PARAM_KEY, target) ?? new Map();
   },
 };

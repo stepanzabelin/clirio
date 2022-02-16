@@ -17,11 +17,11 @@ export const moduleMetadata = {
   },
 
   get(target: Constructor['prototype']): ModuleMetadataData | undefined {
-    return Reflect.getOwnMetadata(METADATA_MODULE_KEY, target);
+    return Reflect.getMetadata(METADATA_MODULE_KEY, target);
   },
 
   has(target: Constructor['prototype']): boolean {
-    return Reflect.hasOwnMetadata(METADATA_MODULE_KEY, target);
+    return Reflect.hasMetadata(METADATA_MODULE_KEY, target);
   },
 
   merge<Key extends keyof ModuleMetadataData>(

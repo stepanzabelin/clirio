@@ -18,11 +18,11 @@ export const helpMetadata = {
   },
 
   get(target: Constructor['prototype']): Map<string, helpData> {
-    return Reflect.getOwnMetadata(METADATA_DATA_KEY, target) || new Map();
+    return Reflect.getMetadata(METADATA_DATA_KEY, target) || new Map();
   },
 
   has(target: Constructor['prototype']) {
-    return Reflect.hasOwnMetadata(METADATA_DATA_KEY, target);
+    return Reflect.hasMetadata(METADATA_DATA_KEY, target);
   },
 
   mergeParam<Key extends keyof helpData>(

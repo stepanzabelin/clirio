@@ -14,7 +14,7 @@ export const inputMetadata = {
     type: InputMetadataData['type']
   ) {
     const paramTypes: Constructor[] =
-      Reflect.getOwnMetadata('design:paramtypes', target, propertyName) ?? [];
+      Reflect.getMetadata('design:paramtypes', target, propertyName) ?? [];
 
     inputMetadata.merge(target, propertyName, argIndex, {
       type,
@@ -46,8 +46,7 @@ export const inputMetadata = {
     propertyName: string
   ): Map<number, InputMetadataData> {
     return (
-      Reflect.getOwnMetadata(METADATA_INPUT_KEY, target, propertyName) ??
-      new Map()
+      Reflect.getMetadata(METADATA_INPUT_KEY, target, propertyName) ?? new Map()
     );
   },
 };

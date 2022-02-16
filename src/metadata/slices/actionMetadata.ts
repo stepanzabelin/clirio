@@ -14,11 +14,11 @@ export const actionMetadata = {
   },
 
   get(target: Constructor['prototype']): Map<string, ActionMetadataData> {
-    return Reflect.getOwnMetadata(METADATA_ACTION_KEY, target) || new Map();
+    return Reflect.getMetadata(METADATA_ACTION_KEY, target) || new Map();
   },
 
   has(target: Constructor['prototype']) {
-    return Reflect.hasOwnMetadata(METADATA_ACTION_KEY, target);
+    return Reflect.hasMetadata(METADATA_ACTION_KEY, target);
   },
 
   setData(
