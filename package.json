@@ -1,7 +1,7 @@
 {
   "name": "clirio",
-  "version": "0.0.6",
-  "description": "Clirio - mini engine for node.js command-line interfaces",
+  "version": "0.0.7",
+  "description": "Clirio - a mini framework for node.js command-line interfaces",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",

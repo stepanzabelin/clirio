@@ -4,7 +4,7 @@ A mini framework for node.js command-line interfaces based on TypeScript, decora
 
 > **NOTE**
 > This lib is _alpha quality_. There is no guarantee it will be reliably.
-> The documentation also needs to be corrected, feel free to do it
+> The documentation also needs to be corrected
 
 - [Clirio.js](#clirio)
   - [Installation](#installation)
@@ -186,7 +186,7 @@ cli.onSuccess(() => {
 });
 ```
 
-##### onSuccess
+##### onComplete
 
 Callback after any result
 
@@ -198,7 +198,7 @@ cli.onComplete(() => {
 
 ### Modules
 
-Modules are custom classes with the `@Module()` decorator (they can be considered as controllers)
+Modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
 An application can have either one or many modules. Each module contains actions (patterns for commands)
 
 ###### Example of common module
@@ -925,7 +925,7 @@ Of course you can use other options and params
 The `@Helper()` decorator provided to handle help mode
 
 ```ts
-import { Module, Command, Description, ClirioHelper } from 'clirio';
+import { Module, Command, Description, Helper, ClirioHelper } from 'clirio';
 
 @Module()
 export class CommonModule {
@@ -938,9 +938,7 @@ export class CommonModule {
   @Command('-h, --help')
   public help(@Helper() helper: ClirioHelper) {
     const moduleDescription = helper.describeAllModules();
-    this.helpService.entry(
-      ClirioHelper.formatModuleDescription(moduleDescription)
-    );
+    console.log(ClirioHelper.formatModuleDescription(moduleDescription));
   }
 }
 ```
@@ -979,6 +977,8 @@ You can format the received data custom or use the `ClirioHelper.formatModuleDes
 The `@Hidden()` decorator for module action provided to hide description of the command
 
 ```ts
+import { Module, Command, Hidden, Description } from 'clirio';
+
 @Module()
 export class Module {
   @Command('debug')
@@ -1102,3 +1102,7 @@ class AddParamsDto {
   readonly allFiles: string[];
 }
 ```
+
+### Contributing
+
+Contributing flow is in progress
