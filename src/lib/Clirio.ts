@@ -65,8 +65,6 @@ export class Clirio extends ClirioCore {
   private callSuccess() {
     if (this.successCallback) {
       this.successCallback();
-    } else {
-      process.exit(0);
     }
   }
 

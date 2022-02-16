@@ -182,7 +182,6 @@ Callback for handling success messages
 ```ts
 cli.onSuccess(() => {
   console.log('The command was executed successfully!');
-  process.exit(0);
 });
 ```
 

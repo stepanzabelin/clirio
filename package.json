@@ -1,6 +1,6 @@
 {
   "name": "clirio",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Clirio - a mini framework for node.js command-line interfaces",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -16,7 +16,8 @@
     "argument",
     "args",
     "argv",
-    "dto"
+    "terminal",
+    "shell"
   ],
   "author": "Stepan Zabelin",
   "scripts": {
