@@ -1,5 +1,5 @@
 import { optionReg } from '../constrains/regexp.config';
-import { devError } from '../lib/devError';
+import { ClirioDebug } from '../exceptions';
 import { md } from '../metadata';
 import { Constructor } from '../types';
 
@@ -13,7 +13,7 @@ export const Option = function (
 ) {
   return function (target: Constructor['prototype'], propertyName: string) {
     if (isArray && variable) {
-      throw devError('The configuration is not correct', {
+      ClirioDebug.fatal('The configuration is not correct', {
         entity: target.constructor.name,
         property: propertyName,
         decorator: 'Option',
@@ -38,7 +38,7 @@ export const Option = function (
           new RegExp(`^\\s*${optionReg.source}\\s*(,|$)`, 'i')
         );
         if (!match) {
-          throw devError('An option value is not correct', {
+          ClirioDebug.fatal('An option value is not correct', {
             value: option,
             entity: target.constructor.name,
             property: propertyName,

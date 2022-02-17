@@ -15,16 +15,24 @@ import { ClirioConfig, clirioConfig } from './clirioConfig';
 import { md } from '../metadata';
 import { ClirioHelper } from './ClirioHelper';
 import { ClirioValidator } from './ClirioValidator';
-import { devError } from './devError';
+import {
+  ClirioComplete,
+  ClirioDebug,
+  ClirioError,
+  ClirioSuccess,
+  ClirioWarning,
+} from '../exceptions';
 
 export class ClirioCore {
   protected args?: Args;
   protected modules: Constructor[] = [];
   protected config: ClirioConfig = clirioConfig;
   protected validator = new ClirioValidator();
-  protected errorCallback?: (err: unknown) => void;
-  protected successCallback?: () => void;
-  protected completeCallback?: () => void;
+  protected errorCallback?: (err: ClirioError) => void;
+  protected successCallback?: (err: ClirioSuccess) => void;
+  protected completeCallback?: (err: ClirioComplete) => void;
+  protected debugCallback?: (err: ClirioDebug) => void;
+  protected warningCallback?: (err: ClirioWarning) => void;
 
   private *iterateData() {
     for (const module of this.modules) {
@@ -37,7 +45,7 @@ export class ClirioCore {
     }
   }
 
-  protected async execute() {
+  protected async execute(): Promise<never> {
     const parsedArgs = ClirioCore.parse(this.args ?? getProcessArgs());
 
     // COMMAND ACTION
@@ -97,7 +105,7 @@ export class ClirioCore {
         transformedArguments
       );
 
-      return null;
+      throw new ClirioComplete();
     }
 
     // EMPTY ACTION
@@ -120,7 +128,7 @@ export class ClirioCore {
 
       await Reflect.apply(module.prototype[actionName], new module(), []);
 
-      return null;
+      throw new ClirioComplete();
     }
 
     // FAILURE ACTION
@@ -149,22 +157,22 @@ export class ClirioCore {
 
       await Reflect.apply(module.prototype[actionName], new module(), []);
 
-      return null;
+      throw new ClirioComplete();
     }
 
     // ERROR
 
-    throw new Error('Incorrect command specified');
+    throw new ClirioError('Incorrect command specified');
   }
 
   public debug() {
     if (this.modules.length === 0) {
-      devError('There is no set module');
+      throw new ClirioDebug('There is no set module');
     }
 
     for (const module of this.modules) {
       if (!md.module.has(module.prototype)) {
-        throw devError(
+        throw new ClirioDebug(
           'A constructor is not specified as a module. use @Module() decorator',
           {
             entity: module.name,
@@ -196,14 +204,14 @@ export class ClirioCore {
         ) > -1;
 
       if (isActionMask && !isInputParams) {
-        throw devError(`Argument @Params is not bound to command`, {
+        throw new ClirioDebug(`Argument @Params is not bound to command`, {
           entity: module.name,
           property: actionName,
         });
       }
 
       if (!isActionMask && isInputParams) {
-        throw devError(
+        throw new ClirioDebug(
           `Either the pattern is missing from the command, or @Params argument is redundant`,
           {
             entity: module.name,
@@ -459,23 +467,49 @@ export class ClirioCore {
     return rows;
   };
 
-  protected callComplete() {
+  protected callDebug(err: ClirioDebug) {
+    if (this.debugCallback) {
+      this.debugCallback(err);
+    } else {
+      err.output();
+      process.exit(5);
+    }
+  }
+
+  protected callComplete(err: ClirioComplete) {
     if (this.completeCallback) {
-      this.completeCallback();
+      this.completeCallback(err);
+    } else {
+      console.log('\x1b[34m%s\x1b[0m', err.message);
+      process.exit(0);
     }
   }
 
-  protected callSuccess() {
+  protected callWarning(err: ClirioWarning) {
+    if (this.warningCallback) {
+      this.warningCallback(err);
+    } else {
+      console.log('\x1b[33m%s\x1b[0m', err.message);
+      process.exit(0);
+    }
+  }
+
+  protected callSuccess(err: ClirioSuccess) {
     if (this.successCallback) {
-      this.successCallback();
+      this.successCallback(err);
+    } else {
+      if (err) {
+        console.log('\x1b[32m%s\x1b[0m', err.message);
+      }
+      process.exit(0);
     }
   }
 
-  protected callError(err: unknown) {
+  protected callError(err: ClirioError) {
     if (this.errorCallback) {
       this.errorCallback(err);
     } else {
-      console.log('\x1b[31m%s\x1b[0m', String(err));
+      console.log('\x1b[31m%s\x1b[0m', err.message);
       process.exit(9);
     }
   }

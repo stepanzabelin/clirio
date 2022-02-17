@@ -3,11 +3,11 @@ import { PingModule } from './modules/ping/PingModule';
 
 export const simpleCli = async (
   errorCallback = (err: any): void => undefined,
-  successCallback = (): void => undefined
+  completeCallback = (): void => undefined
 ) => {
   const cli = new Clirio();
   cli.addModule(PingModule);
-  cli.onSuccess(successCallback);
+  cli.onComplete(completeCallback);
   cli.onError(errorCallback);
   await cli.build();
   return cli;

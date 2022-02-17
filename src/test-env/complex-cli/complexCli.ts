@@ -6,11 +6,11 @@ import { MigrationModule } from './modules/migration/MigrationModule';
 
 export const complexCli = async (
   errorCallback = (err: any): void => undefined,
-  successCallback = (): void => undefined
+  completeCallback = (): void => undefined
 ) => {
   const cli = new Clirio();
   cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
-  cli.onSuccess(successCallback);
+  cli.onComplete(completeCallback);
   cli.onError(errorCallback);
   await cli.build();
   return cli;

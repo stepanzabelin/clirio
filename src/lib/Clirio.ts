@@ -1,3 +1,10 @@
+import {
+  ClirioComplete,
+  ClirioDebug,
+  ClirioError,
+  ClirioSuccess,
+  ClirioWarning,
+} from '../exceptions';
 import { Args, Constructor, OptionalKeys } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
@@ -23,30 +30,51 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public onError(callback: (err: unknown) => void): this {
+  public onDebug(callback: (err: ClirioDebug) => void): this {
+    this.debugCallback = callback;
+    return this;
+  }
+
+  public onError(callback: (err: ClirioError) => void): this {
     this.errorCallback = callback;
     return this;
   }
 
-  public onSuccess(callback: () => void): this {
+  public onSuccess(callback: (err: ClirioSuccess) => void): this {
     this.successCallback = callback;
     return this;
   }
 
-  public onComplete(callback: () => void): this {
+  public onWarning(callback: (err: ClirioWarning) => void): this {
+    this.warningCallback = callback;
+    return this;
+  }
+
+  public onComplete(callback: (err: ClirioComplete) => void): this {
     this.completeCallback = callback;
     return this;
   }
 
   public async build() {
-    this.debug();
     try {
+      this.debug();
       await this.execute();
-      this.callSuccess();
     } catch (err: unknown) {
-      this.callError(err);
-    } finally {
-      this.callComplete();
+      if (err instanceof ClirioDebug) {
+        this.callDebug(err);
+      } else if (err instanceof ClirioWarning) {
+        this.callWarning(err);
+      } else if (err instanceof ClirioSuccess) {
+        this.callSuccess(err);
+      } else if (err instanceof ClirioComplete) {
+        this.callComplete(err);
+      } else if (err instanceof ClirioError) {
+        this.callError(err);
+      } else {
+        this.callError(
+          new ClirioError(err instanceof Error ? err.message : String(err))
+        );
+      }
     }
   }
 }

@@ -22,6 +22,7 @@ A mini framework for node.js command-line interfaces based on TypeScript, decora
     - [Special cases](#special-cases)
       - [Help mode](#help-mode)
       - [Version](#version)
+    - [Exceptions](#exceptions)
     - [Receipts](#receipts)
 
 ## Installation
@@ -166,10 +167,12 @@ cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 
 ##### onError
 
-Callback for handling error messages
+Callback for handling error
 
 ```ts
-cli.onError((err) => {
+import chalk from 'chalk';
+
+cli.onError((err: ClirioError) => {
   console.log(chalk.red(err.message));
   process.exit(9);
 });
@@ -177,21 +180,48 @@ cli.onError((err) => {
 
 ##### onSuccess
 
-Callback for handling success messages
+Callback for handling an success result
 
 ```ts
-cli.onSuccess(() => {
-  console.log('The command was executed successfully!');
+cli.onSuccess((err: ClirioSuccess) => {
+  const message = err.message ?? 'The command was executed successfully!';
+  console.log(chalk.green(message));
+  process.exit(0);
+});
+```
+
+##### onWarning
+
+Callback for handling an warning result
+
+```ts
+cli.onWarning((err: ClirioWarning) => {
+  console.log(chalk.yellow(err.message));
+  process.exit(0);
 });
 ```
 
 ##### onComplete
 
-Callback after any result
+Callback for handling an complete result
 
 ```ts
-cli.onComplete(() => {
-  console.log('Thanks!');
+cli.onComplete((err: ClirioComplete) => {
+  const message = err.message ?? 'Thanks!';
+
+  console.log(chalk.blue(message));
+  process.exit(0);
+});
+```
+
+##### onDebug
+
+Callback for handling an debugging error
+
+```ts
+cli.onDebug((err: ClirioDebug) => {
+  err.output();
+  process.exit(5);
 });
 ```
 
@@ -721,7 +751,7 @@ $ cli connect -e DB_NAME=db-name -e DB_USER=db-user
 All values that come out as a results of parsing the command are either strings or booleans
 To validate and convert to the desired type - use [Joi](https://www.npmjs.com/package/joi) and [DTO type annotations](https://www.npmjs.com/package/joi-class-decorators)
 
-Clirio contains and re-exports the `joi-class-decorators` package [https://www.npmjs.com/package/joi-class-decorators](https://www.npmjs.com/package/joi-class-decorators)
+Clirio uses and re-exports the `joi-class-decorators` package [https://www.npmjs.com/package/joi-class-decorators](https://www.npmjs.com/package/joi-class-decorators)
 
 ##### Joi options validation
 
@@ -1017,6 +1047,89 @@ $ cli --version
 
 ```console
 1.3.1
+```
+
+### Exceptions
+
+Special exceptions designed to complete the script with the desired result
+
+| Exception                              | Description |                    Handler |
+| -------------------------------------- | :---------: | -------------------------: |
+| `new ClirioError(message: string)`     |    Error    |    `cli.onError(callback)` |
+| `new ClirioSuccess(message?: string)`  |   Success   |  `cli.onSuccess(callback)` |
+| `new ClirioWarning(message: string)`   |   Warning   |  `cli.onWarning(callback)` |
+| `new ClirioComplete(message?: string)` |  Complete   | `cli.onComplete(callback)` |
+| `new ClirioDebug(message: string)`     |  Debugging  |    `cli.onDebug(callback)` |
+
+By default, all handlers in Clirio are configured, but you can override your own callback for each
+Use one of the available exceptions to throw the desired event, after that the required callback will be called and the script will end
+
+###### Examples
+
+```ts
+import { Module, Command, ClirioError } from 'clirio';
+
+@Module()
+export class CommonModule {
+  @Command('check')
+  public check() {
+    throw new ClirioError('Not working!');
+  }
+}
+```
+
+```ts
+const cli = new Clirio();
+cli.addModule(CommonModule);
+cli.onError((err: ClirioError) => {
+  console.log(chalk.red('An error occurred: ' + err.message));
+});
+cli.build();
+```
+
+```bash
+
+$ cli check
+
+```
+
+```console
+An error occurred: Not working!
+```
+
+```ts
+import { Module, Command, ClirioError } from 'clirio';
+
+@Module()
+export class CommonModule {
+  @Command('start')
+  public start() {
+    throw new ClirioSuccess();
+  }
+}
+```
+
+```ts
+const cli = new Clirio();
+cli.addModule(CommonModule);
+cli.onSuccess((err: ClirioSuccess) => {
+  if (err.message) {
+    console.log(chalk.green(message));
+  } else {
+    console.log('Successfully!');
+  }
+});
+cli.build();
+```
+
+```bash
+
+$ cli start
+
+```
+
+```console
+Successfully!
 ```
 
 ### Receipts

@@ -1,5 +1,5 @@
 import { moduleCommandReg } from '../constrains/regexp.config';
-import { devError } from '../lib/devError';
+import { ClirioDebug } from '../exceptions';
 import { md } from '../metadata';
 import { Constructor, Link, LinkType } from '../types';
 
@@ -17,7 +17,7 @@ export const Module = function (rawCommand?: string) {
       );
 
       if (!commandMatch) {
-        throw devError('Command value is invalid', {
+        ClirioDebug.fatal('Command value is invalid', {
           entity: constructor.name,
           value: command!,
           decorator: 'Module',

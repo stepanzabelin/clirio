@@ -1,5 +1,5 @@
 import { argReg, optionReg } from '../constrains/regexp.config';
-import { devError } from '../lib/devError';
+import { ClirioDebug } from '../exceptions';
 import { md } from '../metadata';
 import { ActionType, Constructor, Link, LinkType } from '../types';
 
@@ -21,7 +21,7 @@ export const Command = function (rawCommand: string) {
       const argMatch = sub.match(argReg);
 
       if (!argMatch) {
-        throw devError('Command value is not correct', devErrorData);
+        ClirioDebug.fatal('Command value is not correct', devErrorData);
       }
 
       const { action, option, rest, mask } = argMatch!.groups!;
@@ -30,7 +30,7 @@ export const Command = function (rawCommand: string) {
         const values = action.split(/\s*\|\s*/);
 
         if (values.some((action) => !action)) {
-          throw devError('Command value is not correct', devErrorData);
+          ClirioDebug.fatal('Command value is not correct', devErrorData);
         }
 
         links.push({
@@ -55,7 +55,7 @@ export const Command = function (rawCommand: string) {
           );
 
           if (!optionMatch) {
-            throw devError('Command value is not correct', devErrorData);
+            ClirioDebug.fatal('Command value is not correct', devErrorData);
           }
           const { shortName, longName } = optionMatch.groups!;
           values.push(shortName ?? longName);
