@@ -12,41 +12,41 @@ describe('Exact command', () => {
     sandbox.restore();
   });
 
-  it('correct input compound command', () => {
+  it('correct input compound command', async () => {
     const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello there');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
 
     entryStub.restore();
   });
 
-  it('correct input simple command with extra option without options dto', () => {
+  it('correct input simple command with extra option without options dto', async () => {
     const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello there --name=Alex');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('invalid input simple command with extra param', () => {
+  it('invalid input simple command with extra param', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello Alex');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('invalid input compound command with extra param', () => {
+  it('invalid input compound command with extra param', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(sandbox, 'ping ping');
 
-    simpleCli(errorCallbackStub);
+    await simpleCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 

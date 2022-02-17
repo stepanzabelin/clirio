@@ -10,11 +10,11 @@ describe('Command with options', () => {
     sandbox.restore();
   });
 
-  it('correct input', () => {
+  it('correct input', async () => {
     const entryStub = sandbox.stub(HelloService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello --first-name=Alex --last-name=Smith');
-    complexCli();
+    await complexCli();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -26,7 +26,7 @@ describe('Command with options', () => {
     entryStub.restore();
   });
 
-  it('invalid input with unknown option', () => {
+  it('invalid input with unknown option', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(
@@ -34,20 +34,20 @@ describe('Command with options', () => {
       'hello --first-name=Alex --last-name=Smith --middle-name=123'
     );
 
-    complexCli(errorCallbackStub);
+    await complexCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 
     expect(err.message).toEqual('"middle-name" is not allowed');
   });
 
-  it('incorrect input', () => {
+  it('incorrect input', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(sandbox, 'hello --first-name');
-    complexCli();
+    await complexCli();
 
-    complexCli(errorCallbackStub);
+    await complexCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 

@@ -38,12 +38,8 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public build() {
+  public async build() {
     this.debug();
-    this.run();
-  }
-
-  public async run() {
     try {
       await this.execute();
       this.callSuccess();

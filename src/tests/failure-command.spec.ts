@@ -12,41 +12,41 @@ describe('Failure command', () => {
     sandbox.restore();
   });
 
-  it('Failure without handler', () => {
+  it('Failure without handler', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(sandbox, 'cactus');
 
-    simpleCli(errorCallbackStub);
+    await simpleCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 
     expect(err.message).toEqual('Incorrect command specified');
   });
 
-  it('Failure with handler in the root', () => {
+  it('Failure with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'cactus');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Failure with handler in nested module', () => {
+  it('Failure with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration cactus');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Failure without handler in nested module', () => {
+  it('Failure without handler in nested module', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'git cactus');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

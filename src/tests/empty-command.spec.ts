@@ -13,41 +13,41 @@ describe('Empty command', () => {
     sandbox.restore();
   });
 
-  it('Empty without handler', () => {
+  it('Empty without handler', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(sandbox, '');
 
-    simpleCli(errorCallbackStub);
+    await simpleCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 
     expect(err.message).toEqual('Incorrect command specified');
   });
 
-  it('Empty with handler in the root', () => {
+  it('Empty with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
 
     emulateArgv(sandbox, '');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Empty with handler in nested module', () => {
+  it('Empty with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Empty without handler in nested module', () => {
+  it('Empty without handler in nested module', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'git');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

@@ -10,14 +10,14 @@ describe('Options with variable', () => {
     sandbox.restore();
   });
 
-  it('correct input long and short variables', () => {
+  it('correct input long and short variables', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(
       sandbox,
       'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent'
     );
-    complexCli();
+    await complexCli();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -29,11 +29,11 @@ describe('Options with variable', () => {
     entryStub.restore();
   });
 
-  it('correct input only one variable', () => {
+  it('correct input only one variable', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration run -e DB_NAME=db-name --silent');
-    complexCli();
+    await complexCli();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -45,11 +45,11 @@ describe('Options with variable', () => {
     entryStub.restore();
   });
 
-  it('correct input only one variable', () => {
+  it('correct input only one variable', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration run');
-    complexCli();
+    await complexCli();
 
     const [options] = entryStub.getCall(0).args;
 

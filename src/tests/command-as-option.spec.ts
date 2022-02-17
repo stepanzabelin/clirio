@@ -11,33 +11,33 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('correct input version, short options', () => {
+  it('correct input version, short options', async () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
     emulateArgv(sandbox, '-v');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
 
     entryStub.restore();
   });
 
-  it('correct input version, short options', () => {
+  it('correct input version, short options', async () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
     emulateArgv(sandbox, '--version');
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
 
     entryStub.restore();
   });
 
-  it('correct input command as option and extra options', () => {
+  it('correct input command as option and extra options', async () => {
     const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
     emulateArgv(sandbox, '--check --pool=5 -v');
-    complexCli();
+    await complexCli();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -49,11 +49,11 @@ describe('Command as option', () => {
     entryStub.restore();
   });
 
-  it('invalid input command as option and extra options', () => {
+  it('invalid input command as option and extra options', async () => {
     const errorCallbackStub = sinon.stub();
 
     emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-    complexCli(errorCallbackStub);
+    await complexCli(errorCallbackStub);
 
     const err = errorCallbackStub.getCall(0).args[0];
 

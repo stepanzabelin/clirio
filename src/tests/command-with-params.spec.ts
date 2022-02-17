@@ -11,11 +11,11 @@ describe('Command with params', () => {
     sandbox.restore();
   });
 
-  it('correct input: hello-to firstName last-name', () => {
+  it('correct input: hello-to firstName last-name', async () => {
     const fnSpy = sandbox.stub(HelloToService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello to Alex Smith');
-    complexCli();
+    await complexCli();
 
     const [params] = fnSpy.getCall(0).args;
 
@@ -27,11 +27,11 @@ describe('Command with params', () => {
     fnSpy.restore();
   });
 
-  it('correct input extra option in command with masks without options dto', () => {
+  it('correct input extra option in command with masks without options dto', async () => {
     const fnSpy = sandbox.stub(HelloToService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello to Alex Smith --no-middle-name');
-    complexCli();
+    await complexCli();
 
     const [params] = fnSpy.getCall(0).args;
 
@@ -43,12 +43,12 @@ describe('Command with params', () => {
     fnSpy.restore();
   });
 
-  it('invalid input extra param', () => {
+  it('invalid input extra param', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello Alex');
 
-    complexCli();
+    await complexCli();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
