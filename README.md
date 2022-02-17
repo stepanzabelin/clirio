@@ -39,7 +39,7 @@ yarn add clirio
 #### Peer dependencies
 
 ```bash
-reflect-metadata@^0.1 joi@^17 joi-class-decorators@^1
+reflect-metadata@^0.1 joi@^17
 
 ```
 
@@ -721,6 +721,8 @@ $ cli connect -e DB_NAME=db-name -e DB_USER=db-user
 All values that come out as a results of parsing the command are either strings or booleans
 To validate and convert to the desired type - use [Joi](https://www.npmjs.com/package/joi) and [DTO type annotations](https://www.npmjs.com/package/joi-class-decorators)
 
+Clirio contains and re-exports the `joi-class-decorators` package [https://www.npmjs.com/package/joi-class-decorators](https://www.npmjs.com/package/joi-class-decorators)
+
 ##### Joi options validation
 
 ```ts
@@ -737,8 +739,7 @@ export class GitModule {
 
 ```ts
 import Joi from 'joi';
-import { JoiSchema } from 'joi-class-decorators';
-import { Option } from 'clirio';
+import { Option, JoiSchema } from 'clirio';
 
 class GitStatusDto {
   @Option('--branch, -b')
@@ -1036,8 +1037,7 @@ export class Module {
 
 ```ts
 import Joi from 'joi';
-import { JoiSchema } from 'joi-class-decorators';
-import { Option } from 'clirio';
+import { Option, JoiSchema } from 'clirio';
 
 class ModelOptionsDto {
   @Option('--name, -n', {
@@ -1064,8 +1064,7 @@ export class Module {
 
 ```ts
 import Joi from 'joi';
-import { JoiSchema } from 'joi-class-decorators';
-import { Option } from 'clirio';
+import { Option, JoiSchema } from 'clirio';
 
 class DbConnectOptionsDto {
   @Option('--env, -e', {
@@ -1092,8 +1091,7 @@ export class GitModule {
 
 ```ts
 import Joi from 'joi';
-import { JoiSchema } from 'joi-class-decorators';
-import { Param } from 'clirio';
+import { Param, JoiSchema } from 'clirio';
 
 class AddParamsDto {
   @Param('all-files')

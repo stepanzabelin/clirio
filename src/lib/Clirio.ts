@@ -3,10 +3,6 @@ import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 
 export class Clirio extends ClirioCore {
-  private errorCallback?: (err: Error) => void;
-  private successCallback?: () => void;
-  private completeCallback?: () => void;
-
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
     this.config = Object.assign({}, this.config, { partialConfig });
     return this;
@@ -27,7 +23,7 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public onError(callback: (err: Error) => void): this {
+  public onError(callback: (err: unknown) => void): this {
     this.errorCallback = callback;
     return this;
   }
@@ -44,36 +40,17 @@ export class Clirio extends ClirioCore {
 
   public build() {
     this.debug();
+    this.run();
+  }
 
+  public async run() {
     try {
-      this.run();
-
+      await this.execute();
       this.callSuccess();
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.callError(err);
     } finally {
       this.callComplete();
-    }
-  }
-
-  private callComplete() {
-    if (this.completeCallback) {
-      this.completeCallback();
-    }
-  }
-
-  private callSuccess() {
-    if (this.successCallback) {
-      this.successCallback();
-    }
-  }
-
-  private callError(err: Error) {
-    if (this.errorCallback) {
-      this.errorCallback(err);
-    } else {
-      console.log('\x1b[31m%s\x1b[0m', err.message);
-      process.exit(9);
     }
   }
 }

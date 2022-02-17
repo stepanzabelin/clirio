@@ -22,6 +22,9 @@ export class ClirioCore {
   protected modules: Constructor[] = [];
   protected config: ClirioConfig = clirioConfig;
   protected validator = new ClirioValidator();
+  protected errorCallback?: (err: unknown) => void;
+  protected successCallback?: () => void;
+  protected completeCallback?: () => void;
 
   private *iterateData() {
     for (const module of this.modules) {
@@ -34,7 +37,7 @@ export class ClirioCore {
     }
   }
 
-  protected run() {
+  protected async execute() {
     const parsedArgs = ClirioCore.parse(this.args ?? getProcessArgs());
 
     // COMMAND ACTION
@@ -88,7 +91,7 @@ export class ClirioCore {
         }
       });
 
-      Reflect.apply(
+      await Reflect.apply(
         module.prototype[actionName],
         new module(),
         transformedArguments
@@ -115,7 +118,7 @@ export class ClirioCore {
         continue;
       }
 
-      Reflect.apply(module.prototype[actionName], new module(), []);
+      await Reflect.apply(module.prototype[actionName], new module(), []);
 
       return null;
     }
@@ -144,7 +147,7 @@ export class ClirioCore {
         (a, b) => b.count - a.count
       )[0]!;
 
-      Reflect.apply(module.prototype[actionName], new module(), []);
+      await Reflect.apply(module.prototype[actionName], new module(), []);
 
       return null;
     }
@@ -455,4 +458,25 @@ export class ClirioCore {
 
     return rows;
   };
+
+  protected callComplete() {
+    if (this.completeCallback) {
+      this.completeCallback();
+    }
+  }
+
+  protected callSuccess() {
+    if (this.successCallback) {
+      this.successCallback();
+    }
+  }
+
+  protected callError(err: unknown) {
+    if (this.errorCallback) {
+      this.errorCallback(err);
+    } else {
+      console.log('\x1b[31m%s\x1b[0m', String(err));
+      process.exit(9);
+    }
+  }
 }

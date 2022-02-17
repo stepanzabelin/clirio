@@ -1,6 +1,6 @@
 {
   "name": "clirio",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Clirio - a mini framework for node.js command-line interfaces",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -49,7 +49,7 @@
     "node": ">=10"
   },
   "dependencies": {
-   
+    "joi-class-decorators": "^1.0.4"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
@@ -76,13 +76,11 @@
     "typedoc": "^0.19.0",
     "typescript": "^4.5.4",
     "reflect-metadata": "^0.1.13",
-    "joi": "^17.5.0",
-    "joi-class-decorators": "^1.0.4"
+    "joi": "^17.5.0"
   },
   "peerDependencies": {
     "reflect-metadata": "^0.1.13",
-    "joi": "^17.2.1",
-    "joi-class-decorators": "^1.0.4"
+    "joi": "^17.2.1"
   },
   "files": [
     "build/main",
