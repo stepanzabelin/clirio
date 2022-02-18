@@ -11,7 +11,7 @@ import { ClirioCore } from './ClirioCore';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
-    this.config = Object.assign({}, this.config, { partialConfig });
+    this.config = { ...this.config, ...partialConfig };
     return this;
   }
 

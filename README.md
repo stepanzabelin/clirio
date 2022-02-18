@@ -139,7 +139,7 @@ cli.setConfig({
 | Param                     |                                                              Description                                                              | Default |
 | ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | ------: |
 | nullableOptionValue       | value conversion of command line options that have no value e.g. `--verbose` - initially it is `null` after conversion will be `true` |    true |
-| validateOptionsWithoutDto |           if dto options are not specified but options will be passed in the command, then there may be a validation error            |   false |
+| validateOptionsWithoutDto |           if dto options are not specified but options will be passed in the command, then there may be a validation error            |    true |
 
 ##### addModule
 
@@ -184,8 +184,8 @@ Callback for handling an success result
 
 ```ts
 cli.onSuccess((err: ClirioSuccess) => {
-  const message = err.message ?? 'The command was executed successfully!';
-  console.log(chalk.green(message));
+  const successMessage = 'The command has been executed successfully!';
+  console.log(chalk.green(err.message ?? successMessage));
   process.exit(0);
 });
 ```
@@ -220,7 +220,9 @@ Callback for handling an debugging error
 
 ```ts
 cli.onDebug((err: ClirioDebug) => {
-  err.output();
+  const output = err.format();
+
+  console.log(chalk.red(output));
   process.exit(5);
 });
 ```
@@ -844,7 +846,7 @@ $ cli git checkout develop
 
 ##### Joi validating and converting
 
-Joi validates and converts input values that are originally string
+Joi validates and converts input values that are originally string. That is a very useful feature.
 
 ###### Summation and concatenation examples
 
@@ -1061,8 +1063,8 @@ Special exceptions designed to complete the script with the desired result
 | `new ClirioComplete(message?: string)` |  Complete   | `cli.onComplete(callback)` |
 | `new ClirioDebug(message: string)`     |  Debugging  |    `cli.onDebug(callback)` |
 
-By default, all handlers in Clirio are configured, but you can override your own callback for each
-Use one of the available exceptions to throw the desired event, after that the required callback will be called and the script will end
+By default, all handlers in Clirio are configured, but you can override to your own callback for each ones
+Use one of the available exceptions to throw the desired event, after that the related callback will be called and the script will end
 
 ###### Examples
 
@@ -1098,7 +1100,7 @@ An error occurred: Not working!
 ```
 
 ```ts
-import { Module, Command, ClirioError } from 'clirio';
+import { Module, Command, ClirioSuccess } from 'clirio';
 
 @Module()
 export class CommonModule {
@@ -1116,7 +1118,7 @@ cli.onSuccess((err: ClirioSuccess) => {
   if (err.message) {
     console.log(chalk.green(message));
   } else {
-    console.log('Successfully!');
+    console.log(chalk.green('Successfully!'));
   }
 });
 cli.build();

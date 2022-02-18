@@ -11,6 +11,7 @@ export const complexCli = async (
   const cli = new Clirio();
   cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
   cli.onComplete(completeCallback);
+  cli.setConfig({ validateOptionsWithoutDto: false });
   cli.onError(errorCallback);
   await cli.build();
   return cli;

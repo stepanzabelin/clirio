@@ -1,7 +1,8 @@
 import { getClassSchema } from 'joi-class-decorators';
+import Joi from 'joi';
 import { Constructor, RawOptions, RawParams } from '../types';
 import { md } from '../metadata';
-import Joi from 'joi';
+import { ClirioError } from '../exceptions';
 
 export class ClirioValidator {
   public isDto(dto: Constructor) {
@@ -49,6 +50,7 @@ export class ClirioValidator {
           }
         }
       }
+
       throw new Error(message);
     }
 
@@ -89,7 +91,13 @@ export class ClirioValidator {
       paramsList.map(([propertyName]) => propertyName)
     );
 
-    return this.validateSchema(schema, transformedParams, propertiesMap);
+    try {
+      return this.validateSchema(schema, transformedParams, propertiesMap);
+    } catch (err: unknown) {
+      throw new ClirioError(err instanceof Error ? err.message : String(err), {
+        title: 'Command',
+      });
+    }
   }
 
   public validateOptions(
@@ -174,6 +182,12 @@ export class ClirioValidator {
       optionsList.map(([propertyName]) => propertyName)
     );
 
-    return this.validateSchema(schema, transformedOptions, propertiesMap);
+    try {
+      return this.validateSchema(schema, transformedOptions, propertiesMap);
+    } catch (err: unknown) {
+      throw new ClirioError(err instanceof Error ? err.message : String(err), {
+        title: 'Options',
+      });
+    }
   }
 }

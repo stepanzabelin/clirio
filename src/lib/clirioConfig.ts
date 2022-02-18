@@ -5,5 +5,5 @@ export type ClirioConfig = {
 
 export const clirioConfig = {
   nullableOptionValue: true,
-  validateOptionsWithoutDto: false,
+  validateOptionsWithoutDto: true,
 };
