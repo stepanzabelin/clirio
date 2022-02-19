@@ -40,18 +40,18 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public onSuccess(callback: (err: ClirioSuccess) => void): this {
-    this.successCallback = callback;
-    return this;
-  }
-
-  public onWarning(callback: (err: ClirioWarning) => void): this {
+  public onWarning(callback: (data: ClirioWarning) => void): this {
     this.warningCallback = callback;
     return this;
   }
 
   public onComplete(callback: (err: ClirioComplete) => void): this {
     this.completeCallback = callback;
+    return this;
+  }
+
+  public onSuccess(callback: (data: ClirioSuccess) => void): this {
+    this.successCallback = callback;
     return this;
   }
 

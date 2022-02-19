@@ -28,11 +28,11 @@ export class ClirioCore {
   protected modules: Constructor[] = [];
   protected config: ClirioConfig = clirioConfig;
   protected validator = new ClirioValidator();
-  protected errorCallback?: (err: ClirioError) => void;
-  protected successCallback?: (err: ClirioSuccess) => void;
-  protected completeCallback?: (err: ClirioComplete) => void;
   protected debugCallback?: (err: ClirioDebug) => void;
-  protected warningCallback?: (err: ClirioWarning) => void;
+  protected errorCallback?: (err: ClirioError) => void;
+  protected warningCallback?: (data: ClirioWarning) => void;
+  protected completeCallback?: (data: ClirioComplete) => void;
+  protected successCallback?: (data: ClirioSuccess) => void;
 
   private *iterateData() {
     for (const module of this.modules) {
@@ -476,41 +476,41 @@ export class ClirioCore {
     }
   }
 
-  protected callComplete(err: ClirioComplete) {
-    if (this.completeCallback) {
-      this.completeCallback(err);
-    } else {
-      console.log('\x1b[34m%s\x1b[0m', err.message);
-      process.exit(0);
-    }
-  }
-
-  protected callWarning(err: ClirioWarning) {
-    if (this.warningCallback) {
-      this.warningCallback(err);
-    } else {
-      console.log('\x1b[33m%s\x1b[0m', err.message);
-      process.exit(0);
-    }
-  }
-
-  protected callSuccess(err: ClirioSuccess) {
-    if (this.successCallback) {
-      this.successCallback(err);
-    } else {
-      if (err) {
-        console.log('\x1b[32m%s\x1b[0m', err.message);
-      }
-      process.exit(0);
-    }
-  }
-
   protected callError(err: ClirioError) {
     if (this.errorCallback) {
       this.errorCallback(err);
     } else {
       console.log('\x1b[31m%s\x1b[0m', err.message);
       process.exit(9);
+    }
+  }
+
+  protected callWarning(data: ClirioWarning) {
+    if (this.warningCallback) {
+      this.warningCallback(data);
+    } else {
+      console.log('\x1b[33m%s\x1b[0m', data.message);
+      process.exit(0);
+    }
+  }
+
+  protected callComplete(data: ClirioComplete) {
+    if (this.completeCallback) {
+      this.completeCallback(data);
+    } else {
+      console.log('\x1b[34m%s\x1b[0m', data.message);
+      process.exit(0);
+    }
+  }
+
+  protected callSuccess(data: ClirioSuccess) {
+    if (this.successCallback) {
+      this.successCallback(data);
+    } else {
+      if (data) {
+        console.log('\x1b[32m%s\x1b[0m', data.message);
+      }
+      process.exit(0);
     }
   }
 }

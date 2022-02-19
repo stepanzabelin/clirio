@@ -132,7 +132,7 @@ Setting global configuration
 ```ts
 cli.setConfig({
   nullableOptionValue: true,
-  validateOptionsWithoutDto: false,
+  validateOptionsWithoutDto: true,
 });
 ```
 
@@ -183,9 +183,9 @@ cli.onError((err: ClirioError) => {
 Callback for handling an success result
 
 ```ts
-cli.onSuccess((err: ClirioSuccess) => {
+cli.onSuccess((data: ClirioSuccess) => {
   const successMessage = 'The command has been executed successfully!';
-  console.log(chalk.green(err.message ?? successMessage));
+  console.log(chalk.green(data.message ?? successMessage));
   process.exit(0);
 });
 ```
@@ -195,8 +195,8 @@ cli.onSuccess((err: ClirioSuccess) => {
 Callback for handling an warning result
 
 ```ts
-cli.onWarning((err: ClirioWarning) => {
-  console.log(chalk.yellow(err.message));
+cli.onWarning((data: ClirioWarning) => {
+  console.log(chalk.yellow(data.message));
   process.exit(0);
 });
 ```
@@ -206,8 +206,8 @@ cli.onWarning((err: ClirioWarning) => {
 Callback for handling an complete result
 
 ```ts
-cli.onComplete((err: ClirioComplete) => {
-  const message = err.message ?? 'Thanks!';
+cli.onComplete((data: ClirioComplete) => {
+  const message = data.message ?? 'Thanks!';
 
   console.log(chalk.blue(message));
   process.exit(0);
@@ -1114,8 +1114,8 @@ export class CommonModule {
 ```ts
 const cli = new Clirio();
 cli.addModule(CommonModule);
-cli.onSuccess((err: ClirioSuccess) => {
-  if (err.message) {
+cli.onSuccess((data: ClirioSuccess) => {
+  if (data.message) {
     console.log(chalk.green(message));
   } else {
     console.log(chalk.green('Successfully!'));
