@@ -41,22 +41,41 @@ describe('Command as option', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toMatchObject({
-      verbose: true,
-      pool: 5,
+    expect(options).toStrictEqual({
+      verbose: null,
+      pool: '5',
     });
 
     entryStub.restore();
   });
 
-  it('invalid input command as option and extra options', async () => {
-    const errorCallbackStub = sinon.stub();
+  it('correct input command as option and extra options 2', async () => {
+    const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
     emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-    await complexCli(errorCallbackStub);
+    await complexCli();
 
-    const err = errorCallbackStub.getCall(0).args[0];
+    const [options] = entryStub.getCall(0).args;
 
-    expect(err.message).toEqual('"unknown" is not allowed');
+    console.log('options', options);
+
+    expect(options).toStrictEqual({
+      verbose: null,
+      unknown: null,
+      pool: '5',
+    });
+
+    entryStub.restore();
   });
+
+  // it('invalid input command as option and extra options', async () => {
+  //   const errorCallbackStub = sinon.stub();
+
+  //   emulateArgv(sandbox, '--check --unknown --pool=5 -v');
+  //   await complexCli(errorCallbackStub);
+
+  //   const err = errorCallbackStub.getCall(0).args[0];
+
+  //   expect(err.message).toEqual('"unknown" is not allowed');
+  // });
 });

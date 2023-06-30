@@ -9,35 +9,61 @@ import {
   ParsedArg,
   RawOptions,
   RawParams,
+  ClirioPipe,
+  Pipe,
+  PipeScope,
+  ExceptionScope,
+  Exception,
+  ClirioException,
+  Result,
+  Module,
 } from '../types';
 import { getProcessArgs } from './getProcessArgs';
 import { ClirioConfig, clirioConfig } from './clirioConfig';
-import { md } from '../metadata';
+import {
+  actionTargetMetadata,
+  exceptionTargetMetadata,
+  helperArgMetadata,
+  inputArgMetadata,
+  moduleMetadata,
+  optionsArgMetadata,
+  paramsArgMetadata,
+  pipeTargetMetadata,
+} from '../metadata';
 import { ClirioHelper } from './ClirioHelper';
 import { ClirioValidator } from './ClirioValidator';
-import {
-  ClirioComplete,
-  ClirioDebug,
-  ClirioError,
-  ClirioSuccess,
-  ClirioWarning,
-} from '../exceptions';
+import { ClirioRouteError, ClirioValidationError } from '../exceptions';
+import { DataTypeEnum } from '../types/DataTypeEnum';
+import { ClirioDefaultException } from './ClirioDefaultException';
+import { Clirio } from './Clirio';
 
 export class ClirioCore {
   protected args?: Args;
-  protected modules: Constructor[] = [];
+  protected modules: Module[] = [];
   protected config: ClirioConfig = clirioConfig;
   protected validator = new ClirioValidator();
-  protected debugCallback?: (err: ClirioDebug) => void;
-  protected errorCallback?: (err: ClirioError) => void;
-  protected warningCallback?: (data: ClirioWarning) => void;
-  protected completeCallback?: (data: ClirioComplete) => void;
-  protected successCallback?: (data: ClirioSuccess) => void;
+  protected globalPipe: Pipe | null = null;
+  protected globalException: Exception | null = null;
+  protected globalResult: Result | null = null;
+
+  private getPrototype(
+    entity: Constructor<any> | Constructor<any>['prototype']
+  ) {
+    return typeof entity === 'function'
+      ? entity.prototype
+      : entity.constructor.prototype;
+  }
+
+  private getInstance(
+    entity: Constructor<any> | Constructor<any>['prototype']
+  ) {
+    return typeof entity === 'function' ? new entity() : entity;
+  }
 
   private *iterateData() {
     for (const module of this.modules) {
-      const moduleData = md.module.get(module.prototype)!;
-      const actionMap = md.action.get(module.prototype);
+      const moduleData = moduleMetadata.get(this.getPrototype(module))!;
+      const actionMap = actionTargetMetadata.getMap(this.getPrototype(module));
 
       for (const [actionName, actionData] of actionMap) {
         yield { module, moduleData, actionName, actionData };
@@ -45,7 +71,7 @@ export class ClirioCore {
     }
   }
 
-  protected async execute(): Promise<never> {
+  protected async execute(): Promise<never | null> {
     const parsedArgs = ClirioCore.parse(this.args ?? getProcessArgs());
 
     // COMMAND ACTION
@@ -56,56 +82,143 @@ export class ClirioCore {
       actionName,
       actionData,
     } of this.iterateData()) {
-      if (actionData.type !== ActionType.Command) {
-        continue;
-      }
-
-      const links = [...moduleData.links, ...actionData.links];
-      const data = this.matchRoute(parsedArgs, links);
-
-      if (!data) {
-        continue;
-      }
-
-      const inputArguments = Array.from(
-        md.input.get(module.prototype, actionName)
-      );
-
-      if (
-        this.config.validateOptionsWithoutDto &&
-        inputArguments.findIndex(
-          ([, params]) => params.type === InputTypeEnum.Options
-        ) === -1 &&
-        Object.keys(data.options).length > 0
-      ) {
-        this.validator.validateOptions(data.options, class {});
-      }
-
-      const transformedArguments = inputArguments.reverse().map(([, input]) => {
-        switch (input.type) {
-          case InputTypeEnum.Params:
-            return this.validator.validateParams(data.params, input.dto);
-          case InputTypeEnum.Options:
-            return this.validator.validateOptions(data.options, input.dto, {
-              nullableOptionValue: this.config.nullableOptionValue,
-            });
-          case InputTypeEnum.Helper:
-            return new ClirioHelper({
-              scoped: { module, actionName },
-              modules: this.modules,
-            });
-          default:
-            return undefined;
+      try {
+        if (actionData.type !== ActionType.Command) {
+          continue;
         }
-      });
 
-      await Reflect.apply(
-        module.prototype[actionName],
-        new module(),
-        transformedArguments
-      );
+        const links = [...moduleData.links, ...actionData.links];
+        const data = this.matchRoute(parsedArgs, links);
 
-      throw new ClirioComplete();
+        if (!data) {
+          continue;
+        }
+
+        const optionsArgMap = optionsArgMetadata.getArgMap(
+          this.getPrototype(module),
+          actionName
+        );
+
+        if (
+          !this.config.allowUncontrolledOptions &&
+          optionsArgMap.size === 0 &&
+          Object.keys(data.options).length > 0
+        ) {
+          throw new ClirioValidationError('Invalid options received', {
+            propertyName: null,
+            dataType: DataTypeEnum.Options,
+          });
+        }
+
+        const paramsArgMap = paramsArgMetadata.getArgMap(
+          this.getPrototype(module),
+          actionName
+        );
+
+        const helperArgMap = helperArgMetadata.getArgMap(
+          this.getPrototype(module),
+          actionName
+        );
+
+        // const inputArguments = Array.from(
+        //   inputArgMetadata.get(this.getPrototype(module), actionName)
+        // );
+
+        const combinedArguments = [
+          ...paramsArgMap,
+          ...optionsArgMap,
+          ...helperArgMap,
+        ].sort((a, b) => a[0] - b[0]);
+
+        // console.log(combinedArguments);
+
+        // if (
+        //   !this.config.allowUncontrolledOptions &&
+        //   inputArguments.findIndex(
+        //     ([, params]) => params.type === InputTypeEnum.Options
+        //   ) === -1 &&
+        //   Object.keys(data.options).length > 0
+        // ) {
+        //   throw new ClirioValidationError('Invalid options received', {
+        //     propertyName: null,
+        //     dataType: DataTypeEnum.Options,
+        //     // module,
+        //     // actionName,
+        //   });
+        // }
+
+        // console.log(
+        //   'paramsArgMetadata',
+        //   paramsArgMetadata.getArgMap(this.getPrototype(module), actionName)
+        // );
+
+        // console.log(
+        //   'optionTargetMetadata',
+        //   optionsArgMetadata.getArgMap(this.getPrototype(module), actionName)
+        // );
+
+        const pipeScopeList = this.collectPipes(module, actionName);
+
+        const transformedArguments = [];
+
+        for (const [, input] of combinedArguments) {
+          switch (input.type) {
+            case InputTypeEnum.Params:
+              {
+                const transformedParams = this.validator.validateParams(
+                  data.params,
+                  input.dto
+                );
+
+                const pipedParams = this.handlePipes(
+                  transformedParams,
+                  input.dto,
+                  DataTypeEnum.Params,
+                  pipeScopeList
+                );
+
+                transformedArguments.push(pipedParams);
+              }
+
+              break;
+            case InputTypeEnum.Options:
+              {
+                const transformedOptions = this.validator.validateOptions(
+                  data.options,
+                  input.dto
+                );
+
+                const pipedOptions = this.handlePipes(
+                  transformedOptions,
+                  input.dto,
+                  DataTypeEnum.Options,
+                  pipeScopeList
+                );
+
+                transformedArguments.push(pipedOptions);
+              }
+              break;
+
+            case InputTypeEnum.Helper:
+              transformedArguments.push(
+                new ClirioHelper({
+                  scoped: { module, actionName },
+                  modules: this.modules,
+                })
+              );
+              break;
+            default:
+              continue;
+          }
+        }
+
+        await this.applyAction(module, actionName, transformedArguments);
+        return null;
+      } catch (err: any) {
+        const exceptionScopeList = this.collectExceptions(module, actionName);
+        this.handleExceptions(err, exceptionScopeList);
+        return null;
+      }
     }
 
     // EMPTY ACTION
@@ -116,19 +229,23 @@ export class ClirioCore {
       actionName,
       actionData,
     } of this.iterateData()) {
-      if (actionData.type !== ActionType.Empty) {
-        continue;
+      try {
+        if (actionData.type !== ActionType.Empty) {
+          continue;
+        }
+
+        const data = this.matchRoute(parsedArgs, moduleData.links);
+
+        if (!data) {
+          continue;
+        }
+
+        await this.applyAction(module, actionName, []);
+      } catch (err: any) {
+        const exceptionScopeList = this.collectExceptions(module, actionName);
+        this.handleExceptions(err, exceptionScopeList);
+        return null;
       }
-
-      const data = this.matchRoute(parsedArgs, moduleData.links);
-
-      if (!data) {
-        continue;
-      }
-
-      await Reflect.apply(module.prototype[actionName], new module(), []);
-
-      throw new ClirioComplete();
     }
 
     // FAILURE ACTION
@@ -154,28 +271,48 @@ export class ClirioCore {
       const { module, actionName } = failures.sort(
         (a, b) => b.count - a.count
       )[0]!;
-
-      await Reflect.apply(module.prototype[actionName], new module(), []);
-
-      throw new ClirioComplete();
+      try {
+        await this.applyAction(module, actionName, []);
+      } catch (err: any) {
+        const exceptionScopeList = this.collectExceptions(module, actionName);
+        this.handleExceptions(err, exceptionScopeList);
+        return null;
+      }
     }
 
-    // ERROR
+    const exceptionScopeList = this.collectExceptions();
 
-    throw new ClirioError('Incorrect command specified');
+    this.handleExceptions(
+      new ClirioRouteError('Incorrect command specified'),
+      exceptionScopeList
+    );
+
+    return null;
+  }
+
+  async applyAction(
+    module: Constructor<any>,
+    actionName: string,
+    transformedArguments: any[]
+  ) {
+    await Reflect.apply(
+      this.getPrototype(module)[actionName],
+      this.getInstance(module),
+      transformedArguments
+    );
   }
 
   public debug() {
     if (this.modules.length === 0) {
-      throw new ClirioDebug('There is no set module');
+      throw Clirio.debug('There is no set module');
     }
 
     for (const module of this.modules) {
-      if (!md.module.has(module.prototype)) {
-        throw new ClirioDebug(
+      if (!moduleMetadata.has(this.getPrototype(module))) {
+        throw Clirio.debug(
           'A constructor is not specified as a module. use @Module() decorator',
           {
-            entity: module.name,
+            moduleName: module.name,
           }
         );
       }
@@ -195,7 +332,7 @@ export class ClirioCore {
         ) > -1;
 
       const inputArguments = Array.from(
-        md.input.get(module.prototype, actionName)
+        inputArgMetadata.get(this.getPrototype(module), actionName)
       );
 
       const isInputParams =
@@ -204,22 +341,138 @@ export class ClirioCore {
         ) > -1;
 
       if (isActionMask && !isInputParams) {
-        throw new ClirioDebug(`Argument @Params is not bound to command`, {
-          entity: module.name,
-          property: actionName,
+        throw Clirio.debug(`Argument @Params is not bound to command`, {
+          moduleName: module.name,
+          actionName,
         });
       }
 
       if (!isActionMask && isInputParams) {
-        throw new ClirioDebug(
+        throw Clirio.debug(
           `Either the pattern is missing from the command, or @Params argument is redundant`,
           {
-            entity: module.name,
-            property: actionName,
+            moduleName: module.name,
+            actionName,
           }
         );
       }
     }
+  }
+
+  public handlePipes(
+    rawData: any,
+    dto: Constructor,
+    dataType: DataTypeEnum,
+    pipeList: PipeScope[] = []
+  ) {
+    let data = { ...rawData };
+
+    for (const { pipe, scope } of pipeList) {
+      const pipeInst: ClirioPipe =
+        typeof pipe === 'function' ? new pipe() : pipe;
+
+      data = pipeInst.transform(data, {
+        dataType,
+        scope,
+        dto,
+      });
+    }
+
+    return data;
+  }
+
+  public handleExceptions(
+    rawErr: any,
+    exceptionList: ExceptionScope[] = [],
+    {
+      dto = null,
+      dataType = null,
+    }: {
+      dto?: Constructor | null;
+      dataType?: DataTypeEnum | null;
+    } = {}
+  ) {
+    let currentErr = rawErr;
+
+    for (const { exception, scope } of exceptionList) {
+      const exceptionInst: ClirioException =
+        typeof exception === 'function' ? new exception() : exception;
+
+      try {
+        exceptionInst.catch(currentErr, {
+          dataType,
+          scope,
+          dto,
+        });
+      } catch (err) {
+        currentErr = err;
+      }
+    }
+
+    new ClirioDefaultException().catch(currentErr, {
+      dataType,
+      scope: 'default',
+      dto,
+    });
+  }
+
+  collectPipes(module: Constructor<any>, actionName: string): PipeScope[] {
+    let pipeScopeList: PipeScope[] = [];
+
+    const pipeMetadata = pipeTargetMetadata.getData(
+      this.getPrototype(module),
+      actionName
+    );
+
+    if (this.globalPipe) {
+      pipeScopeList.push({ scope: 'global', pipe: this.globalPipe });
+    }
+
+    if (pipeMetadata) {
+      pipeScopeList.push({ scope: 'route', pipe: pipeMetadata.pipe });
+
+      if (pipeMetadata.overwriteGlobal) {
+        pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
+      }
+    }
+
+    return pipeScopeList;
+  }
+
+  collectExceptions(
+    module?: Constructor<any>,
+    actionName?: string
+  ): ExceptionScope[] {
+    let exceptionScopeList: ExceptionScope[] = [];
+
+    if (this.globalException) {
+      exceptionScopeList.push({
+        scope: 'global',
+        exception: this.globalException,
+      });
+    }
+
+    if (module && actionName) {
+      const exceptionMetadata = exceptionTargetMetadata.getData(
+        this.getPrototype(module),
+        actionName
+      );
+
+      if (exceptionMetadata) {
+        exceptionScopeList.push({
+          scope: 'route',
+          exception: exceptionMetadata.exception,
+        });
+
+        if (exceptionMetadata.overwriteGlobal) {
+          exceptionScopeList = exceptionScopeList.filter(
+            (item) => item.scope !== 'global'
+          );
+        }
+      }
+    }
+
+    return exceptionScopeList;
   }
 
   private matchRoute(
@@ -466,51 +719,4 @@ export class ClirioCore {
 
     return rows;
   };
-
-  protected callDebug(err: ClirioDebug) {
-    if (this.debugCallback) {
-      this.debugCallback(err);
-    } else {
-      console.log('\x1b[31m%s\x1b[0m', err.format());
-      process.exit(5);
-    }
-  }
-
-  protected callError(err: ClirioError) {
-    if (this.errorCallback) {
-      this.errorCallback(err);
-    } else {
-      console.log('\x1b[31m%s\x1b[0m', err.message);
-      process.exit(9);
-    }
-  }
-
-  protected callWarning(data: ClirioWarning) {
-    if (this.warningCallback) {
-      this.warningCallback(data);
-    } else {
-      console.log('\x1b[33m%s\x1b[0m', data.message);
-      process.exit(0);
-    }
-  }
-
-  protected callComplete(data: ClirioComplete) {
-    if (this.completeCallback) {
-      this.completeCallback(data);
-    } else {
-      console.log('\x1b[34m%s\x1b[0m', data.message);
-      process.exit(0);
-    }
-  }
-
-  protected callSuccess(data: ClirioSuccess) {
-    if (this.successCallback) {
-      this.successCallback(data);
-    } else {
-      if (data) {
-        console.log('\x1b[32m%s\x1b[0m', data.message);
-      }
-      process.exit(0);
-    }
-  }
 }

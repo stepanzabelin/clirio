@@ -37,13 +37,6 @@ yarn add clirio
 
 ```
 
-#### Peer dependencies
-
-```bash
-reflect-metadata@^0.1 joi@^17
-
-```
-
 ## Quick Start
 
 For example to emulate `git status` cli command with options - 3 easy steps to build an app
@@ -740,22 +733,15 @@ class DbConnectOptionsDto {
 ```
 
 ```bash
-$ cli connect -e DB_NAME=db-name -e DB_USER=db-user
+$ cli connect -e DB_NAME=dbname -e DB_USER=dbuser
 ```
 
 ```console
-{ envs: { DB_USER: 'db-name', DB_USER: 'db-user' } }
+{ envs: { DB_NAME: 'dbname', DB_USER: 'dbuser' } }
 
 ```
 
-### Using Joi
-
-All values that come out as a results of parsing the command are either strings or booleans
-To validate and convert to the desired type - use [Joi](https://www.npmjs.com/package/joi) and [DTO type annotations](https://www.npmjs.com/package/joi-class-decorators)
-
-Clirio uses and re-exports the `joi-class-decorators` package [https://www.npmjs.com/package/joi-class-decorators](https://www.npmjs.com/package/joi-class-decorators)
-
-##### Joi options validation
+### Using Validation and Transformation
 
 ```ts
 import { Module, Command, Options } from 'clirio';
@@ -770,24 +756,20 @@ export class GitModule {
 ```
 
 ```ts
-import Joi from 'joi';
-import { Option, JoiSchema } from 'clirio';
+import { Option, Validate } from 'clirio';
 
 class GitStatusDto {
   @Option('--branch, -b')
-  @JoiSchema(Joi.string().required())
+  @Validate((v) => typeof v === 'string')
   readonly branch: string;
 
   @Option('--ignore-submodules')
-  @JoiSchema(
-    Joi.string()
-      .valid('none' | 'untracked' | 'dirty' | 'all')
-      .optional()
+  @Validate(
+    (v) => v === undefined || ['none', 'untracked', 'dirty', 'all'].includes(v)
   )
   readonly ignoreSubmodules?: 'none' | 'untracked' | 'dirty' | 'all';
 
   @Option('--short, -s')
-  @JoiSchema(Joi.boolean().optional())
   readonly short?: boolean;
 }
 ```

@@ -19,7 +19,7 @@ describe('Command with params', () => {
 
     const [params] = fnSpy.getCall(0).args;
 
-    expect(params).toMatchObject({
+    expect(params).toStrictEqual({
       firstName: 'Alex',
       'last-name': 'Smith',
     });
@@ -35,7 +35,7 @@ describe('Command with params', () => {
 
     const [params] = fnSpy.getCall(0).args;
 
-    expect(params).toMatchObject({
+    expect(params).toStrictEqual({
       firstName: 'Alex',
       'last-name': 'Smith',
     });

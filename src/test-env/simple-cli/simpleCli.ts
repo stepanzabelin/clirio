@@ -1,4 +1,4 @@
-import { Clirio } from '../../lib/Clirio';
+import { Clirio } from '../../index';
 import { PingModule } from './modules/ping/PingModule';
 
 export const simpleCli = async (
@@ -7,8 +7,8 @@ export const simpleCli = async (
 ) => {
   const cli = new Clirio();
   cli.addModule(PingModule);
-  cli.onComplete(completeCallback);
-  cli.onError(errorCallback);
+  // cli.onComplete(completeCallback);
+  // cli.onError(errorCallback);
   await cli.build();
   return cli;
 };

@@ -1,9 +1,7 @@
 export type ClirioConfig = {
-  nullableOptionValue: unknown;
-  validateOptionsWithoutDto: boolean;
+  allowUncontrolledOptions: boolean;
 };
 
 export const clirioConfig = {
-  nullableOptionValue: true,
-  validateOptionsWithoutDto: true,
+  allowUncontrolledOptions: false,
 };

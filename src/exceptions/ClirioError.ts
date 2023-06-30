@@ -1,24 +1,10 @@
-type ErrorTrace = {
-  title?: string;
+type Payload = {
+  [key: string]: any;
 };
 
 export class ClirioError extends Error {
-  constructor(message: string, public readonly trace: ErrorTrace = {}) {
+  constructor(message: string, public readonly payload: Payload) {
     super(message);
     this.name = 'ClirioError';
-  }
-
-  public format() {
-    let output = '';
-
-    if (this.trace.title) {
-      output += `[${this.trace.title}]: `;
-    }
-
-    if (this.message) {
-      output += this.message;
-    }
-
-    return output;
   }
 }

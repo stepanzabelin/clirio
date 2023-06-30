@@ -1,12 +1,12 @@
 export const METADATA_INPUT_KEY = Symbol('input');
-import { Constructor, InputTypeEnum } from '../../types';
+import { Constructor, InputTypeEnum } from '../types';
 
 export type InputMetadataData = {
   type: InputTypeEnum;
   dto: Constructor;
 };
 
-export const inputMetadata = {
+export const inputArgMetadata = {
   define(
     target: Constructor['prototype'],
     propertyName: string,
@@ -16,7 +16,7 @@ export const inputMetadata = {
     const paramTypes: Constructor[] =
       Reflect.getMetadata('design:paramtypes', target, propertyName) ?? [];
 
-    inputMetadata.merge(target, propertyName, argIndex, {
+    inputArgMetadata.merge(target, propertyName, argIndex, {
       type,
       dto: paramTypes[argIndex],
     });

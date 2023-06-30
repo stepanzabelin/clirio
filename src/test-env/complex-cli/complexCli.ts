@@ -1,4 +1,4 @@
-import { Clirio } from '../../lib/Clirio';
+import { Clirio } from '../../index';
 import { CommonModule } from './modules/common/CommonModule';
 import { GitModule } from './modules/git/GitModule';
 import { HelloModule } from './modules/hello/HelloModule';
@@ -9,10 +9,10 @@ export const complexCli = async (
   completeCallback = (): void => undefined
 ) => {
   const cli = new Clirio();
-  cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
-  cli.onComplete(completeCallback);
-  cli.setConfig({ validateOptionsWithoutDto: false });
-  cli.onError(errorCallback);
+  cli.setModules([HelloModule, CommonModule, GitModule, new MigrationModule()]);
+  // cli.onComplete(completeCallback);
+  cli.setConfig({ allowUncontrolledOptions: false });
+  // cli.onError(errorCallback);
   await cli.build();
   return cli;
 };

@@ -1,5 +1,5 @@
 export const METADATA_MODULE_KEY = Symbol('module');
-import { Constructor, Link } from '../../types';
+import { Constructor, Link } from '../types';
 
 export type ModuleMetadataData = {
   command: string | null;
@@ -17,7 +17,7 @@ export const moduleMetadata = {
   },
 
   get(target: Constructor['prototype']): ModuleMetadataData | undefined {
-    return Reflect.getMetadata(METADATA_MODULE_KEY, target);
+    return Reflect.getMetadata(METADATA_MODULE_KEY, target) || new Map();
   },
 
   has(target: Constructor['prototype']): boolean {

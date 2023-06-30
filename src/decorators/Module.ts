@@ -1,6 +1,7 @@
 import { moduleCommandReg } from '../constrains/regexp.config';
-import { ClirioDebug } from '../exceptions';
-import { md } from '../metadata';
+import { Clirio } from '../lib/Clirio';
+
+import { moduleMetadata } from '../metadata';
 import { Constructor, Link, LinkType } from '../types';
 
 export const Module = function (rawCommand?: string) {
@@ -17,7 +18,7 @@ export const Module = function (rawCommand?: string) {
       );
 
       if (!commandMatch) {
-        ClirioDebug.fatal('Command value is invalid', {
+        throw Clirio.debug('Command value is invalid', {
           entity: constructor.name,
           value: command!,
           decorator: 'Module',
@@ -34,7 +35,7 @@ export const Module = function (rawCommand?: string) {
       sub = sub.slice(commandMatch[0].length);
     }
 
-    md.module.set(constructor.prototype, {
+    moduleMetadata.set(constructor.prototype, {
       links,
       command,
     });

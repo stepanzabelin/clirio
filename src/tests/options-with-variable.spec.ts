@@ -21,9 +21,9 @@ describe('Options with variable', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toMatchObject({
+    expect(options).toStrictEqual({
       envs: { DB_USER: 'db-user', DB_NAME: 'db-name' },
-      silent: true,
+      silent: null,
     });
 
     entryStub.restore();
@@ -37,9 +37,9 @@ describe('Options with variable', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toMatchObject({
+    expect(options).toStrictEqual({
       envs: { DB_NAME: 'db-name' },
-      silent: true,
+      silent: null,
     });
 
     entryStub.restore();
@@ -53,7 +53,7 @@ describe('Options with variable', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toMatchObject({});
+    expect(options).toStrictEqual({});
 
     entryStub.restore();
   });

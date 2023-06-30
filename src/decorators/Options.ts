@@ -1,12 +1,25 @@
-import { md } from '../metadata';
+import { ArgMetadata } from '../lib/ArgMetadata';
+import { inputArgMetadata, optionsArgMetadata } from '../metadata';
 import { Constructor, InputTypeEnum } from '../types';
 
 export const Options = function () {
   return function (
     target: Constructor,
     propertyName: string,
-    inputIndex: number
+    argIndex: number
   ) {
-    md.input.define(target, propertyName, inputIndex, InputTypeEnum.Options);
+    inputArgMetadata.define(
+      target,
+      propertyName,
+      argIndex,
+      InputTypeEnum.Options
+    );
+
+    const dto = ArgMetadata.extractDto(target, propertyName, argIndex);
+
+    optionsArgMetadata.setArgData(target, propertyName, argIndex, {
+      dto,
+      type: InputTypeEnum.Options,
+    });
   };
 };

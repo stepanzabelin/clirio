@@ -1,4 +1,5 @@
-import { md } from '../metadata';
+import { ArgMetadata } from '../lib/ArgMetadata';
+import { inputArgMetadata, paramsArgMetadata } from '../metadata';
 import { Constructor, InputTypeEnum } from '../types';
 
 export const Params = function () {
@@ -7,6 +8,18 @@ export const Params = function () {
     propertyName: string,
     argIndex: number
   ) {
-    md.input.define(target, propertyName, argIndex, InputTypeEnum.Params);
+    inputArgMetadata.define(
+      target,
+      propertyName,
+      argIndex,
+      InputTypeEnum.Params
+    );
+
+    const dto = ArgMetadata.extractDto(target, propertyName, argIndex);
+
+    paramsArgMetadata.setArgData(target, propertyName, argIndex, {
+      dto,
+      type: InputTypeEnum.Params,
+    });
   };
 };

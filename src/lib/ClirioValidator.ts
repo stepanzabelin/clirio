@@ -1,60 +1,17 @@
-import { getClassSchema } from 'joi-class-decorators';
-import Joi from 'joi';
-import { Constructor, RawOptions, RawParams } from '../types';
-import { md } from '../metadata';
-import { ClirioError } from '../exceptions';
+import { Constructor, RawOptions, RawParams, PipeScope } from '../types';
+import {
+  validateTargetMetadata,
+  transformTargetMetadata,
+  optionTargetMetadata,
+  paramTargetMetadata,
+} from '../metadata';
+import { DataTypeEnum } from '../types/DataTypeEnum';
+import { ClirioValidationError } from '../exceptions';
+// import { ClirioValidationError } from '../exceptions';
 
 export class ClirioValidator {
   public isDto(dto: Constructor) {
     return dto && dto !== Object;
-  }
-
-  public extendSchema(
-    schema: Joi.Schema<any>,
-    propertyNames: string[]
-  ): Joi.Schema<any> {
-    const schemaDescription = schema.describe();
-    for (const propertyName of propertyNames) {
-      if (!(propertyName in schemaDescription.keys)) {
-        Object.assign(
-          schema,
-          (schema as any)?.keys?.({
-            [propertyName]: Joi.any(),
-          })
-        );
-      }
-    }
-
-    return schema;
-  }
-
-  private validateSchema(
-    schema: Joi.Schema<any>,
-    raw: any,
-    crossMap?: Map<string, string>
-  ): any {
-    const { value, error } = schema.validate(raw);
-
-    if (error) {
-      let { message } = error;
-      const { label } = error.details[0].context!;
-
-      if (crossMap) {
-        for (const [propertyName, name] of crossMap) {
-          const match = String(label).match(
-            new RegExp(`^${propertyName}\\b.*?$`)
-          );
-
-          if (match) {
-            message = message.replace(`"${match[0]}"`, `"${name}"`);
-          }
-        }
-      }
-
-      throw new Error(message);
-    }
-
-    return value;
   }
 
   public validateParams(
@@ -65,7 +22,7 @@ export class ClirioValidator {
       return params;
     }
     const transformedParams: Record<string, any> = {};
-    const paramsList = Array.from(md.param.get(dto.prototype));
+    const paramsList = Array.from(paramTargetMetadata.getMap(dto.prototype));
 
     const takenPropertiesSet = new Set<string>();
     const propertiesMap = new Map<string, string>();
@@ -86,32 +43,19 @@ export class ClirioValidator {
       }
     }
 
-    const schema = this.extendSchema(
-      getClassSchema(dto),
-      paramsList.map(([propertyName]) => propertyName)
-    );
+    const handledParams = this.handle(transformedParams, dto);
 
-    try {
-      return this.validateSchema(schema, transformedParams, propertiesMap);
-    } catch (err: unknown) {
-      throw new ClirioError(err instanceof Error ? err.message : String(err), {
-        title: 'Command',
-      });
-    }
+    return handledParams;
   }
 
-  public validateOptions(
-    options: RawOptions,
-    dto: Constructor,
-    { nullableOptionValue }: { nullableOptionValue?: any } = {}
-  ): Record<string, any> {
+  public validateOptions(options: RawOptions, dto: Constructor): any {
     if (!this.isDto(dto)) {
       return options;
     }
 
     const transformedOptions: Record<string, any> = {};
 
-    const optionsList = Array.from(md.option.get(dto.prototype));
+    const optionsList = Array.from(optionTargetMetadata.getMap(dto.prototype));
 
     const takenPropertiesSet = new Set<string>();
     const propertiesMap = new Map<string, string>();
@@ -160,12 +104,9 @@ export class ClirioValidator {
               ];
             }
 
-            transformedOptions[propertyName].push(
-              options[optionName] ?? nullableOptionValue
-            );
+            transformedOptions[propertyName].push(options[optionName] ?? null);
           } else {
-            transformedOptions[propertyName] =
-              options[optionName] ?? nullableOptionValue;
+            transformedOptions[propertyName] = options[optionName] ?? null;
           }
         }
       }
@@ -177,17 +118,63 @@ export class ClirioValidator {
       }
     }
 
-    const schema = this.extendSchema(
-      getClassSchema(dto),
-      optionsList.map(([propertyName]) => propertyName)
-    );
+    const handledOptions = this.handle(transformedOptions, dto);
 
-    try {
-      return this.validateSchema(schema, transformedOptions, propertiesMap);
-    } catch (err: unknown) {
-      throw new ClirioError(err instanceof Error ? err.message : String(err), {
-        title: 'Options',
+    return handledOptions;
+  }
+
+  public handle(data: any, dto: Constructor<any>) {
+    const newData = { ...data };
+
+    for (const propertyName in data) {
+      const validate = validateTargetMetadata.getDataField(
+        dto.prototype,
+        propertyName,
+        'validate'
+      );
+
+      if (validate && !validate(data[propertyName])) {
+        throw new ClirioValidationError(`Option "${propertyName}" is wrong`, {
+          propertyName,
+          dataType: DataTypeEnum.Options,
+          module: class {},
+          actionName: '',
+        });
+      }
+
+      const transform = transformTargetMetadata.getDataField(
+        dto.prototype,
+        propertyName,
+        'transform'
+      );
+
+      if (transform) {
+        newData[propertyName] = transform(newData[propertyName]);
+      }
+    }
+
+    return newData;
+  }
+
+  public handlePipes(
+    rawData: any,
+    dto: Constructor,
+    dataType: DataTypeEnum,
+    pipeList: PipeScope[] = []
+  ) {
+    let data = rawData;
+
+    for (const { pipe, scope } of pipeList) {
+      const pipeInst: any = typeof pipe === 'function' ? new pipe() : pipe;
+
+      data = pipeInst.transform({
+        dataType,
+        scope,
+        dto,
+        data,
       });
     }
+
+    return data;
   }
 }

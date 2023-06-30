@@ -1,9 +1,9 @@
-import { md } from '../metadata';
+import { paramTargetMetadata } from '../metadata';
 import { Constructor } from '../types';
 
 export const Param = function (paramName: string | null = null) {
   return function (target: Constructor['prototype'], propertyName: string) {
-    md.param.merge(target, propertyName, {
+    paramTargetMetadata.setData(target, propertyName, {
       paramName,
     });
   };

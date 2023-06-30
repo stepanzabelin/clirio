@@ -1,11 +1,14 @@
 import {
-  ClirioComplete,
-  ClirioDebug,
-  ClirioError,
-  ClirioSuccess,
-  ClirioWarning,
-} from '../exceptions';
-import { Args, Constructor, OptionalKeys } from '../types';
+  Args,
+  Constructor,
+  OptionalKeys,
+  ClirioPipe,
+  PipeScope,
+  Result,
+  Pipe,
+  Exception,
+  Module,
+} from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 
@@ -20,61 +23,63 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public addModule(module: Constructor): this {
+  public setGlobalPipe(globalPipe: Pipe): this {
+    this.globalPipe = globalPipe;
+    return this;
+  }
+
+  public setGlobalException(globalException: Exception): this {
+    this.globalException = globalException;
+    return this;
+  }
+
+  public setGlobalResult(globalResult: Result): this {
+    this.globalResult = globalResult;
+    return this;
+  }
+
+  public addModule(module: Module): this {
     this.modules.push(module);
     return this;
   }
 
-  public setModules(modules: Constructor[]): this {
+  public setModules(modules: Module[]): this {
     this.modules = modules;
     return this;
   }
 
-  public onDebug(callback: (err: ClirioDebug) => void): this {
-    this.debugCallback = callback;
-    return this;
-  }
-
-  public onError(callback: (err: ClirioError) => void): this {
-    this.errorCallback = callback;
-    return this;
-  }
-
-  public onWarning(callback: (data: ClirioWarning) => void): this {
-    this.warningCallback = callback;
-    return this;
-  }
-
-  public onComplete(callback: (err: ClirioComplete) => void): this {
-    this.completeCallback = callback;
-    return this;
-  }
-
-  public onSuccess(callback: (data: ClirioSuccess) => void): this {
-    this.successCallback = callback;
-    return this;
-  }
-
   public async build() {
-    try {
-      this.debug();
-      await this.execute();
-    } catch (err: unknown) {
-      if (err instanceof ClirioDebug) {
-        this.callDebug(err);
-      } else if (err instanceof ClirioWarning) {
-        this.callWarning(err);
-      } else if (err instanceof ClirioSuccess) {
-        this.callSuccess(err);
-      } else if (err instanceof ClirioComplete) {
-        this.callComplete(err);
-      } else if (err instanceof ClirioError) {
-        this.callError(err);
-      } else {
-        this.callError(
-          new ClirioError(err instanceof Error ? err.message : String(err))
-        );
+    // TODO exception
+    this.debug();
+    await this.execute();
+  }
+
+  public static VD = {
+    LOGICAL: (value: string | null): boolean => {
+      return [null, 'true', 'false'].includes(value);
+    },
+  };
+
+  public static TF = {
+    LOGICAL: (value: string | null): boolean => {
+      switch (true) {
+        case value === null: {
+          return true;
+        }
+        case value === 'true': {
+          return true;
+        }
+
+        default:
+          return false;
+          break;
       }
-    }
+    },
+  };
+
+  public static debug(message: string, payload: any = {}) {
+    const err = new Error(message);
+    Object.assign(err, payload);
+    return err;
   }
 }

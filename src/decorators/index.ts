@@ -9,3 +9,6 @@ export * from './Option';
 export * from './Options';
 export * from './Param';
 export * from './Params';
+export * from './Transform';
+export * from './Pipe';
+export * from './Exception';

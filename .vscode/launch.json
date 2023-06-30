@@ -5,6 +5,23 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Debug with ts-node",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "${workspaceFolder}/src/test-env/complex-cli/runComplexCli.ts",
+        "migration",
+        "to",
+        "test",
+        "--id=222"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug Active Spec",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
       "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
@@ -25,5 +42,6 @@
       "outputCapture": "std",
       "skipFiles": ["<node_internals>/**/*.js"]
       // "smartStep": true
-    }]
+    }
+  ]
 }

@@ -1,8 +1,12 @@
-import Joi from 'joi';
-import { getClassSchema } from 'joi-class-decorators';
-import { md } from '../metadata';
+import {
+  actionTargetMetadata,
+  hiddenTargetMetadata,
+  descriptionTargetMetadata,
+  inputArgMetadata,
+  moduleMetadata,
+  optionTargetMetadata,
+} from '../metadata';
 import { ActionType, Constructor, InputTypeEnum } from '../types';
-// import { formatTwoCols } from './format';
 
 type OptionsData = {
   options: string[];
@@ -34,20 +38,26 @@ export class ClirioHelper {
   }
 
   public describeModule(module: Constructor): ModuleData[] {
-    const moduleData = md.module.get(module.prototype)!;
-    const actionMap = md.action.get(module.prototype);
-    const results = [];
+    const moduleData = moduleMetadata.get(module.prototype)!;
+    const actionMap = actionTargetMetadata.getMap(module.prototype);
+    const results: ModuleData[] = [];
 
     for (const [propertyKey, actionData] of actionMap) {
-      const action = md.action.get(module.prototype).get(propertyKey)!;
-
-      if (action.type !== ActionType.Command) {
+      if (actionData.type !== ActionType.Command) {
         continue;
       }
 
-      const { description, hidden } = md.help.getData(
+      const description =
+        descriptionTargetMetadata.getDataField(
+          module.prototype,
+          propertyKey,
+          'description'
+        ) ?? '';
+
+      const hidden = hiddenTargetMetadata.getDataField(
         module.prototype,
-        propertyKey
+        propertyKey,
+        'hidden'
       );
 
       if (hidden) {
@@ -79,7 +89,7 @@ export class ClirioHelper {
     const optionDescription: OptionsData[] = [];
 
     const inputArguments = Array.from(
-      md.input.get(module.prototype, propertyKey)
+      inputArgMetadata.get(module.prototype, propertyKey)
     );
 
     const inputArgumentsOptions = inputArguments.find(
@@ -89,14 +99,22 @@ export class ClirioHelper {
     if (inputArgumentsOptions) {
       const { dto } = inputArgumentsOptions[1];
 
-      const schemaDescription = getClassSchema(dto).describe();
-
-      const optionsList = Array.from(md.option.get(dto.prototype));
+      const optionsList = Array.from(
+        optionTargetMetadata.getMap(dto.prototype)
+      );
 
       for (const [property, { aliases }] of optionsList) {
-        const { description, hidden } = md.help.getData(
-          dto.prototype,
-          property
+        const description =
+          descriptionTargetMetadata.getDataField(
+            module.prototype,
+            propertyKey,
+            'description'
+          ) ?? '';
+
+        const hidden = hiddenTargetMetadata.getDataField(
+          module.prototype,
+          propertyKey,
+          'hidden'
         );
 
         if (hidden) {
@@ -110,27 +128,12 @@ export class ClirioHelper {
         optionDescription.push({
           options,
           description,
-          ...this.getSchemaPropertyType(schemaDescription, property),
+          type: null,
+          itemType: null,
         });
       }
     }
     return optionDescription;
-  }
-
-  public getSchemaPropertyType(
-    schemaDescription: Joi.Description,
-    property: string
-  ): { type: null | string; required: boolean; itemType: null | string } {
-    if (schemaDescription.keys[property]) {
-      const { type, flags, items } = schemaDescription.keys[property];
-      return {
-        type,
-        required: flags?.presence === 'required',
-        itemType: items?.[0]?.type ?? null,
-      };
-    } else {
-      return { type: null, required: false, itemType: null };
-    }
   }
 
   public describeAllModules(): ModuleData[] {
