@@ -43,7 +43,11 @@ export class ClirioValidator {
       }
     }
 
-    const handledParams = this.handle(transformedParams, dto);
+    const handledParams = this.handle(
+      transformedParams,
+      dto,
+      DataTypeEnum.Params
+    );
 
     return handledParams;
   }
@@ -118,12 +122,16 @@ export class ClirioValidator {
       }
     }
 
-    const handledOptions = this.handle(transformedOptions, dto);
+    const handledOptions = this.handle(
+      transformedOptions,
+      dto,
+      DataTypeEnum.Options
+    );
 
     return handledOptions;
   }
 
-  public handle(data: any, dto: Constructor<any>) {
+  public handle(data: any, dto: Constructor<any>, dataType: DataTypeEnum) {
     const newData = { ...data };
 
     for (const propertyName in data) {
@@ -134,12 +142,16 @@ export class ClirioValidator {
       );
 
       if (validate && !validate(data[propertyName])) {
-        throw new ClirioValidationError(`Option "${propertyName}" is wrong`, {
-          propertyName,
-          dataType: DataTypeEnum.Options,
-          module: class {},
-          actionName: '',
-        });
+        // TODO map real prop (and type option or param)
+        throw new ClirioValidationError(
+          `The "${propertyName}" ${dataType.toLowerCase()} is wrong`,
+          {
+            propertyName,
+            dataType,
+            module: class {},
+            actionName: '',
+          }
+        );
       }
 
       const transform = transformTargetMetadata.getDataField(
