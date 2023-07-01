@@ -1,4 +1,4 @@
 export enum DataTypeEnum {
-  Options = 'OPTIONS',
-  Params = 'PARAMS',
+  Options = 'options',
+  Params = 'params',
 }

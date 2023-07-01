@@ -1,6 +1,6 @@
 import { Pipe } from './Pipe';
 
 export type PipeScope = {
-  scope: 'global' | 'action';
+  scope: 'global' | 'command';
   pipe: Pipe;
 };

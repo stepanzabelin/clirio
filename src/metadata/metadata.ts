@@ -37,7 +37,7 @@ export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
   'option'
 );
 export const actionTargetMetadata = new TargetMetadata<ActionTargetData>(
-  'action'
+  'command'
 );
 export const descriptionTargetMetadata =
   new TargetMetadata<DescriptionTargetData>('description');

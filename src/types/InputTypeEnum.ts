@@ -1,5 +1,5 @@
 export enum InputTypeEnum {
-  Params = 'PARAMS',
-  Options = 'OPTIONS',
+  Params = 'params',
+  Options = 'options',
   Helper = 'HELPER',
 }

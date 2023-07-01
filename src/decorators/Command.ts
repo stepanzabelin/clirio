@@ -25,7 +25,7 @@ export const Command = function (rawCommand: string) {
         throw Clirio.debug('Command value is not correct', devErrorData);
       }
 
-      const { action, option, rest, mask } = argMatch!.groups!;
+      const { action, option, list, value } = argMatch!.groups!;
 
       if (action) {
         const values = action.split(/\s*\|\s*/);
@@ -40,10 +40,10 @@ export const Command = function (rawCommand: string) {
         });
       }
 
-      if (mask) {
+      if (value) {
         links.push({
-          type: rest ? LinkType.RestMask : LinkType.Mask,
-          values: [mask],
+          type: list ? LinkType.List : LinkType.Value,
+          values: [value],
         });
       }
 

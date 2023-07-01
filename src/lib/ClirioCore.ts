@@ -324,7 +324,7 @@ export class ClirioCore {
 
       const isActionMask =
         links.findIndex((link) =>
-          [LinkType.RestMask, LinkType.Mask].includes(link.type)
+          [LinkType.List, LinkType.Value].includes(link.type)
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
@@ -335,7 +335,7 @@ export class ClirioCore {
       const isInputParams = paramsArgMap.size > 0;
 
       if (isActionMask && !isInputParams) {
-        throw Clirio.debug(`Argument @Params is not bound to command`, {
+        throw Clirio.debug(`Value @Params is not bound to command`, {
           moduleName: module.name,
           actionName,
         });
@@ -423,7 +423,7 @@ export class ClirioCore {
     }
 
     if (pipeMetadata) {
-      pipeScopeList.push({ scope: 'action', pipe: pipeMetadata.pipe });
+      pipeScopeList.push({ scope: 'command', pipe: pipeMetadata.pipe });
 
       if (pipeMetadata.overwriteGlobal) {
         pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
@@ -454,7 +454,7 @@ export class ClirioCore {
 
       if (exceptionMetadata) {
         exceptionScopeList.push({
-          scope: 'action',
+          scope: 'command',
           exception: exceptionMetadata.exception,
         });
 
@@ -614,13 +614,11 @@ export class ClirioCore {
   }
 
   private compareMask(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.Mask && attributes.type === ArgType.Action;
+    return link.type === LinkType.Value && attributes.type === ArgType.Action;
   }
 
   private compareRestMask(link: Link, attributes: ParsedArg): boolean {
-    return (
-      link.type === LinkType.RestMask && attributes.type === ArgType.Action
-    );
+    return link.type === LinkType.List && attributes.type === ArgType.Action;
   }
 
   public static split = (query: string): string[] => {

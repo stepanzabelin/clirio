@@ -1,4 +1,4 @@
 export enum ArgType {
-  Action = 'ACTION',
-  Option = 'OPTION',
+  Action = 'action',
+  Option = 'option',
 }

@@ -1,6 +1,6 @@
 import { Exception } from './Exception';
 
 export type ExceptionScope = {
-  scope: 'global' | 'action';
+  scope: 'global' | 'command';
   exception: Exception;
 };
