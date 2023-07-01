@@ -1,8 +1,8 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
+import { cliApp } from '../test-env/cli-app/cliApp';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
-import { CommonFailureService } from '../test-env/complex-cli/modules/common/failure';
-import { HelloToService } from '../test-env/complex-cli/modules/hello/helloTo';
+import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
+import { HelloToService } from '../test-env/cli-app/modules/hello/helloTo';
 
 describe('Command with params', () => {
   const sandbox = sinon.createSandbox();
@@ -15,7 +15,7 @@ describe('Command with params', () => {
     const fnSpy = sandbox.stub(HelloToService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello to Alex Smith');
-    await complexCli();
+    await cliApp();
 
     const [params] = fnSpy.getCall(0).args;
 
@@ -31,7 +31,7 @@ describe('Command with params', () => {
     const fnSpy = sandbox.stub(HelloToService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello to Alex Smith --no-middle-name');
-    await complexCli();
+    await cliApp({ config: { allowUncontrolledOptions: true } });
 
     const [params] = fnSpy.getCall(0).args;
 
@@ -48,7 +48,7 @@ describe('Command with params', () => {
 
     emulateArgv(sandbox, 'hello Alex');
 
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

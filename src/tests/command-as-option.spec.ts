@@ -1,7 +1,7 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { CheckService } from '../test-env/complex-cli/modules/common/check';
-import { VersionService } from '../test-env/complex-cli/modules/common/version';
+import { cliApp } from '../test-env/cli-app/cliApp';
+import { CheckService } from '../test-env/cli-app/modules/common/check';
+import { VersionService } from '../test-env/cli-app/modules/common/version';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Command as option', () => {
@@ -15,7 +15,7 @@ describe('Command as option', () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
     emulateArgv(sandbox, '-v');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
 
@@ -26,7 +26,7 @@ describe('Command as option', () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
     emulateArgv(sandbox, '--version');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
 
@@ -37,7 +37,7 @@ describe('Command as option', () => {
     const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
     emulateArgv(sandbox, '--check --pool=5 -v');
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -53,7 +53,7 @@ describe('Command as option', () => {
     const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
     emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -72,7 +72,7 @@ describe('Command as option', () => {
   //   const errorCallbackStub = sinon.stub();
 
   //   emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-  //   await complexCli(errorCallbackStub);
+  //   await cliApp(errorCallbackStub);
 
   //   const err = errorCallbackStub.getCall(0).args[0];
 

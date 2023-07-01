@@ -1,6 +1,6 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { MigrationRunService } from '../test-env/complex-cli/modules/migration/migrationRun';
+import { cliApp } from '../test-env/cli-app/cliApp';
+import { MigrationRunService } from '../test-env/cli-app/modules/migration/migrationRun';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Options with variable', () => {
@@ -17,7 +17,7 @@ describe('Options with variable', () => {
       sandbox,
       'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent'
     );
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -33,7 +33,7 @@ describe('Options with variable', () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration run -e DB_NAME=db-name --silent');
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -49,7 +49,7 @@ describe('Options with variable', () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration run');
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 

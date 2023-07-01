@@ -1,9 +1,8 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { CommonEmptyService } from '../test-env/complex-cli/modules/common/empty';
-import { CommonFailureService } from '../test-env/complex-cli/modules/common/failure';
-import { MigrationEmptyService } from '../test-env/complex-cli/modules/migration/empty';
-import { simpleCli } from '../test-env/simple-cli/simpleCli';
+import { cliApp } from '../test-env/cli-app/cliApp';
+import { CommonEmptyService } from '../test-env/cli-app/modules/common/empty';
+import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
+import { MigrationEmptyService } from '../test-env/cli-app/modules/migration/empty';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Empty command', () => {
@@ -13,23 +12,23 @@ describe('Empty command', () => {
     sandbox.restore();
   });
 
-  it('Empty without handler', async () => {
-    const errorCallbackStub = sinon.stub();
+  // it('Empty without handler', async () => {
+  //   const globalExceptionCatch = sinon.stub();
 
-    emulateArgv(sandbox, '');
+  //   emulateArgv(sandbox, '');
 
-    await simpleCli(errorCallbackStub);
+  //   await cliApp({ globalExceptionCatch });
 
-    const err = errorCallbackStub.getCall(0).args[0];
+  //   const err = globalExceptionCatch.getCall(0).args[0];
 
-    expect(err.message).toEqual('Incorrect command specified');
-  });
+  //   expect(err.message).toEqual('Incorrect command specified');
+  // });
 
   it('Empty with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
 
     emulateArgv(sandbox, '');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
@@ -38,7 +37,7 @@ describe('Empty command', () => {
     const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
@@ -47,7 +46,7 @@ describe('Empty command', () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'git');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

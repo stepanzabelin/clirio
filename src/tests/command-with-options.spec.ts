@@ -1,9 +1,9 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { HelloService } from '../test-env/complex-cli/modules/hello/hello';
+import { cliApp } from '../test-env/cli-app/cliApp';
+import { HelloService } from '../test-env/cli-app/modules/hello/hello';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
-describe('Command with options', () => {
+describe('Command with options without layers', () => {
   const sandbox = sinon.createSandbox();
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('Command with options', () => {
     const entryStub = sandbox.stub(HelloService.prototype, 'entry');
 
     emulateArgv(sandbox, 'hello --first-name=Alex --last-name=Smith');
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -26,20 +26,21 @@ describe('Command with options', () => {
     entryStub.restore();
   });
 
-  it('correct input (disabled )', async () => {
+  it('correct input with unknown parameters', async () => {
     const entryStub = sandbox.stub(HelloService.prototype, 'entry');
 
     emulateArgv(
       sandbox,
       'hello --first-name=Alex --last-name=Smith --middle-name=123'
     );
-    await complexCli();
+    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
     expect(options).toStrictEqual({
       firstName: 'Alex',
       lastName: 'Smith',
+      'middle-name': '123',
     });
 
     entryStub.restore();
@@ -53,7 +54,7 @@ describe('Command with options', () => {
   //     'hello --first-name=Alex --last-name=Smith --middle-name=123'
   //   );
 
-  //   await complexCli(errorCallbackStub);
+  //   await cliApp(errorCallbackStub);
 
   //   const err = errorCallbackStub.getCall(0).args[0];
   //   console.log({ err });
@@ -65,9 +66,9 @@ describe('Command with options', () => {
   //   const errorCallbackStub = sinon.stub();
 
   //   emulateArgv(sandbox, 'hello --first-name');
-  //   await complexCli();
+  //   await cliApp();
 
-  //   await complexCli(errorCallbackStub);
+  //   await cliApp(errorCallbackStub);
 
   //   const err = errorCallbackStub.getCall(0).args[0];
 

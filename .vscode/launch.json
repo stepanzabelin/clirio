@@ -8,7 +8,7 @@
       "name": "Debug with ts-node",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-env/complex-cli/runComplexCli.ts",
+        "${workspaceFolder}/src/test-env/cli-app/runComplexCli.ts",
         "migration",
         "to",
         "test",

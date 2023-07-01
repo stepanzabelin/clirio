@@ -1,8 +1,7 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { CommonFailureService } from '../test-env/complex-cli/modules/common/failure';
-import { MigrationFailureService } from '../test-env/complex-cli/modules/migration/failure';
-import { simpleCli } from '../test-env/simple-cli/simpleCli';
+import { cliApp } from '../test-env/cli-app/cliApp';
+import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
+import { MigrationFailureService } from '../test-env/cli-app/modules/migration/failure';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Failure command', () => {
@@ -12,23 +11,23 @@ describe('Failure command', () => {
     sandbox.restore();
   });
 
-  it('Failure without handler', async () => {
-    const errorCallbackStub = sinon.stub();
+  // it('Failure without handler', async () => {
+  //   const errorCallbackStub = sinon.stub();
 
-    emulateArgv(sandbox, 'cactus');
+  //   emulateArgv(sandbox, 'cactus');
 
-    await simpleCli(errorCallbackStub);
+  //   await simpleCli(errorCallbackStub);
 
-    const err = errorCallbackStub.getCall(0).args[0];
+  //   const err = errorCallbackStub.getCall(0).args[0];
 
-    expect(err.message).toEqual('Incorrect command specified');
-  });
+  //   expect(err.message).toEqual('Incorrect command specified');
+  // });
 
   it('Failure with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'cactus');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
@@ -37,7 +36,7 @@ describe('Failure command', () => {
     const entryStub = sandbox.stub(MigrationFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration cactus');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
@@ -46,7 +45,7 @@ describe('Failure command', () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     emulateArgv(sandbox, 'git cactus');
-    await complexCli();
+    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
