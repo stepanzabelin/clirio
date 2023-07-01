@@ -34,3 +34,4 @@ export * from './OptionsArgData';
 export * from './HelperArgData';
 export * from './ParamsArgData';
 export * from './Module';
+export * from './ModuleData';

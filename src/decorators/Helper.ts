@@ -1,5 +1,5 @@
 import { ArgMetadata } from '../lib/ArgMetadata';
-import { helperArgMetadata, inputArgMetadata } from '../metadata';
+import { helperArgMetadata } from '../metadata';
 import { Constructor, InputTypeEnum } from '../types';
 
 export const Helper = function () {
@@ -8,13 +8,6 @@ export const Helper = function () {
     propertyName: string,
     argIndex: number
   ) {
-    inputArgMetadata.define(
-      target,
-      propertyName,
-      argIndex,
-      InputTypeEnum.Helper
-    );
-
     const dto = ArgMetadata.extractDto(target, propertyName, argIndex);
 
     helperArgMetadata.setArgData(target, propertyName, argIndex, {

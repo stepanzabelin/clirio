@@ -24,8 +24,7 @@ import {
   actionTargetMetadata,
   exceptionTargetMetadata,
   helperArgMetadata,
-  inputArgMetadata,
-  moduleMetadata,
+  moduleEntityMetadata,
   optionsArgMetadata,
   paramsArgMetadata,
   pipeTargetMetadata,
@@ -62,7 +61,7 @@ export class ClirioCore {
 
   private *iterateData() {
     for (const module of this.modules) {
-      const moduleData = moduleMetadata.get(this.getPrototype(module))!;
+      const moduleData = moduleEntityMetadata.get(this.getPrototype(module))!;
       const actionMap = actionTargetMetadata.getMap(this.getPrototype(module));
 
       for (const [actionName, actionData] of actionMap) {
@@ -119,10 +118,6 @@ export class ClirioCore {
           this.getPrototype(module),
           actionName
         );
-
-        // const inputArguments = Array.from(
-        //   inputArgMetadata.get(this.getPrototype(module), actionName)
-        // );
 
         const combinedArguments = [
           ...paramsArgMap,
@@ -308,7 +303,7 @@ export class ClirioCore {
     }
 
     for (const module of this.modules) {
-      if (!moduleMetadata.has(this.getPrototype(module))) {
+      if (!moduleEntityMetadata.has(this.getPrototype(module))) {
         throw Clirio.debug(
           'A constructor is not specified as a module. use @Module() decorator',
           {
@@ -331,14 +326,12 @@ export class ClirioCore {
           [LinkType.RestMask, LinkType.Mask].includes(link.type)
         ) > -1;
 
-      const inputArguments = Array.from(
-        inputArgMetadata.get(this.getPrototype(module), actionName)
+      const paramsArgMap = paramsArgMetadata.getArgMap(
+        this.getPrototype(module),
+        actionName
       );
 
-      const isInputParams =
-        inputArguments.findIndex(
-          ([, params]) => params.type === InputTypeEnum.Params
-        ) > -1;
+      const isInputParams = paramsArgMap.size > 0;
 
       if (isActionMask && !isInputParams) {
         throw Clirio.debug(`Argument @Params is not bound to command`, {

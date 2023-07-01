@@ -1,4 +1,5 @@
 import { ArgMetadata } from '../lib/ArgMetadata';
+import { EntityMetadata } from '../lib/EntityMetadata';
 import { TargetMetadata } from '../lib/TargetMetadata';
 import {
   ExceptionTargetData,
@@ -14,6 +15,7 @@ import {
   OptionsArgData,
   ParamsArgData,
   HelperArgData,
+  ModuleData,
 } from '../types';
 
 export const resultTargetMetadata = new TargetMetadata<ResultTargetData>(
@@ -46,3 +48,5 @@ export const hiddenTargetMetadata = new TargetMetadata<HiddenTargetData>(
 export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');
 export const paramsArgMetadata = new ArgMetadata<ParamsArgData>('params');
 export const helperArgMetadata = new ArgMetadata<HelperArgData>('helper');
+
+export const moduleEntityMetadata = new EntityMetadata<ModuleData>('module');

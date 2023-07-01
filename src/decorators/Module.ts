@@ -1,7 +1,7 @@
 import { moduleCommandReg } from '../constrains/regexp.config';
 import { Clirio } from '../lib/Clirio';
 
-import { moduleMetadata } from '../metadata';
+import { moduleEntityMetadata } from '../metadata';
 import { Constructor, Link, LinkType } from '../types';
 
 export const Module = function (rawCommand?: string) {
@@ -35,7 +35,7 @@ export const Module = function (rawCommand?: string) {
       sub = sub.slice(commandMatch[0].length);
     }
 
-    moduleMetadata.set(constructor.prototype, {
+    moduleEntityMetadata.set(constructor.prototype, {
       links,
       command,
     });

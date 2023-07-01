@@ -2,9 +2,9 @@ import {
   actionTargetMetadata,
   hiddenTargetMetadata,
   descriptionTargetMetadata,
-  inputArgMetadata,
-  moduleMetadata,
+  moduleEntityMetadata,
   optionTargetMetadata,
+  optionsArgMetadata,
 } from '../metadata';
 import { ActionType, Constructor, InputTypeEnum } from '../types';
 
@@ -38,7 +38,7 @@ export class ClirioHelper {
   }
 
   public describeModule(module: Constructor): ModuleData[] {
-    const moduleData = moduleMetadata.get(module.prototype)!;
+    const moduleData = moduleEntityMetadata.get(module.prototype)!;
     const actionMap = actionTargetMetadata.getMap(module.prototype);
     const results: ModuleData[] = [];
 
@@ -88,16 +88,13 @@ export class ClirioHelper {
   ): OptionsData[] {
     const optionDescription: OptionsData[] = [];
 
-    const inputArguments = Array.from(
-      inputArgMetadata.get(module.prototype, propertyKey)
+    const optionsArgMap = optionsArgMetadata.getArgMap(
+      module.prototype,
+      propertyKey
     );
 
-    const inputArgumentsOptions = inputArguments.find(
-      ([, params]) => params.type === InputTypeEnum.Options
-    );
-
-    if (inputArgumentsOptions) {
-      const { dto } = inputArgumentsOptions[1];
+    if (optionsArgMap.size > 0) {
+      const { dto } = [...optionsArgMap.values()][0];
 
       const optionsList = Array.from(
         optionTargetMetadata.getMap(dto.prototype)
