@@ -1,6 +1,6 @@
 import { Result } from './Result';
 
 export type ResultScope = {
-  scope: 'global' | 'route';
+  scope: 'global' | 'action';
   result: Result;
 };

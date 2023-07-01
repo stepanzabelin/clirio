@@ -1,7 +1,7 @@
 import { complexCli } from './complexCli';
 
 complexCli(
-  (err) => {
+  (err: any) => {
     console.log(err);
   },
   () => {}

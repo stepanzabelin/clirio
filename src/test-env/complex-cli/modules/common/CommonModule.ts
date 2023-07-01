@@ -5,9 +5,10 @@ import {
   Empty,
   Failure,
   Options,
-} from '../../../../decorators';
-import { Helper } from '../../../../decorators/Helper';
-import { ClirioHelper } from '../../../../lib/ClirioHelper';
+  Helper,
+  ClirioHelper,
+} from '../../../../index';
+
 import { VersionService } from './version';
 import { HelpService } from './help';
 import { CheckService, CheckOptionsDto } from './check';

@@ -1,4 +1,4 @@
-import { Option } from '../../../../../decorators';
+import { Option } from '../../../../../index';
 
 export class CheckOptionsDto {
   @Option('--verbose, -v')

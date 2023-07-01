@@ -1,4 +1,4 @@
-import { Param } from '../../../../../decorators';
+import { Param } from '../../../../../index';
 
 export class GitAddParamsDto {
   @Param('all-files')

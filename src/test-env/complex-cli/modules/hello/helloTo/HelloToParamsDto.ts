@@ -1,4 +1,4 @@
-import { Param } from '../../../../../decorators';
+import { Param } from '../../../../../index';
 
 export class HelloToParamsDto {
   @Param('first-name')

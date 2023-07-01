@@ -1,4 +1,4 @@
-import { Module, Command, Options, Params } from '../../../../decorators';
+import { Module, Command, Options, Params } from '../../../../index';
 import { GitAddOptionsDto, GitAddParamsDto, GitAddService } from './git-add';
 import { GitCheckoutParamsDto, GitCheckoutService } from './git-checkout';
 import { GitStatusOptionsDto, GitStatusService } from './git-status';

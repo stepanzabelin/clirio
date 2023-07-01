@@ -7,7 +7,7 @@ import {
   Hidden,
   Pipe,
   Params,
-} from '../../../../decorators';
+} from '../../../../index';
 import { MigrationEmptyService } from './empty';
 import { MigrationFailureService } from './failure';
 import { MigrationRunOptionsDto, MigrationRunService } from './migrationRun';

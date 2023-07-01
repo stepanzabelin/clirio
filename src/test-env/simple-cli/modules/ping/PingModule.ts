@@ -1,4 +1,4 @@
-import { Module, Command } from '../../../../decorators';
+import { Module, Command } from '../../../../index';
 import { CheckPingService } from './check-ping';
 
 @Module()

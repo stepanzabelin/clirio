@@ -4,7 +4,7 @@ import {
   Options,
   Params,
   Description,
-} from '../../../../decorators';
+} from '../../../../index';
 import { HelloService, HelloOptionsDto } from './hello';
 import { HelloThereService } from './hello-there';
 import { HelloToService, HelloToParamsDto } from './helloTo';

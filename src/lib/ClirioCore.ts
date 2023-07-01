@@ -71,7 +71,7 @@ export class ClirioCore {
   }
 
   protected async execute(): Promise<never | null> {
-    const parsedArgs = ClirioCore.parse(this.args ?? getProcessArgs());
+    const parsedArgs = ClirioCore.describe(this.args ?? getProcessArgs());
 
     // COMMAND ACTION
 
@@ -268,6 +268,7 @@ export class ClirioCore {
       )[0]!;
       try {
         await this.applyAction(module, actionName, []);
+        return null;
       } catch (err: any) {
         const exceptionScopeList = this.collectExceptions(module, actionName);
         this.handleExceptions(err, exceptionScopeList);
@@ -422,7 +423,7 @@ export class ClirioCore {
     }
 
     if (pipeMetadata) {
-      pipeScopeList.push({ scope: 'route', pipe: pipeMetadata.pipe });
+      pipeScopeList.push({ scope: 'action', pipe: pipeMetadata.pipe });
 
       if (pipeMetadata.overwriteGlobal) {
         pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
@@ -453,7 +454,7 @@ export class ClirioCore {
 
       if (exceptionMetadata) {
         exceptionScopeList.push({
-          scope: 'route',
+          scope: 'action',
           exception: exceptionMetadata.exception,
         });
 
@@ -622,7 +623,18 @@ export class ClirioCore {
     );
   }
 
-  public static parse = (args: Args): ParsedArg[] => {
+  public static split = (query: string): string[] => {
+    return query
+      .trim()
+      .split(/\s+/)
+      .filter((f) => f);
+  };
+
+  public static parse = (query: string): ParsedArg[] => {
+    return Clirio.describe(Clirio.split(query));
+  };
+
+  public static describe = (args: Args): ParsedArg[] => {
     const rows: ParsedArg[] = [];
 
     let nextData: Omit<ParsedArg, 'value'> | null = null;

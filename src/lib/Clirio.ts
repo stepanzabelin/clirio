@@ -1,14 +1,4 @@
-import {
-  Args,
-  Constructor,
-  OptionalKeys,
-  ClirioPipe,
-  PipeScope,
-  Result,
-  Pipe,
-  Exception,
-  Module,
-} from '../types';
+import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 

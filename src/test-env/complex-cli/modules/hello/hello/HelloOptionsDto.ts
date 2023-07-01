@@ -1,4 +1,4 @@
-import { Description, Option } from '../../../../../decorators';
+import { Description, Option } from '../../../../../index';
 
 export class HelloOptionsDto {
   @Option('--first-name, -f')

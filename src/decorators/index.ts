@@ -10,5 +10,6 @@ export * from './Options';
 export * from './Param';
 export * from './Params';
 export * from './Transform';
+export * from './Validate';
 export * from './Pipe';
 export * from './Exception';
