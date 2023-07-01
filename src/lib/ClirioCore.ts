@@ -17,6 +17,7 @@ import {
   ClirioException,
   Result,
   Module,
+  LinkedArg,
 } from '../types';
 import { getProcessArgs } from './getProcessArgs';
 import { ClirioConfig, clirioConfig } from './clirioConfig';
@@ -88,6 +89,9 @@ export class ClirioCore {
 
         const links = [...moduleData.links, ...actionData.links];
         const data = this.matchRoute(parsedArgs, links);
+        const linkedArgs = this.linkArgs(parsedArgs, links);
+
+        console.log(linkedArgs);
 
         if (!data) {
           continue;
@@ -124,33 +128,6 @@ export class ClirioCore {
           ...optionsArgMap,
           ...helperArgMap,
         ].sort((a, b) => a[0] - b[0]);
-
-        // console.log(combinedArguments);
-
-        // if (
-        //   !this.config.allowUncontrolledOptions &&
-        //   inputArguments.findIndex(
-        //     ([, params]) => params.type === InputTypeEnum.Options
-        //   ) === -1 &&
-        //   Object.keys(data.options).length > 0
-        // ) {
-        //   throw new ClirioValidationError('Invalid options received', {
-        //     propertyName: null,
-        //     dataType: DataTypeEnum.Options,
-        //     // module,
-        //     // actionName,
-        //   });
-        // }
-
-        // console.log(
-        //   'paramsArgMetadata',
-        //   paramsArgMetadata.getArgMap(this.getPrototype(module), actionName)
-        // );
-
-        // console.log(
-        //   'optionTargetMetadata',
-        //   optionsArgMetadata.getArgMap(this.getPrototype(module), actionName)
-        // );
 
         const pipeScopeList = this.collectPipes(module, actionName);
 
@@ -469,6 +446,121 @@ export class ClirioCore {
     return exceptionScopeList;
   }
 
+  private linkArgs(parsedArgs: ParsedArg[], links: Link[]): null | LinkedArg[] {
+    const linkedArgs: LinkedArg[] = [];
+
+    let actionIndex = 0;
+
+    for (const link of links) {
+      if (!parsedArgs.hasOwnProperty(actionIndex)) {
+        return null;
+      }
+
+      const attributes = parsedArgs[actionIndex];
+
+      switch (true) {
+        case this.compareOption(link, attributes):
+          break;
+        case this.compareAction(link, attributes):
+          break;
+        case this.compareMask(link, attributes):
+          {
+            const [paramName] = link.values;
+
+            linkedArgs.push({
+              type: 'param',
+              key: paramName,
+              allowedKeys: [],
+              property: null,
+              value: attributes.value,
+              transformed: false,
+            });
+          }
+          break;
+        case this.compareRestMask(link, attributes):
+          {
+            const values: string[] = [];
+
+            for (let index = actionIndex; index < parsedArgs.length; index++) {
+              const parsedArg = parsedArgs[index];
+              if (parsedArg.type === ArgType.Action) {
+                values.push(parsedArg.value!);
+                actionIndex = index;
+              } else {
+                break;
+              }
+            }
+
+            const [paramName] = link.values;
+
+            linkedArgs.push({
+              type: 'param',
+              key: paramName,
+              allowedKeys: [],
+              value: values,
+              property: null,
+              transformed: false,
+            });
+          }
+
+          break;
+        default:
+          return null;
+      }
+
+      actionIndex++;
+    }
+
+    const restParsedArgs = parsedArgs.slice(actionIndex);
+
+    if (
+      restParsedArgs.findIndex(
+        (attributes) => attributes.type === ArgType.Action
+      ) > -1
+    ) {
+      return null;
+    }
+
+    const parsedOptions = restParsedArgs.filter(
+      (attributes) => attributes.type === ArgType.Option
+    );
+
+    for (let index = 0; index < parsedOptions.length; index++) {
+      const attributes = parsedOptions[index];
+
+      linkedArgs.push({
+        type: 'option',
+        key: attributes.key,
+        allowedKeys: [],
+        value: attributes.value,
+        property: null,
+        transformed: false,
+      });
+    }
+
+    // const optionMap = new Map<string, any>();
+
+    // for (let index = 0; index < parsedOptions.length; index++) {
+    //   const attributes = parsedOptions[index];
+
+    //   const values = optionMap.get(attributes.key) ?? [];
+    //   values.push(attributes.value);
+    //   optionMap.set(attributes.key, values);
+    // }
+
+    // linkedArgs.concat(
+    //   [...optionMap].map(([key, values]) => ({
+    //     type: 'option',
+    //     key,
+    //     value: values.length > 1 ? values : ,
+    //     property: null,
+    //     transformed: false,
+    //   }))
+    // );
+
+    return linkedArgs;
+  }
+
   private matchRoute(
     parsedArgs: ParsedArg[],
     links: Link[]
@@ -624,7 +716,7 @@ export class ClirioCore {
   public static split = (query: string): string[] => {
     return query
       .trim()
-      .split(/\s+/)
+      .split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g)
       .filter((f) => f);
   };
 

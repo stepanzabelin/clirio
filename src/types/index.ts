@@ -35,3 +35,4 @@ export * from './HelperArgData';
 export * from './ParamsArgData';
 export * from './Module';
 export * from './ModuleData';
+export * from './LinkedArg';
