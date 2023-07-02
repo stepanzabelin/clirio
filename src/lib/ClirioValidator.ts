@@ -1,4 +1,11 @@
-import { Constructor, RawOptions, RawParams, PipeScope } from '../types';
+import {
+  Constructor,
+  RawOptions,
+  RawParams,
+  PipeScope,
+  LinkedArg,
+  MappedLink,
+} from '../types';
 import {
   validateTargetMetadata,
   transformTargetMetadata,
@@ -6,166 +13,240 @@ import {
   paramTargetMetadata,
 } from '../metadata';
 import { DataTypeEnum } from '../types/DataTypeEnum';
-import { ClirioValidationError } from '../exceptions';
+import { ClirioRouteError, ClirioValidationError } from '../exceptions';
 // import { ClirioValidationError } from '../exceptions';
 
 export class ClirioValidator {
   public isDto(dto: Constructor) {
-    return dto && dto !== Object;
+    return dto && dto !== Object && typeof dto === 'function';
   }
 
   public validateParams(
-    params: RawParams,
+    linkedArgs: LinkedArg[],
     dto: Constructor
-  ): Record<string, any> {
-    if (!this.isDto(dto)) {
-      return params;
-    }
-    const transformedParams: Record<string, any> = {};
-    const paramsList = Array.from(paramTargetMetadata.getMap(dto.prototype));
+  ): MappedLink[] {
+    const mappedLinks: MappedLink[] = [];
 
-    const takenPropertiesSet = new Set<string>();
-    const propertiesMap = new Map<string, string>();
+    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    for (const [propertyName, paramData] of paramsList) {
-      const paramName = paramData.paramName ?? propertyName;
-      takenPropertiesSet.add(paramName);
-      propertiesMap.set(propertyName, paramName);
+    const paramTargetDataList = this.isDto(dto)
+      ? [...paramTargetMetadata.getMap(dto.prototype)]
+      : [];
 
-      if (params.hasOwnProperty(paramName)) {
-        transformedParams[propertyName] = params[paramName];
+    // const paramsList = Array.from(paramTargetMetadata.getMap(dto.prototype));
+
+    for (const [propertyName, paramData] of paramTargetDataList) {
+      const filteredLinkedArgs = parsedLinkedArgs.filter(
+        (linkedArg) => linkedArg.key === paramData.paramName
+      );
+
+      parsedLinkedArgs = parsedLinkedArgs.filter(
+        (linkedArg) => linkedArg.key !== paramData.paramName
+      );
+
+      if (paramData.isArray) {
+        if (filteredLinkedArgs.length > 0) {
+          const value = filteredLinkedArgs.map((linkedArg) => linkedArg.value);
+
+          mappedLinks.push({
+            type: 'param',
+            key: filteredLinkedArgs[0]!.key,
+            allowedKeys: [paramData.paramName ?? propertyName],
+            value,
+            propertyName,
+            mapped: true,
+          });
+        }
+      } else {
+        if (filteredLinkedArgs.length === 1) {
+          mappedLinks.push({
+            type: 'param',
+            key: filteredLinkedArgs[0]!.key,
+            allowedKeys: [paramData.paramName ?? propertyName],
+            value: filteredLinkedArgs[0]!.value,
+            propertyName,
+            mapped: true,
+          });
+        } else if (filteredLinkedArgs.length > 1) {
+          throw new ClirioRouteError('');
+        }
       }
     }
 
-    for (const property in params) {
-      if (!takenPropertiesSet.has(property)) {
-        transformedParams[property] = params[property];
-      }
-    }
+    // this can't be
+    // for (const linkedArg of parsedLinkedArgs) {
+    //   mappedLinks.push({
+    //     type: 'param',
+    //     key: linkedArg.key,
+    //     allowedKeys: [],
+    //     value: linkedArg.value,
+    //     propertyName: null,
+    //     mapped: false,
+    //   });
+    // }
 
-    const handledParams = this.handle(
-      transformedParams,
-      dto,
-      DataTypeEnum.Params
-    );
+    const handledParams = this.handle(mappedLinks, dto, DataTypeEnum.Params);
 
     return handledParams;
   }
 
-  public validateOptions(options: RawOptions, dto: Constructor): any {
-    if (!this.isDto(dto)) {
-      return options;
-    }
+  public validateOptions(
+    linkedArgs: LinkedArg[],
+    dto: Constructor
+  ): MappedLink[] {
+    const mappedLinks: MappedLink[] = [];
 
-    const transformedOptions: Record<string, any> = {};
+    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    const optionsList = Array.from(optionTargetMetadata.getMap(dto.prototype));
+    const optionTargetDataList = this.isDto(dto)
+      ? [...optionTargetMetadata.getMap(dto.prototype)]
+      : [];
 
-    const takenPropertiesSet = new Set<string>();
-    const propertiesMap = new Map<string, string>();
-
-    for (const [propertyName, optionData] of optionsList) {
+    for (const [propertyName, optionData] of optionTargetDataList) {
       const aliases = optionData?.aliases ?? [propertyName];
-      for (const optionName of optionData?.aliases ?? [propertyName]) {
-        takenPropertiesSet.add(optionName);
 
-        propertiesMap.set(
-          propertyName,
-          aliases
-            .map((name) => (name.length === 1 ? `-` : `--`) + name)
-            .join(', ')
-        );
+      const filteredLinkedArgs = parsedLinkedArgs.filter((linkedArg) =>
+        aliases.includes(linkedArg.key)
+      );
 
-        if (options.hasOwnProperty(optionName)) {
-          if (optionData.variable) {
-            for (const value of Array.isArray(options[optionName])
-              ? options[optionName]
-              : [options[optionName]]) {
-              const matchVariable = String(value).match(
+      parsedLinkedArgs = parsedLinkedArgs.filter(
+        (linkedArg) => !aliases.includes(linkedArg.key)
+      );
+
+      if (filteredLinkedArgs.length === 0) {
+        continue;
+      }
+
+      // propertiesMap.set(
+      //   propertyName,
+      //   aliases
+      //     .map((name) => (name.length === 1 ? `-` : `--`) + name)
+      //     .join(', ')
+      // );
+
+      switch (true) {
+        case optionData.variable:
+          {
+            const obj: any = {};
+
+            for (const linkedArg of filteredLinkedArgs) {
+              const matchVariable = String(linkedArg.value).match(
                 /^(?<key>[^=]+)(=(?<value>[\s\S]*))?$/
               );
 
               if (matchVariable) {
                 const { key, value } = matchVariable!.groups!;
-
-                if (
-                  transformedOptions.hasOwnProperty(propertyName) &&
-                  typeof transformedOptions[propertyName] === 'object'
-                ) {
-                  transformedOptions[propertyName][key] = value;
-                } else {
-                  transformedOptions[propertyName] = { [key]: value };
-                }
+                obj[key] = value;
               }
             }
-          } else if (
-            transformedOptions.hasOwnProperty(propertyName) ||
-            optionData.isArray
-          ) {
-            if (!Array.isArray(transformedOptions[propertyName])) {
-              transformedOptions[propertyName] = [
-                transformedOptions[propertyName],
-              ];
-            }
 
-            transformedOptions[propertyName].push(options[optionName] ?? null);
-          } else {
-            transformedOptions[propertyName] = options[optionName] ?? null;
+            mappedLinks.push({
+              type: 'option',
+              key: filteredLinkedArgs[0]!.key,
+              allowedKeys: aliases,
+              value: obj,
+              propertyName,
+              mapped: true,
+            });
           }
-        }
+          break;
+        case optionData.isArray:
+          {
+            const values = filteredLinkedArgs.map(
+              (filteredArg) => filteredArg.value
+            );
+
+            mappedLinks.push({
+              type: 'option',
+              key: filteredLinkedArgs[0]!.key,
+              allowedKeys: aliases,
+              value: values,
+              propertyName,
+              mapped: true,
+            });
+          }
+          break;
+        default:
+          if (filteredLinkedArgs.length > 1) {
+            // TODO VALIDATION
+            throw new Error('111');
+          }
+
+          mappedLinks.push({
+            type: 'option',
+            key: filteredLinkedArgs[0]!.key,
+            allowedKeys: aliases,
+            value: filteredLinkedArgs[0]!.value,
+            propertyName,
+            mapped: true,
+          });
+
+          break;
       }
     }
+    console.log({ parsedLinkedArgs });
 
-    for (const propertyName in options) {
-      if (!takenPropertiesSet.has(propertyName)) {
-        transformedOptions[propertyName] = options[propertyName];
-      }
+    for (const linkedArg of parsedLinkedArgs) {
+      mappedLinks.push({
+        type: 'option',
+        key: linkedArg.key,
+        allowedKeys: [],
+        value: linkedArg.value,
+        propertyName: null,
+        mapped: false,
+      });
     }
 
-    const handledOptions = this.handle(
-      transformedOptions,
-      dto,
-      DataTypeEnum.Options
-    );
+    const handledOptions = this.handle(mappedLinks, dto, DataTypeEnum.Options);
 
     return handledOptions;
   }
 
-  public handle(data: any, dto: Constructor<any>, dataType: DataTypeEnum) {
-    const newData = { ...data };
+  public handle(
+    linkedArgs: MappedLink[],
+    dto: Constructor<any>,
+    dataType: DataTypeEnum
+  ): MappedLink[] {
+    const handledLinkedArgs = [...linkedArgs];
 
-    for (const propertyName in data) {
+    for (const linkedArg of linkedArgs) {
+      if (!linkedArg.propertyName) {
+        handledLinkedArgs.push(linkedArg);
+        continue;
+      }
+
       const validate = validateTargetMetadata.getDataField(
         dto.prototype,
-        propertyName,
+        linkedArg.propertyName,
         'validate'
       );
 
-      if (validate && !validate(data[propertyName])) {
-        // TODO map real prop (and type option or param)
+      if (validate && !validate(linkedArg.value)) {
         throw new ClirioValidationError(
-          `The "${propertyName}" ${dataType.toLowerCase()} is wrong`,
+          `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
           {
-            propertyName,
             dataType,
-            module: class {},
-            actionName: '',
+            ...linkedArg,
           }
         );
       }
 
       const transform = transformTargetMetadata.getDataField(
         dto.prototype,
-        propertyName,
+        linkedArg.propertyName,
         'transform'
       );
 
+      const transformedLinkedArg = { ...linkedArg };
+
       if (transform) {
-        newData[propertyName] = transform(newData[propertyName]);
+        transformedLinkedArg.value = transform(transformedLinkedArg.value);
       }
+
+      handledLinkedArgs.push(transformedLinkedArg);
     }
 
-    return newData;
+    return handledLinkedArgs;
   }
 
   public handlePipes(

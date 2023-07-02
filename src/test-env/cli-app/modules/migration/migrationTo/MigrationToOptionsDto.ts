@@ -7,7 +7,7 @@ export class MigrationToOptionsDto {
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Validate((v) => !!v)
+  @Validate((v) => v === null)
   @Transform(Clirio.TF.LOGICAL)
   readonly silent?: boolean;
 

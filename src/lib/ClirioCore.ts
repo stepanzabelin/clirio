@@ -18,6 +18,7 @@ import {
   Result,
   Module,
   LinkedArg,
+  MappedLink,
 } from '../types';
 import { getProcessArgs } from './getProcessArgs';
 import { ClirioConfig, clirioConfig } from './clirioConfig';
@@ -88,30 +89,26 @@ export class ClirioCore {
         }
 
         const links = [...moduleData.links, ...actionData.links];
-        const data = this.matchRoute(parsedArgs, links);
+        // const data = this.matchRoute(parsedArgs, links);
         const linkedArgs = this.linkArgs(parsedArgs, links);
 
         console.log(linkedArgs);
 
-        if (!data) {
+        if (!linkedArgs) {
           continue;
         }
+
+        const paramLinkedArgs = linkedArgs.filter(
+          (linkedArg) => linkedArg.type === 'param'
+        );
+        const optionLinkedArgs = linkedArgs.filter(
+          (linkedArg) => linkedArg.type === 'option'
+        );
 
         const optionsArgMap = optionsArgMetadata.getArgMap(
           this.getPrototype(module),
           actionName
         );
-
-        if (
-          !this.config.allowUncontrolledOptions &&
-          optionsArgMap.size === 0 &&
-          Object.keys(data.options).length > 0
-        ) {
-          throw new ClirioValidationError('Invalid options received', {
-            propertyName: null,
-            dataType: DataTypeEnum.Options,
-          });
-        }
 
         const paramsArgMap = paramsArgMetadata.getArgMap(
           this.getPrototype(module),
@@ -129,6 +126,14 @@ export class ClirioCore {
           ...helperArgMap,
         ].sort((a, b) => a[0] - b[0]);
 
+        if (
+          !this.config.allowUncontrolledOptions &&
+          optionsArgMap.size === 0 &&
+          optionLinkedArgs.length > 0
+        ) {
+          throw new ClirioRouteError('Invalid options received');
+        }
+
         const pipeScopeList = this.collectPipes(module, actionName);
 
         const transformedArguments = [];
@@ -138,7 +143,7 @@ export class ClirioCore {
             case InputTypeEnum.Params:
               {
                 const transformedParams = this.validator.validateParams(
-                  data.params,
+                  paramLinkedArgs,
                   input.dto
                 );
 
@@ -156,7 +161,7 @@ export class ClirioCore {
             case InputTypeEnum.Options:
               {
                 const transformedOptions = this.validator.validateOptions(
-                  data.options,
+                  optionLinkedArgs,
                   input.dto
                 );
 
@@ -331,12 +336,19 @@ export class ClirioCore {
   }
 
   public handlePipes(
-    rawData: any,
+    mappedLinks: MappedLink[],
     dto: Constructor,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = []
   ) {
-    let data = { ...rawData };
+    let data = Object.fromEntries(
+      mappedLinks.map((mappedLink) => [
+        mappedLink.propertyName ?? mappedLink.key,
+        mappedLink.value,
+      ])
+    );
+
+    console.log({ data });
 
     for (const { pipe, scope } of pipeList) {
       const pipeInst: ClirioPipe =
@@ -470,10 +482,7 @@ export class ClirioCore {
             linkedArgs.push({
               type: 'param',
               key: paramName,
-              allowedKeys: [],
-              property: null,
               value: attributes.value,
-              transformed: false,
             });
           }
           break;
@@ -493,14 +502,13 @@ export class ClirioCore {
 
             const [paramName] = link.values;
 
-            linkedArgs.push({
-              type: 'param',
-              key: paramName,
-              allowedKeys: [],
-              value: values,
-              property: null,
-              transformed: false,
-            });
+            for (const value of values) {
+              linkedArgs.push({
+                type: 'param',
+                key: paramName,
+                value,
+              });
+            }
           }
 
           break;
@@ -531,10 +539,7 @@ export class ClirioCore {
       linkedArgs.push({
         type: 'option',
         key: attributes.key,
-        allowedKeys: [],
         value: attributes.value,
-        property: null,
-        transformed: false,
       });
     }
 
@@ -553,8 +558,8 @@ export class ClirioCore {
     //     type: 'option',
     //     key,
     //     value: values.length > 1 ? values : ,
-    //     property: null,
-    //     transformed: false,
+    //     propertyName: null,
+    //     mapped: false,
     //   }))
     // );
 
