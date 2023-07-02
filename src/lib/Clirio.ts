@@ -1,6 +1,8 @@
 import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
+import { TRANSFORMATION } from './TRANSFORMATION';
+import { VALIDATION } from './VALIDATION';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
@@ -44,32 +46,7 @@ export class Clirio extends ClirioCore {
     await this.execute();
   }
 
-  public static VD = {
-    LOGICAL: (value: string | null): boolean => {
-      return [null, 'true', 'false'].includes(value);
-    },
-  };
+  public static VALIDATION = VALIDATION;
 
-  public static TF = {
-    LOGICAL: (value: string | null): boolean => {
-      switch (true) {
-        case value === null: {
-          return true;
-        }
-        case value === 'true': {
-          return true;
-        }
-
-        default:
-          return false;
-          break;
-      }
-    },
-  };
-
-  public static debug(message: string, payload: any = {}) {
-    const err = new Error(message);
-    Object.assign(err, payload);
-    return err;
-  }
+  public static TRANSFORMATION = TRANSFORMATION;
 }

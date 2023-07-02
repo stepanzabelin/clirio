@@ -3,6 +3,7 @@ import { argReg, optionReg } from '../constrains/regexp.config';
 
 import { ActionType, Constructor, Link, LinkType } from '../types';
 import { actionTargetMetadata } from '../metadata';
+import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 
 export const Command = function (rawCommand: string) {
   return function (target: Constructor['prototype'], propertyKey: string) {
@@ -22,7 +23,10 @@ export const Command = function (rawCommand: string) {
       const argMatch = sub.match(argReg);
 
       if (!argMatch) {
-        throw Clirio.debug('Command value is not correct', devErrorData);
+        throw new ClirioDebugError(
+          'Command value is not correct',
+          devErrorData
+        );
       }
 
       const { action, option, list, value } = argMatch!.groups!;
@@ -31,7 +35,10 @@ export const Command = function (rawCommand: string) {
         const values = action.split(/\s*\|\s*/);
 
         if (values.some((action) => !action)) {
-          throw Clirio.debug('Command value is not correct', devErrorData);
+          throw new ClirioDebugError(
+            'Command value is not correct',
+            devErrorData
+          );
         }
 
         links.push({
@@ -56,7 +63,10 @@ export const Command = function (rawCommand: string) {
           );
 
           if (!optionMatch) {
-            throw Clirio.debug('Command value is not correct', devErrorData);
+            throw new ClirioDebugError(
+              'Command value is not correct',
+              devErrorData
+            );
           }
           const { shortName, longName } = optionMatch.groups!;
           values.push(shortName ?? longName);

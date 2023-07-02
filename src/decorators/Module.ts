@@ -1,4 +1,5 @@
 import { moduleCommandReg } from '../constrains/regexp.config';
+import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 import { Clirio } from '../lib/Clirio';
 
 import { moduleEntityMetadata } from '../metadata';
@@ -18,7 +19,7 @@ export const Module = function (rawCommand?: string) {
       );
 
       if (!commandMatch) {
-        throw Clirio.debug('Command value is invalid', {
+        throw new ClirioDebugError('Command value is invalid', {
           entity: constructor.name,
           value: command!,
           decorator: 'Module',

@@ -37,6 +37,7 @@ import { ClirioRouteError } from '../exceptions';
 import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioDefaultException } from './ClirioDefaultException';
 import { Clirio } from './Clirio';
+import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 
 export class ClirioCore {
   protected args?: Args;
@@ -281,12 +282,12 @@ export class ClirioCore {
 
   public debug() {
     if (this.modules.length === 0) {
-      throw Clirio.debug('There is no set module');
+      throw new ClirioDebugError('There is no set module');
     }
 
     for (const module of this.modules) {
       if (!moduleEntityMetadata.has(this.handler.getPrototype(module))) {
-        throw Clirio.debug(
+        throw new ClirioDebugError(
           'A constructor is not specified as a module. use @Module() decorator',
           {
             moduleName: module.name,
@@ -316,14 +317,14 @@ export class ClirioCore {
       const isInputParams = paramsArgMap.size > 0;
 
       if (isActionMask && !isInputParams) {
-        throw Clirio.debug(`Value @Params is not bound to command`, {
+        throw new ClirioDebugError(`Value @Params is not bound to command`, {
           moduleName: module.name,
           actionName,
         });
       }
 
       if (!isActionMask && isInputParams) {
-        throw Clirio.debug(
+        throw new ClirioDebugError(
           `Either the pattern is missing from the command, or @Params argument is redundant`,
           {
             moduleName: module.name,
