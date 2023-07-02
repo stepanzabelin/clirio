@@ -32,8 +32,8 @@ import {
   pipeTargetMetadata,
 } from '../metadata';
 import { ClirioHelper } from './ClirioHelper';
-import { ClirioValidator } from './ClirioValidator';
-import { ClirioRouteError, ClirioValidationError } from '../exceptions';
+import { ClirioHandler } from './ClirioHandler';
+import { ClirioRouteError } from '../exceptions';
 import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioDefaultException } from './ClirioDefaultException';
 import { Clirio } from './Clirio';
@@ -42,7 +42,7 @@ export class ClirioCore {
   protected args?: Args;
   protected modules: Module[] = [];
   protected config: ClirioConfig = clirioConfig;
-  protected validator = new ClirioValidator();
+  protected handler = new ClirioHandler();
   protected globalPipe: Pipe | null = null;
   protected globalException: Exception | null = null;
   protected globalResult: Result | null = null;
@@ -142,12 +142,12 @@ export class ClirioCore {
           switch (input.type) {
             case InputTypeEnum.Params:
               {
-                const transformedParams = this.validator.validateParams(
+                const transformedParams = this.handler.validateParams(
                   paramLinkedArgs,
                   input.dto
                 );
 
-                const pipedParams = this.handlePipes(
+                const pipedParams = this.passPipes(
                   transformedParams,
                   input.dto,
                   DataTypeEnum.Params,
@@ -160,12 +160,12 @@ export class ClirioCore {
               break;
             case InputTypeEnum.Options:
               {
-                const transformedOptions = this.validator.validateOptions(
+                const transformedOptions = this.handler.validateOptions(
                   optionLinkedArgs,
                   input.dto
                 );
 
-                const pipedOptions = this.handlePipes(
+                const pipedOptions = this.passPipes(
                   transformedOptions,
                   input.dto,
                   DataTypeEnum.Options,
@@ -335,7 +335,7 @@ export class ClirioCore {
     }
   }
 
-  public handlePipes(
+  public passPipes(
     mappedLinks: MappedLink[],
     dto: Constructor,
     dataType: DataTypeEnum,

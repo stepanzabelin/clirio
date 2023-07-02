@@ -16,7 +16,7 @@ import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioRouteError, ClirioValidationError } from '../exceptions';
 // import { ClirioValidationError } from '../exceptions';
 
-export class ClirioValidator {
+export class ClirioHandler {
   public isDto(dto: Constructor) {
     return dto && dto !== Object && typeof dto === 'function';
   }
@@ -249,7 +249,7 @@ export class ClirioValidator {
     return handledLinkedArgs;
   }
 
-  public handlePipes(
+  public passPipes(
     rawData: any,
     dto: Constructor,
     dataType: DataTypeEnum,
