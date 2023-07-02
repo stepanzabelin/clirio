@@ -47,24 +47,14 @@ export class ClirioCore {
   protected globalException: Exception | null = null;
   protected globalResult: Result | null = null;
 
-  private getPrototype(
-    entity: Constructor<any> | Constructor<any>['prototype']
-  ) {
-    return typeof entity === 'function'
-      ? entity.prototype
-      : entity.constructor.prototype;
-  }
-
-  private getInstance(
-    entity: Constructor<any> | Constructor<any>['prototype']
-  ) {
-    return typeof entity === 'function' ? new entity() : entity;
-  }
-
   private *iterateData() {
     for (const module of this.modules) {
-      const moduleData = moduleEntityMetadata.get(this.getPrototype(module))!;
-      const actionMap = actionTargetMetadata.getMap(this.getPrototype(module));
+      const moduleData = moduleEntityMetadata.get(
+        this.handler.getPrototype(module)
+      )!;
+      const actionMap = actionTargetMetadata.getMap(
+        this.handler.getPrototype(module)
+      );
 
       for (const [actionName, actionData] of actionMap) {
         yield { module, moduleData, actionName, actionData };
@@ -89,8 +79,7 @@ export class ClirioCore {
         }
 
         const links = [...moduleData.links, ...actionData.links];
-        // const data = this.matchRoute(parsedArgs, links);
-        const linkedArgs = this.linkArgs(parsedArgs, links);
+        const linkedArgs = this.handler.linkArgs(parsedArgs, links);
 
         console.log(linkedArgs);
 
@@ -106,17 +95,17 @@ export class ClirioCore {
         );
 
         const optionsArgMap = optionsArgMetadata.getArgMap(
-          this.getPrototype(module),
+          this.handler.getPrototype(module),
           actionName
         );
 
         const paramsArgMap = paramsArgMetadata.getArgMap(
-          this.getPrototype(module),
+          this.handler.getPrototype(module),
           actionName
         );
 
         const helperArgMap = helperArgMetadata.getArgMap(
-          this.getPrototype(module),
+          this.handler.getPrototype(module),
           actionName
         );
 
@@ -134,7 +123,11 @@ export class ClirioCore {
           throw new ClirioRouteError('Invalid options received');
         }
 
-        const pipeScopeList = this.collectPipes(module, actionName);
+        const pipeScopeList = this.handler.collectPipes(
+          this.globalPipe,
+          module,
+          actionName
+        );
 
         const transformedArguments = [];
 
@@ -147,7 +140,7 @@ export class ClirioCore {
                   input.dto
                 );
 
-                const pipedParams = this.passPipes(
+                const pipedParams = this.handler.passPipes(
                   transformedParams,
                   input.dto,
                   DataTypeEnum.Params,
@@ -165,7 +158,7 @@ export class ClirioCore {
                   input.dto
                 );
 
-                const pipedOptions = this.passPipes(
+                const pipedOptions = this.handler.passPipes(
                   transformedOptions,
                   input.dto,
                   DataTypeEnum.Options,
@@ -189,11 +182,19 @@ export class ClirioCore {
           }
         }
 
-        await this.applyAction(module, actionName, transformedArguments);
+        await this.handler.applyAction(
+          module,
+          actionName,
+          transformedArguments
+        );
         return null;
       } catch (err: any) {
-        const exceptionScopeList = this.collectExceptions(module, actionName);
-        this.handleExceptions(err, exceptionScopeList);
+        const exceptionScopeList = this.handler.collectExceptions(
+          this.globalException,
+          module,
+          actionName
+        );
+        this.handler.handleExceptions(err, exceptionScopeList);
         return null;
       }
     }
@@ -211,16 +212,20 @@ export class ClirioCore {
           continue;
         }
 
-        const data = this.matchRoute(parsedArgs, moduleData.links);
+        const data = this.handler.matchRoute(parsedArgs, moduleData.links);
 
         if (!data) {
           continue;
         }
 
-        await this.applyAction(module, actionName, []);
+        await this.handler.applyAction(module, actionName, []);
       } catch (err: any) {
-        const exceptionScopeList = this.collectExceptions(module, actionName);
-        this.handleExceptions(err, exceptionScopeList);
+        const exceptionScopeList = this.handler.collectExceptions(
+          this.globalException,
+          module,
+          actionName
+        );
+        this.handler.handleExceptions(err, exceptionScopeList);
         return null;
       }
     }
@@ -239,7 +244,7 @@ export class ClirioCore {
         continue;
       }
 
-      const count = this.countMatchRoute(parsedArgs, moduleData.links);
+      const count = this.handler.countMatchRoute(parsedArgs, moduleData.links);
 
       failures.push({ count, module, actionName });
     }
@@ -249,35 +254,29 @@ export class ClirioCore {
         (a, b) => b.count - a.count
       )[0]!;
       try {
-        await this.applyAction(module, actionName, []);
+        await this.handler.applyAction(module, actionName, []);
         return null;
       } catch (err: any) {
-        const exceptionScopeList = this.collectExceptions(module, actionName);
-        this.handleExceptions(err, exceptionScopeList);
+        const exceptionScopeList = this.handler.collectExceptions(
+          this.globalException,
+          module,
+          actionName
+        );
+        this.handler.handleExceptions(err, exceptionScopeList);
         return null;
       }
     }
 
-    const exceptionScopeList = this.collectExceptions();
+    const exceptionScopeList = this.handler.collectExceptions(
+      this.globalException
+    );
 
-    this.handleExceptions(
+    this.handler.handleExceptions(
       new ClirioRouteError('Incorrect command specified'),
       exceptionScopeList
     );
 
     return null;
-  }
-
-  async applyAction(
-    module: Constructor<any>,
-    actionName: string,
-    transformedArguments: any[]
-  ) {
-    await Reflect.apply(
-      this.getPrototype(module)[actionName],
-      this.getInstance(module),
-      transformedArguments
-    );
   }
 
   public debug() {
@@ -286,7 +285,7 @@ export class ClirioCore {
     }
 
     for (const module of this.modules) {
-      if (!moduleEntityMetadata.has(this.getPrototype(module))) {
+      if (!moduleEntityMetadata.has(this.handler.getPrototype(module))) {
         throw Clirio.debug(
           'A constructor is not specified as a module. use @Module() decorator',
           {
@@ -310,7 +309,7 @@ export class ClirioCore {
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
-        this.getPrototype(module),
+        this.handler.getPrototype(module),
         actionName
       );
 
@@ -333,389 +332,6 @@ export class ClirioCore {
         );
       }
     }
-  }
-
-  public passPipes(
-    mappedLinks: MappedLink[],
-    dto: Constructor,
-    dataType: DataTypeEnum,
-    pipeList: PipeScope[] = []
-  ) {
-    let data = Object.fromEntries(
-      mappedLinks.map((mappedLink) => [
-        mappedLink.propertyName ?? mappedLink.key,
-        mappedLink.value,
-      ])
-    );
-
-    console.log({ data });
-
-    for (const { pipe, scope } of pipeList) {
-      const pipeInst: ClirioPipe =
-        typeof pipe === 'function' ? new pipe() : pipe;
-
-      data = pipeInst.transform(data, {
-        dataType,
-        scope,
-        dto,
-      });
-    }
-
-    return data;
-  }
-
-  public handleExceptions(
-    rawErr: any,
-    exceptionList: ExceptionScope[] = [],
-    {
-      dto = null,
-      dataType = null,
-    }: {
-      dto?: Constructor | null;
-      dataType?: DataTypeEnum | null;
-    } = {}
-  ) {
-    let currentErr = rawErr;
-
-    for (const { exception, scope } of exceptionList) {
-      const exceptionInst: ClirioException =
-        typeof exception === 'function' ? new exception() : exception;
-
-      try {
-        exceptionInst.catch(currentErr, {
-          dataType,
-          scope,
-          dto,
-        });
-      } catch (err) {
-        currentErr = err;
-      }
-    }
-
-    new ClirioDefaultException().catch(currentErr, {
-      dataType,
-      scope: 'default',
-      dto,
-    });
-  }
-
-  collectPipes(module: Constructor<any>, actionName: string): PipeScope[] {
-    let pipeScopeList: PipeScope[] = [];
-
-    const pipeMetadata = pipeTargetMetadata.getData(
-      this.getPrototype(module),
-      actionName
-    );
-
-    if (this.globalPipe) {
-      pipeScopeList.push({ scope: 'global', pipe: this.globalPipe });
-    }
-
-    if (pipeMetadata) {
-      pipeScopeList.push({ scope: 'command', pipe: pipeMetadata.pipe });
-
-      if (pipeMetadata.overwriteGlobal) {
-        pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
-      }
-    }
-
-    return pipeScopeList;
-  }
-
-  collectExceptions(
-    module?: Constructor<any>,
-    actionName?: string
-  ): ExceptionScope[] {
-    let exceptionScopeList: ExceptionScope[] = [];
-
-    if (this.globalException) {
-      exceptionScopeList.push({
-        scope: 'global',
-        exception: this.globalException,
-      });
-    }
-
-    if (module && actionName) {
-      const exceptionMetadata = exceptionTargetMetadata.getData(
-        this.getPrototype(module),
-        actionName
-      );
-
-      if (exceptionMetadata) {
-        exceptionScopeList.push({
-          scope: 'command',
-          exception: exceptionMetadata.exception,
-        });
-
-        if (exceptionMetadata.overwriteGlobal) {
-          exceptionScopeList = exceptionScopeList.filter(
-            (item) => item.scope !== 'global'
-          );
-        }
-      }
-    }
-
-    return exceptionScopeList;
-  }
-
-  private linkArgs(parsedArgs: ParsedArg[], links: Link[]): null | LinkedArg[] {
-    const linkedArgs: LinkedArg[] = [];
-
-    let actionIndex = 0;
-
-    for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
-        return null;
-      }
-
-      const attributes = parsedArgs[actionIndex];
-
-      switch (true) {
-        case this.compareOption(link, attributes):
-          break;
-        case this.compareAction(link, attributes):
-          break;
-        case this.compareMask(link, attributes):
-          {
-            const [paramName] = link.values;
-
-            linkedArgs.push({
-              type: 'param',
-              key: paramName,
-              value: attributes.value,
-            });
-          }
-          break;
-        case this.compareRestMask(link, attributes):
-          {
-            const values: string[] = [];
-
-            for (let index = actionIndex; index < parsedArgs.length; index++) {
-              const parsedArg = parsedArgs[index];
-              if (parsedArg.type === ArgType.Action) {
-                values.push(parsedArg.value!);
-                actionIndex = index;
-              } else {
-                break;
-              }
-            }
-
-            const [paramName] = link.values;
-
-            for (const value of values) {
-              linkedArgs.push({
-                type: 'param',
-                key: paramName,
-                value,
-              });
-            }
-          }
-
-          break;
-        default:
-          return null;
-      }
-
-      actionIndex++;
-    }
-
-    const restParsedArgs = parsedArgs.slice(actionIndex);
-
-    if (
-      restParsedArgs.findIndex(
-        (attributes) => attributes.type === ArgType.Action
-      ) > -1
-    ) {
-      return null;
-    }
-
-    const parsedOptions = restParsedArgs.filter(
-      (attributes) => attributes.type === ArgType.Option
-    );
-
-    for (let index = 0; index < parsedOptions.length; index++) {
-      const attributes = parsedOptions[index];
-
-      linkedArgs.push({
-        type: 'option',
-        key: attributes.key,
-        value: attributes.value,
-      });
-    }
-
-    // const optionMap = new Map<string, any>();
-
-    // for (let index = 0; index < parsedOptions.length; index++) {
-    //   const attributes = parsedOptions[index];
-
-    //   const values = optionMap.get(attributes.key) ?? [];
-    //   values.push(attributes.value);
-    //   optionMap.set(attributes.key, values);
-    // }
-
-    // linkedArgs.concat(
-    //   [...optionMap].map(([key, values]) => ({
-    //     type: 'option',
-    //     key,
-    //     value: values.length > 1 ? values : ,
-    //     propertyName: null,
-    //     mapped: false,
-    //   }))
-    // );
-
-    return linkedArgs;
-  }
-
-  private matchRoute(
-    parsedArgs: ParsedArg[],
-    links: Link[]
-  ): null | {
-    params: RawParams;
-    options: RawOptions;
-  } {
-    const params: RawParams = {};
-
-    let actionIndex = 0;
-
-    for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
-        return null;
-      }
-
-      const attributes = parsedArgs[actionIndex];
-
-      switch (true) {
-        case this.compareOption(link, attributes):
-          break;
-        case this.compareAction(link, attributes):
-          break;
-        case this.compareMask(link, attributes):
-          {
-            const [paramName] = link.values;
-            params[paramName] = attributes.value!;
-          }
-          break;
-        case this.compareRestMask(link, attributes):
-          {
-            const values: string[] = [];
-
-            for (let index = actionIndex; index < parsedArgs.length; index++) {
-              const parsedArg = parsedArgs[index];
-              if (parsedArg.type === ArgType.Action) {
-                values.push(parsedArg.value!);
-                actionIndex = index;
-              } else {
-                break;
-              }
-            }
-            const [paramName] = link.values;
-            params[paramName] = values;
-          }
-
-          break;
-        default:
-          return null;
-      }
-
-      actionIndex++;
-    }
-
-    const restParsedArgs = parsedArgs.slice(actionIndex);
-
-    if (
-      restParsedArgs.findIndex(
-        (attributes) => attributes.type === ArgType.Action
-      ) > -1
-    ) {
-      return null;
-    }
-
-    const parsedOptions = restParsedArgs.filter(
-      (attributes) => attributes.type === ArgType.Option
-    );
-
-    const options: RawOptions = {};
-
-    for (let index = 0; index < parsedOptions.length; index++) {
-      const attributes = parsedOptions[index];
-
-      if (options.hasOwnProperty(attributes.key)) {
-        if (Array.isArray(options[attributes.key])) {
-          options[attributes.key].push(attributes.value);
-        } else {
-          options[attributes.key] = [options[attributes.key], attributes.value];
-        }
-      } else {
-        options[attributes.key] = attributes.value;
-      }
-    }
-
-    return { params, options };
-  }
-
-  private countMatchRoute(parsedArgs: ParsedArg[], links: Link[]): number {
-    let counter = 0;
-
-    let actionIndex = 0;
-
-    for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
-        return counter;
-      }
-
-      const attributes = parsedArgs[actionIndex];
-
-      switch (true) {
-        case this.compareOption(link, attributes):
-          break;
-        case this.compareAction(link, attributes):
-          break;
-        case this.compareMask(link, attributes):
-          break;
-        case this.compareRestMask(link, attributes):
-          for (let index = actionIndex; index < parsedArgs.length; index++) {
-            const parsedArg = parsedArgs[index];
-            if (parsedArg.type === ArgType.Action) {
-              actionIndex = index;
-            } else {
-              break;
-            }
-          }
-          break;
-        default:
-          return counter;
-      }
-
-      actionIndex++;
-      counter++;
-    }
-
-    return counter;
-  }
-
-  private compareOption(link: Link, attributes: ParsedArg): boolean {
-    return (
-      link.type === LinkType.Option &&
-      attributes.type === ArgType.Option &&
-      link.values.includes(attributes.key) &&
-      attributes.value === null
-    );
-  }
-
-  private compareAction(link: Link, attributes: ParsedArg): boolean {
-    return (
-      link.type === LinkType.Action &&
-      attributes.type === ArgType.Action &&
-      link.values.includes(attributes.value!)
-    );
-  }
-
-  private compareMask(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.Value && attributes.type === ArgType.Action;
-  }
-
-  private compareRestMask(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.List && attributes.type === ArgType.Action;
   }
 
   public static split = (query: string): string[] => {

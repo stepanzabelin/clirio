@@ -5,20 +5,91 @@ import {
   PipeScope,
   LinkedArg,
   MappedLink,
+  ExceptionScope,
+  ClirioException,
+  Link,
+  ParsedArg,
+  LinkType,
+  ArgType,
+  Exception,
+  Pipe,
+  ClirioPipe,
 } from '../types';
 import {
   validateTargetMetadata,
   transformTargetMetadata,
   optionTargetMetadata,
   paramTargetMetadata,
+  exceptionTargetMetadata,
+  pipeTargetMetadata,
 } from '../metadata';
 import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioRouteError, ClirioValidationError } from '../exceptions';
+import { ClirioDefaultException } from './ClirioDefaultException';
 // import { ClirioValidationError } from '../exceptions';
 
 export class ClirioHandler {
   public isDto(dto: Constructor) {
     return dto && dto !== Object && typeof dto === 'function';
+  }
+
+  public getPrototype(
+    entity: Constructor<any> | Constructor<any>['prototype']
+  ) {
+    return typeof entity === 'function'
+      ? entity.prototype
+      : entity.constructor.prototype;
+  }
+
+  public getInstance(entity: Constructor<any> | Constructor<any>['prototype']) {
+    return typeof entity === 'function' ? new entity() : entity;
+  }
+
+  public handleExceptions(
+    rawErr: any,
+    exceptionList: ExceptionScope[] = [],
+    {
+      dto = null,
+      dataType = null,
+    }: {
+      dto?: Constructor | null;
+      dataType?: DataTypeEnum | null;
+    } = {}
+  ) {
+    let currentErr = rawErr;
+
+    for (const { exception, scope } of exceptionList) {
+      const exceptionInst: ClirioException =
+        typeof exception === 'function' ? new exception() : exception;
+
+      try {
+        exceptionInst.catch(currentErr, {
+          dataType,
+          scope,
+          dto,
+        });
+      } catch (err) {
+        currentErr = err;
+      }
+    }
+
+    new ClirioDefaultException().catch(currentErr, {
+      dataType,
+      scope: 'default',
+      dto,
+    });
+  }
+
+  async applyAction(
+    module: Constructor<any>,
+    actionName: string,
+    transformedArguments: any[]
+  ) {
+    await Reflect.apply(
+      this.getPrototype(module)[actionName],
+      this.getInstance(module),
+      transformedArguments
+    );
   }
 
   public validateParams(
@@ -250,24 +321,355 @@ export class ClirioHandler {
   }
 
   public passPipes(
-    rawData: any,
+    mappedLinks: MappedLink[],
     dto: Constructor,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = []
   ) {
-    let data = rawData;
+    let data = Object.fromEntries(
+      mappedLinks.map((mappedLink) => [
+        mappedLink.propertyName ?? mappedLink.key,
+        mappedLink.value,
+      ])
+    );
+
+    console.log({ data });
 
     for (const { pipe, scope } of pipeList) {
-      const pipeInst: any = typeof pipe === 'function' ? new pipe() : pipe;
+      const pipeInst: ClirioPipe =
+        typeof pipe === 'function' ? new pipe() : pipe;
 
-      data = pipeInst.transform({
+      data = pipeInst.transform(data, {
         dataType,
         scope,
         dto,
-        data,
       });
     }
 
     return data;
+  }
+
+  public collectPipes(
+    globalPipe: Pipe | null,
+    module: Constructor<any>,
+    actionName: string
+  ): PipeScope[] {
+    let pipeScopeList: PipeScope[] = [];
+
+    const pipeMetadata = pipeTargetMetadata.getData(
+      this.getPrototype(module),
+      actionName
+    );
+
+    if (globalPipe) {
+      pipeScopeList.push({ scope: 'global', pipe: globalPipe });
+    }
+
+    if (pipeMetadata) {
+      pipeScopeList.push({ scope: 'command', pipe: pipeMetadata.pipe });
+
+      if (pipeMetadata.overwriteGlobal) {
+        pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
+      }
+    }
+
+    return pipeScopeList;
+  }
+
+  collectExceptions(
+    globalException: Exception | null,
+    module?: Constructor<any>,
+    actionName?: string
+  ): ExceptionScope[] {
+    let exceptionScopeList: ExceptionScope[] = [];
+
+    if (globalException) {
+      exceptionScopeList.push({
+        scope: 'global',
+        exception: globalException,
+      });
+    }
+
+    if (module && actionName) {
+      const exceptionMetadata = exceptionTargetMetadata.getData(
+        this.getPrototype(module),
+        actionName
+      );
+
+      if (exceptionMetadata) {
+        exceptionScopeList.push({
+          scope: 'command',
+          exception: exceptionMetadata.exception,
+        });
+
+        if (exceptionMetadata.overwriteGlobal) {
+          exceptionScopeList = exceptionScopeList.filter(
+            (item) => item.scope !== 'global'
+          );
+        }
+      }
+    }
+
+    return exceptionScopeList;
+  }
+
+  public linkArgs(parsedArgs: ParsedArg[], links: Link[]): null | LinkedArg[] {
+    const linkedArgs: LinkedArg[] = [];
+
+    let actionIndex = 0;
+
+    for (const link of links) {
+      if (!parsedArgs.hasOwnProperty(actionIndex)) {
+        return null;
+      }
+
+      const attributes = parsedArgs[actionIndex];
+
+      switch (true) {
+        case this.compareOption(link, attributes):
+          break;
+        case this.compareAction(link, attributes):
+          break;
+        case this.compareMask(link, attributes):
+          {
+            const [paramName] = link.values;
+
+            linkedArgs.push({
+              type: 'param',
+              key: paramName,
+              value: attributes.value,
+            });
+          }
+          break;
+        case this.compareRestMask(link, attributes):
+          {
+            const values: string[] = [];
+
+            for (let index = actionIndex; index < parsedArgs.length; index++) {
+              const parsedArg = parsedArgs[index];
+              if (parsedArg.type === ArgType.Action) {
+                values.push(parsedArg.value!);
+                actionIndex = index;
+              } else {
+                break;
+              }
+            }
+
+            const [paramName] = link.values;
+
+            for (const value of values) {
+              linkedArgs.push({
+                type: 'param',
+                key: paramName,
+                value,
+              });
+            }
+          }
+
+          break;
+        default:
+          return null;
+      }
+
+      actionIndex++;
+    }
+
+    const restParsedArgs = parsedArgs.slice(actionIndex);
+
+    if (
+      restParsedArgs.findIndex(
+        (attributes) => attributes.type === ArgType.Action
+      ) > -1
+    ) {
+      return null;
+    }
+
+    const parsedOptions = restParsedArgs.filter(
+      (attributes) => attributes.type === ArgType.Option
+    );
+
+    for (let index = 0; index < parsedOptions.length; index++) {
+      const attributes = parsedOptions[index];
+
+      linkedArgs.push({
+        type: 'option',
+        key: attributes.key,
+        value: attributes.value,
+      });
+    }
+
+    // const optionMap = new Map<string, any>();
+
+    // for (let index = 0; index < parsedOptions.length; index++) {
+    //   const attributes = parsedOptions[index];
+
+    //   const values = optionMap.get(attributes.key) ?? [];
+    //   values.push(attributes.value);
+    //   optionMap.set(attributes.key, values);
+    // }
+
+    // linkedArgs.concat(
+    //   [...optionMap].map(([key, values]) => ({
+    //     type: 'option',
+    //     key,
+    //     value: values.length > 1 ? values : ,
+    //     propertyName: null,
+    //     mapped: false,
+    //   }))
+    // );
+
+    return linkedArgs;
+  }
+
+  public countMatchRoute(parsedArgs: ParsedArg[], links: Link[]): number {
+    let counter = 0;
+
+    let actionIndex = 0;
+
+    for (const link of links) {
+      if (!parsedArgs.hasOwnProperty(actionIndex)) {
+        return counter;
+      }
+
+      const attributes = parsedArgs[actionIndex];
+
+      switch (true) {
+        case this.compareOption(link, attributes):
+          break;
+        case this.compareAction(link, attributes):
+          break;
+        case this.compareMask(link, attributes):
+          break;
+        case this.compareRestMask(link, attributes):
+          for (let index = actionIndex; index < parsedArgs.length; index++) {
+            const parsedArg = parsedArgs[index];
+            if (parsedArg.type === ArgType.Action) {
+              actionIndex = index;
+            } else {
+              break;
+            }
+          }
+          break;
+        default:
+          return counter;
+      }
+
+      actionIndex++;
+      counter++;
+    }
+
+    return counter;
+  }
+
+  public matchRoute(
+    parsedArgs: ParsedArg[],
+    links: Link[]
+  ): null | {
+    params: RawParams;
+    options: RawOptions;
+  } {
+    const params: RawParams = {};
+
+    let actionIndex = 0;
+
+    for (const link of links) {
+      if (!parsedArgs.hasOwnProperty(actionIndex)) {
+        return null;
+      }
+
+      const attributes = parsedArgs[actionIndex];
+
+      switch (true) {
+        case this.compareOption(link, attributes):
+          break;
+        case this.compareAction(link, attributes):
+          break;
+        case this.compareMask(link, attributes):
+          {
+            const [paramName] = link.values;
+            params[paramName] = attributes.value!;
+          }
+          break;
+        case this.compareRestMask(link, attributes):
+          {
+            const values: string[] = [];
+
+            for (let index = actionIndex; index < parsedArgs.length; index++) {
+              const parsedArg = parsedArgs[index];
+              if (parsedArg.type === ArgType.Action) {
+                values.push(parsedArg.value!);
+                actionIndex = index;
+              } else {
+                break;
+              }
+            }
+            const [paramName] = link.values;
+            params[paramName] = values;
+          }
+
+          break;
+        default:
+          return null;
+      }
+
+      actionIndex++;
+    }
+
+    const restParsedArgs = parsedArgs.slice(actionIndex);
+
+    if (
+      restParsedArgs.findIndex(
+        (attributes) => attributes.type === ArgType.Action
+      ) > -1
+    ) {
+      return null;
+    }
+
+    const parsedOptions = restParsedArgs.filter(
+      (attributes) => attributes.type === ArgType.Option
+    );
+
+    const options: RawOptions = {};
+
+    for (let index = 0; index < parsedOptions.length; index++) {
+      const attributes = parsedOptions[index];
+
+      if (options.hasOwnProperty(attributes.key)) {
+        if (Array.isArray(options[attributes.key])) {
+          options[attributes.key].push(attributes.value);
+        } else {
+          options[attributes.key] = [options[attributes.key], attributes.value];
+        }
+      } else {
+        options[attributes.key] = attributes.value;
+      }
+    }
+
+    return { params, options };
+  }
+
+  private compareOption(link: Link, attributes: ParsedArg): boolean {
+    return (
+      link.type === LinkType.Option &&
+      attributes.type === ArgType.Option &&
+      link.values.includes(attributes.key) &&
+      attributes.value === null
+    );
+  }
+
+  private compareAction(link: Link, attributes: ParsedArg): boolean {
+    return (
+      link.type === LinkType.Action &&
+      attributes.type === ArgType.Action &&
+      link.values.includes(attributes.value!)
+    );
+  }
+
+  private compareMask(link: Link, attributes: ParsedArg): boolean {
+    return link.type === LinkType.Value && attributes.type === ArgType.Action;
+  }
+
+  private compareRestMask(link: Link, attributes: ParsedArg): boolean {
+    return link.type === LinkType.List && attributes.type === ArgType.Action;
   }
 }
