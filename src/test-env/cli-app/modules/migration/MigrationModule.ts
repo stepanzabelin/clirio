@@ -31,7 +31,7 @@ export class MigrationModule {
     this.migrationRunService.entry(options);
   }
 
-  @Command('to <name>')
+  @Command('to <...name>')
   @Pipe(MigrationToPipe)
   public to(
     @Params() params: MigrationToParamsDto,

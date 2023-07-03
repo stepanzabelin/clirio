@@ -82,8 +82,6 @@ export class ClirioCore {
         const links = [...moduleData.links, ...actionData.links];
         const linkedArgs = this.handler.linkArgs(parsedArgs, links);
 
-        console.log(linkedArgs);
-
         if (!linkedArgs) {
           continue;
         }
@@ -130,9 +128,18 @@ export class ClirioCore {
           actionName
         );
 
-        const transformedArguments = [];
+        const maxIndex = combinedArguments.reduce((max, [argumentIndex]) => {
+          return argumentIndex > max ? argumentIndex : max;
+        }, 0);
 
-        for (const [, input] of combinedArguments) {
+        const transformedArguments: any[] = Array.from(
+          { length: maxIndex + 1 },
+          () => null
+        );
+
+        console.log({ transformedArguments });
+
+        for (const [argumentIndex, input] of combinedArguments) {
           switch (input.type) {
             case InputTypeEnum.Params:
               {
@@ -148,7 +155,7 @@ export class ClirioCore {
                   pipeScopeList
                 );
 
-                transformedArguments.push(pipedParams);
+                transformedArguments[argumentIndex] = pipedParams;
               }
 
               break;
@@ -166,17 +173,16 @@ export class ClirioCore {
                   pipeScopeList
                 );
 
-                transformedArguments.push(pipedOptions);
+                transformedArguments[argumentIndex] = pipedOptions;
               }
               break;
 
             case InputTypeEnum.Helper:
-              transformedArguments.push(
-                new ClirioHelper({
-                  scoped: { module, actionName },
-                  modules: this.modules,
-                })
-              );
+              transformedArguments[argumentIndex] = new ClirioHelper({
+                scoped: { module, actionName },
+                modules: this.modules,
+              });
+
               break;
             default:
               continue;

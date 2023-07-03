@@ -8,7 +8,7 @@ export class MigrationToOptionsDto {
 
   @Option('--silent, -s')
   @Validate((v) => v === null)
-  @Transform(Clirio.TRANSFORMATION.LOGICAL)
+  @Transform(Clirio.TRANSFORM.LOGICAL)
   readonly silent?: boolean;
 
   @Option('--id')

@@ -1,4 +1,4 @@
-export const TRANSFORMATION = {
+export const TRANSFORM = {
   LOGICAL: (value: string | null): boolean => {
     switch (true) {
       case value === null: {

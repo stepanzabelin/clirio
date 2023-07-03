@@ -1,6 +1,5 @@
 import { moduleCommandReg } from '../constrains/regexp.config';
 import { ClirioDebugError } from '../exceptions/ClirioDebugError';
-import { Clirio } from '../lib/Clirio';
 
 import { moduleEntityMetadata } from '../metadata';
 import { Constructor, Link, LinkType } from '../types';

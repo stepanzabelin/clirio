@@ -11,7 +11,8 @@
         "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
         "migration",
         "to",
-        "test",
+        "test1",
+        "test2",
         "--id=222",
         "-s"
       ],
