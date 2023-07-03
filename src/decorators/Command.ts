@@ -1,6 +1,4 @@
-import { Clirio } from '../lib/Clirio';
 import { argReg, optionReg } from '../constrains/regexp.config';
-
 import { ActionType, Constructor, Link, LinkType } from '../types';
 import { actionTargetMetadata } from '../metadata';
 import { ClirioDebugError } from '../exceptions/ClirioDebugError';
@@ -29,12 +27,12 @@ export const Command = function (rawCommand: string) {
         );
       }
 
-      const { action, option, list, value } = argMatch!.groups!;
+      const { action, option, rest, param } = argMatch!.groups!;
 
       if (action) {
         const values = action.split(/\s*\|\s*/);
 
-        if (values.some((action) => !action)) {
+        if (values.some((value) => !value)) {
           throw new ClirioDebugError(
             'Command value is not correct',
             devErrorData
@@ -47,10 +45,10 @@ export const Command = function (rawCommand: string) {
         });
       }
 
-      if (value) {
+      if (param) {
         links.push({
-          type: list ? LinkType.List : LinkType.Value,
-          values: [value],
+          type: rest ? LinkType.List : LinkType.Param,
+          values: [param],
         });
       }
 

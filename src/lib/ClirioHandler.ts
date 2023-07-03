@@ -122,39 +122,47 @@ export class ClirioHandler {
           mappedLinks.push({
             type: 'param',
             key: filteredLinkedArgs[0]!.key,
-            allowedKeys: [paramData.paramName ?? propertyName],
+            definedKeys: [paramData.paramName ?? propertyName],
             value,
             propertyName,
             mapped: true,
           });
         }
       } else {
-        if (filteredLinkedArgs.length === 1) {
-          mappedLinks.push({
-            type: 'param',
-            key: filteredLinkedArgs[0]!.key,
-            allowedKeys: [paramData.paramName ?? propertyName],
-            value: filteredLinkedArgs[0]!.value,
-            propertyName,
-            mapped: true,
-          });
-        } else if (filteredLinkedArgs.length > 1) {
-          throw new ClirioRouteError('');
-        }
+        mappedLinks.push({
+          type: 'param',
+          key: filteredLinkedArgs[0]!.key,
+          definedKeys: [paramData.paramName ?? propertyName],
+          value: filteredLinkedArgs[0]!.value,
+          propertyName,
+          mapped: true,
+        });
+
+        // if (filteredLinkedArgs.length === 1) {
+        //   mappedLinks.push({
+        //     type: 'param',
+        //     key: filteredLinkedArgs[0]!.key,
+        //     definedKeys: [paramData.paramName ?? propertyName],
+        //     value: filteredLinkedArgs[0]!.value,
+        //     propertyName,
+        //     mapped: true,
+        //   });
+        // } else if (filteredLinkedArgs.length > 1) {
+        //   throw new ClirioRouteError('');
+        // }
       }
     }
 
-    // this can't be
-    // for (const linkedArg of parsedLinkedArgs) {
-    //   mappedLinks.push({
-    //     type: 'param',
-    //     key: linkedArg.key,
-    //     allowedKeys: [],
-    //     value: linkedArg.value,
-    //     propertyName: null,
-    //     mapped: false,
-    //   });
-    // }
+    for (const linkedArg of parsedLinkedArgs) {
+      mappedLinks.push({
+        type: 'param',
+        key: linkedArg.key,
+        definedKeys: [],
+        value: linkedArg.value,
+        propertyName: null,
+        mapped: false,
+      });
+    }
 
     const handledParams = this.handle(mappedLinks, dto, DataTypeEnum.Params);
 
@@ -214,7 +222,7 @@ export class ClirioHandler {
             mappedLinks.push({
               type: 'option',
               key: filteredLinkedArgs[0]!.key,
-              allowedKeys: aliases,
+              definedKeys: aliases,
               value: obj,
               propertyName,
               mapped: true,
@@ -230,7 +238,7 @@ export class ClirioHandler {
             mappedLinks.push({
               type: 'option',
               key: filteredLinkedArgs[0]!.key,
-              allowedKeys: aliases,
+              definedKeys: aliases,
               value: values,
               propertyName,
               mapped: true,
@@ -246,7 +254,7 @@ export class ClirioHandler {
           mappedLinks.push({
             type: 'option',
             key: filteredLinkedArgs[0]!.key,
-            allowedKeys: aliases,
+            definedKeys: aliases,
             value: filteredLinkedArgs[0]!.value,
             propertyName,
             mapped: true,
@@ -261,7 +269,7 @@ export class ClirioHandler {
       mappedLinks.push({
         type: 'option',
         key: linkedArg.key,
-        allowedKeys: [],
+        definedKeys: [],
         value: linkedArg.value,
         propertyName: null,
         mapped: false,
@@ -430,7 +438,7 @@ export class ClirioHandler {
           break;
         case this.compareAction(link, attributes):
           break;
-        case this.compareMask(link, attributes):
+        case this.compareParam(link, attributes):
           {
             const [paramName] = link.values;
 
@@ -441,7 +449,7 @@ export class ClirioHandler {
             });
           }
           break;
-        case this.compareRestMask(link, attributes):
+        case this.compareRestParam(link, attributes):
           {
             const values: string[] = [];
 
@@ -538,9 +546,9 @@ export class ClirioHandler {
           break;
         case this.compareAction(link, attributes):
           break;
-        case this.compareMask(link, attributes):
+        case this.compareParam(link, attributes):
           break;
-        case this.compareRestMask(link, attributes):
+        case this.compareRestParam(link, attributes):
           for (let index = actionIndex; index < parsedArgs.length; index++) {
             const parsedArg = parsedArgs[index];
             if (parsedArg.type === ArgType.Action) {
@@ -584,13 +592,13 @@ export class ClirioHandler {
           break;
         case this.compareAction(link, attributes):
           break;
-        case this.compareMask(link, attributes):
+        case this.compareParam(link, attributes):
           {
             const [paramName] = link.values;
             params[paramName] = attributes.value!;
           }
           break;
-        case this.compareRestMask(link, attributes):
+        case this.compareRestParam(link, attributes):
           {
             const values: string[] = [];
 
@@ -665,11 +673,11 @@ export class ClirioHandler {
     );
   }
 
-  private compareMask(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.Value && attributes.type === ArgType.Action;
+  private compareParam(link: Link, attributes: ParsedArg): boolean {
+    return link.type === LinkType.Param && attributes.type === ArgType.Action;
   }
 
-  private compareRestMask(link: Link, attributes: ParsedArg): boolean {
+  private compareRestParam(link: Link, attributes: ParsedArg): boolean {
     return link.type === LinkType.List && attributes.type === ArgType.Action;
   }
 }

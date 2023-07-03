@@ -1,6 +1,6 @@
 export enum LinkType {
   Action = 'action',
-  Value = 'value',
+  Param = 'param',
   List = 'list',
   Option = 'option',
 }

@@ -312,7 +312,7 @@ export class ClirioCore {
 
       const isActionMask =
         links.findIndex((link) =>
-          [LinkType.List, LinkType.Value].includes(link.type)
+          [LinkType.List, LinkType.Param].includes(link.type)
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
