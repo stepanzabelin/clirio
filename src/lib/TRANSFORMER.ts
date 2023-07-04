@@ -1,6 +1,6 @@
 import { keyValueReg } from '../constrains/regexp.config';
 
-export const TRANSFORM = {
+export const TRANSFORMER = {
   LOGICAL: (value: string | null): boolean => {
     switch (true) {
       case value === null: {

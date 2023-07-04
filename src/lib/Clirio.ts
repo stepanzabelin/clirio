@@ -1,7 +1,7 @@
 import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
-import { TRANSFORM } from './TRANSFORM';
+import { TRANSFORMER } from './TRANSFORMER';
 import { VALIDATOR } from './VALIDATOR';
 
 export class Clirio extends ClirioCore {
@@ -48,5 +48,5 @@ export class Clirio extends ClirioCore {
 
   public static VALIDATOR = VALIDATOR;
 
-  public static TRANSFORM = TRANSFORM;
+  public static TRANSFORMER = TRANSFORMER;
 }
