@@ -37,3 +37,4 @@ export * from './Module';
 export * from './ModuleData';
 export * from './LinkedArg';
 export * from './Row';
+export * from './Validation';

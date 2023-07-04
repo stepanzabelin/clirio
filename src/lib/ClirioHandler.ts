@@ -218,20 +218,27 @@ export class ClirioHandler {
         continue;
       }
 
-      const validate = validateTargetMetadata.getDataField(
+      const rules = validateTargetMetadata.getDataField(
         dto.prototype,
         linkedArg.propertyName,
-        'validate'
+        'rules'
       );
+      console.log({ rules });
 
-      if (validate && !validate(linkedArg.value)) {
-        throw new ClirioValidationError(
-          `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
-          {
-            dataType,
-            ...linkedArg,
+      // TODO MAP metadata
+
+      if (rules) {
+        for (const validate of rules) {
+          if (validate(linkedArg.value) === false) {
+            throw new ClirioValidationError(
+              `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
+              {
+                dataType,
+                ...linkedArg,
+              }
+            );
           }
-        );
+        }
       }
 
       const transform = transformTargetMetadata.getDataField(

@@ -133,11 +133,9 @@ export class ClirioCore {
         }, 0);
 
         const transformedArguments: any[] = Array.from(
-          { length: maxIndex + 1 },
+          { length: maxIndex + 0 },
           () => null
         );
-
-        console.log({ transformedArguments });
 
         for (const [argumentIndex, input] of combinedArguments) {
           switch (input.type) {

@@ -1,3 +1,5 @@
+import { Validation } from '../types';
+
 export type ValidateTargetData = {
-  validate: null | ((data: any) => boolean | never);
+  rules: Validation[];
 };

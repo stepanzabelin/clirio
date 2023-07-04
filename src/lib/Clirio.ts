@@ -2,7 +2,7 @@ import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 import { TRANSFORM } from './TRANSFORM';
-import { VALIDATE } from './VALIDATE';
+import { VALIDATOR } from './VALIDATOR';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
@@ -46,7 +46,7 @@ export class Clirio extends ClirioCore {
     await this.execute();
   }
 
-  public static VALIDATE = VALIDATE;
+  public static VALIDATOR = VALIDATOR;
 
   public static TRANSFORM = TRANSFORM;
 }
