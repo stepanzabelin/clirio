@@ -1,9 +1,10 @@
 import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
-import { isValid } from './isValid';
+import { valid } from './valid';
 import { TRANSFORMER } from './TRANSFORMER';
 import { VALIDATOR } from './VALIDATOR';
+import { form } from './form';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
@@ -51,5 +52,7 @@ export class Clirio extends ClirioCore {
 
   public static TRANSFORMER = TRANSFORMER;
 
-  public static isValid = isValid;
+  public static valid = valid;
+
+  public static form = form;
 }

@@ -5,8 +5,8 @@ export class MigrationRunOptionsDto {
   @Option('--env, -e', {
     cast: 'array',
   })
-  @Validate(Clirio.VALIDATOR.KEY_VALUE)
-  @Transform(Clirio.TRANSFORMER.KEY_VALUE)
+  @Validate(Clirio.valid('KEY_VALUE'))
+  @Transform(Clirio.form('KEY_VALUE'))
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
