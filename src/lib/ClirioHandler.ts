@@ -4,7 +4,7 @@ import {
   RawParams,
   PipeScope,
   LinkedArg,
-  MappedLink,
+  Row,
   ExceptionScope,
   ClirioException,
   Link,
@@ -24,9 +24,8 @@ import {
   pipeTargetMetadata,
 } from '../metadata';
 import { DataTypeEnum } from '../types/DataTypeEnum';
-import { ClirioRouteError, ClirioValidationError } from '../exceptions';
+import { ClirioValidationError } from '../exceptions';
 import { ClirioDefaultException } from './ClirioDefaultException';
-// import { ClirioValidationError } from '../exceptions';
 
 export class ClirioHandler {
   public isDto(dto: Constructor) {
@@ -92,13 +91,10 @@ export class ClirioHandler {
     );
   }
 
-  public validateParams(
-    linkedArgs: LinkedArg[],
-    dto: Constructor
-  ): MappedLink[] {
-    const mappedLinks: MappedLink[] = [];
+  public handleParams(linkedArgs: LinkedArg[], dto: Constructor): Row[] {
+    const rows: Row[] = [];
 
-    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
+    const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
     const paramTargetDataList = this.isDto(dto)
       ? [...paramTargetMetadata.getMap(dto.prototype)]
@@ -107,54 +103,33 @@ export class ClirioHandler {
     // const paramsList = Array.from(paramTargetMetadata.getMap(dto.prototype));
 
     for (const [propertyName, paramData] of paramTargetDataList) {
-      const filteredLinkedArgs = parsedLinkedArgs.filter(
-        (linkedArg) => linkedArg.key === paramData.paramName
+      const key = paramData.key ?? propertyName;
+
+      const index = parsedLinkedArgs.findIndex(
+        (linkedArg) => linkedArg.key === key
       );
 
-      parsedLinkedArgs = parsedLinkedArgs.filter(
-        (linkedArg) => linkedArg.key !== paramData.paramName
-      );
-
-      if (paramData.isArray) {
-        if (filteredLinkedArgs.length > 0) {
-          const value = filteredLinkedArgs.map((linkedArg) => linkedArg.value);
-
-          mappedLinks.push({
-            type: 'param',
-            key: filteredLinkedArgs[0]!.key,
-            definedKeys: [paramData.paramName ?? propertyName],
-            value,
-            propertyName,
-            mapped: true,
-          });
-        }
-      } else {
-        mappedLinks.push({
-          type: 'param',
-          key: filteredLinkedArgs[0]!.key,
-          definedKeys: [paramData.paramName ?? propertyName],
-          value: filteredLinkedArgs[0]!.value,
-          propertyName,
-          mapped: true,
-        });
-
-        // if (filteredLinkedArgs.length === 1) {
-        //   mappedLinks.push({
-        //     type: 'param',
-        //     key: filteredLinkedArgs[0]!.key,
-        //     definedKeys: [paramData.paramName ?? propertyName],
-        //     value: filteredLinkedArgs[0]!.value,
-        //     propertyName,
-        //     mapped: true,
-        //   });
-        // } else if (filteredLinkedArgs.length > 1) {
-        //   throw new ClirioRouteError('');
-        // }
+      if (index === -1) {
+        continue;
       }
+
+      const linkedArg = parsedLinkedArgs[index];
+      parsedLinkedArgs.splice(index, 1);
+
+      const value = this.cast(linkedArg.value, paramData.cast);
+
+      rows.push({
+        type: 'param',
+        key: linkedArg.key,
+        definedKeys: [key],
+        value,
+        propertyName,
+        mapped: true,
+      });
     }
 
     for (const linkedArg of parsedLinkedArgs) {
-      mappedLinks.push({
+      rows.push({
         type: 'param',
         key: linkedArg.key,
         definedKeys: [],
@@ -164,109 +139,50 @@ export class ClirioHandler {
       });
     }
 
-    const handledParams = this.handle(mappedLinks, dto, DataTypeEnum.Params);
+    const handledParams = this.handle(rows, dto, DataTypeEnum.Params);
 
     return handledParams;
   }
 
-  public validateOptions(
-    linkedArgs: LinkedArg[],
-    dto: Constructor
-  ): MappedLink[] {
-    const mappedLinks: MappedLink[] = [];
+  public handleOptions(linkedArgs: LinkedArg[], dto: Constructor): Row[] {
+    const rows: Row[] = [];
 
-    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
+    const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
     const optionTargetDataList = this.isDto(dto)
       ? [...optionTargetMetadata.getMap(dto.prototype)]
       : [];
 
     for (const [propertyName, optionData] of optionTargetDataList) {
-      const aliases = optionData?.aliases ?? [propertyName];
+      const keys = optionData.keys ?? [propertyName];
 
-      const filteredLinkedArgs = parsedLinkedArgs.filter((linkedArg) =>
-        aliases.includes(linkedArg.key)
+      const index = parsedLinkedArgs.findIndex((linkedArg) =>
+        keys.includes(linkedArg.key)
       );
 
-      parsedLinkedArgs = parsedLinkedArgs.filter(
-        (linkedArg) => !aliases.includes(linkedArg.key)
-      );
-
-      if (filteredLinkedArgs.length === 0) {
+      if (index === -1) {
         continue;
       }
 
-      // propertiesMap.set(
-      //   propertyName,
-      //   aliases
-      //     .map((name) => (name.length === 1 ? `-` : `--`) + name)
-      //     .join(', ')
-      // );
+      const linkedArg = parsedLinkedArgs[index];
+      parsedLinkedArgs.splice(index, 1);
 
-      switch (true) {
-        case optionData.variable:
-          {
-            const obj: any = {};
+      const value = this.cast(linkedArg.value, optionData.cast);
 
-            for (const linkedArg of filteredLinkedArgs) {
-              const matchVariable = String(linkedArg.value).match(
-                /^(?<key>[^=]+)(=(?<value>[\s\S]*))?$/
-              );
-
-              if (matchVariable) {
-                const { key, value } = matchVariable!.groups!;
-                obj[key] = value;
-              }
-            }
-
-            mappedLinks.push({
-              type: 'option',
-              key: filteredLinkedArgs[0]!.key,
-              definedKeys: aliases,
-              value: obj,
-              propertyName,
-              mapped: true,
-            });
-          }
-          break;
-        case optionData.isArray:
-          {
-            const values = filteredLinkedArgs.map(
-              (filteredArg) => filteredArg.value
-            );
-
-            mappedLinks.push({
-              type: 'option',
-              key: filteredLinkedArgs[0]!.key,
-              definedKeys: aliases,
-              value: values,
-              propertyName,
-              mapped: true,
-            });
-          }
-          break;
-        default:
-          if (filteredLinkedArgs.length > 1) {
-            // TODO VALIDATION
-            throw new Error('111');
-          }
-
-          mappedLinks.push({
-            type: 'option',
-            key: filteredLinkedArgs[0]!.key,
-            definedKeys: aliases,
-            value: filteredLinkedArgs[0]!.value,
-            propertyName,
-            mapped: true,
-          });
-
-          break;
-      }
+      rows.push({
+        type: 'option',
+        key: linkedArg.key,
+        definedKeys: keys,
+        value,
+        propertyName,
+        mapped: true,
+      });
     }
+
     console.log({ parsedLinkedArgs });
 
     for (const linkedArg of parsedLinkedArgs) {
-      mappedLinks.push({
+      rows.push({
         type: 'option',
         key: linkedArg.key,
         definedKeys: [],
@@ -276,16 +192,16 @@ export class ClirioHandler {
       });
     }
 
-    const handledOptions = this.handle(mappedLinks, dto, DataTypeEnum.Options);
+    const handledOptions = this.handle(rows, dto, DataTypeEnum.Options);
 
     return handledOptions;
   }
 
   public handle(
-    linkedArgs: MappedLink[],
+    linkedArgs: Row[],
     dto: Constructor<any>,
     dataType: DataTypeEnum
-  ): MappedLink[] {
+  ): Row[] {
     const handledLinkedArgs = [...linkedArgs];
 
     for (const linkedArg of linkedArgs) {
@@ -329,16 +245,13 @@ export class ClirioHandler {
   }
 
   public passPipes(
-    mappedLinks: MappedLink[],
+    rows: Row[],
     dto: Constructor,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = []
   ) {
     let data = Object.fromEntries(
-      mappedLinks.map((mappedLink) => [
-        mappedLink.propertyName ?? mappedLink.key,
-        mappedLink.value,
-      ])
+      rows.map((row) => [row.propertyName ?? row.key, row.value])
     );
 
     console.log({ data });
@@ -449,7 +362,7 @@ export class ClirioHandler {
             });
           }
           break;
-        case this.compareRestParam(link, attributes):
+        case this.compareParamList(link, attributes):
           {
             const values: string[] = [];
 
@@ -465,13 +378,11 @@ export class ClirioHandler {
 
             const [paramName] = link.values;
 
-            for (const value of values) {
-              linkedArgs.push({
-                type: 'param',
-                key: paramName,
-                value,
-              });
-            }
+            linkedArgs.push({
+              type: 'param',
+              key: paramName,
+              value: values,
+            });
           }
 
           break;
@@ -496,35 +407,35 @@ export class ClirioHandler {
       (attributes) => attributes.type === ArgType.Option
     );
 
-    for (let index = 0; index < parsedOptions.length; index++) {
-      const attributes = parsedOptions[index];
-
-      linkedArgs.push({
-        type: 'option',
-        key: attributes.key,
-        value: attributes.value,
-      });
-    }
-
-    // const optionMap = new Map<string, any>();
-
     // for (let index = 0; index < parsedOptions.length; index++) {
     //   const attributes = parsedOptions[index];
 
-    //   const values = optionMap.get(attributes.key) ?? [];
-    //   values.push(attributes.value);
-    //   optionMap.set(attributes.key, values);
+    //   linkedArgs.push({
+    //     type: 'option',
+    //     key: attributes.key,
+    //     value: attributes.value,
+    //   });
     // }
 
-    // linkedArgs.concat(
-    //   [...optionMap].map(([key, values]) => ({
-    //     type: 'option',
-    //     key,
-    //     value: values.length > 1 ? values : ,
-    //     propertyName: null,
-    //     mapped: false,
-    //   }))
-    // );
+    const optionMap = new Map<string, any>();
+
+    for (let index = 0; index < parsedOptions.length; index++) {
+      const attributes = parsedOptions[index];
+
+      const values = optionMap.get(attributes.key) ?? [];
+      values.push(attributes.value);
+      optionMap.set(attributes.key, values);
+    }
+
+    linkedArgs.concat(
+      [...optionMap].map(([key, values]) => ({
+        type: 'option',
+        key,
+        value: values.length > 2 ? values : values[0],
+        propertyName: null,
+        mapped: false,
+      }))
+    );
 
     return linkedArgs;
   }
@@ -548,7 +459,7 @@ export class ClirioHandler {
           break;
         case this.compareParam(link, attributes):
           break;
-        case this.compareRestParam(link, attributes):
+        case this.compareParamList(link, attributes):
           for (let index = actionIndex; index < parsedArgs.length; index++) {
             const parsedArg = parsedArgs[index];
             if (parsedArg.type === ArgType.Action) {
@@ -598,7 +509,7 @@ export class ClirioHandler {
             params[paramName] = attributes.value!;
           }
           break;
-        case this.compareRestParam(link, attributes):
+        case this.compareParamList(link, attributes):
           {
             const values: string[] = [];
 
@@ -677,7 +588,20 @@ export class ClirioHandler {
     return link.type === LinkType.Param && attributes.type === ArgType.Action;
   }
 
-  private compareRestParam(link: Link, attributes: ParsedArg): boolean {
+  private compareParamList(link: Link, attributes: ParsedArg): boolean {
     return link.type === LinkType.List && attributes.type === ArgType.Action;
+  }
+
+  private cast(value: any, cast: null | 'array' | 'plain'): any {
+    switch (cast) {
+      case 'array': {
+        return Array.isArray(value) ? value : [value];
+      }
+      case 'plain': {
+        return Array.isArray(value) ? value[0] : value;
+      }
+      default:
+        return value;
+    }
   }
 }

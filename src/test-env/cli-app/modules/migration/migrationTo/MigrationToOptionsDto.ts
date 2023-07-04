@@ -2,12 +2,14 @@ import { Validate, Clirio, Option, Transform } from '../../../../../index';
 
 export class MigrationToOptionsDto {
   @Option('--env, -e', {
-    variable: true,
+    cast: 'array',
   })
+  @Validate(Clirio.VALIDATE.KEY_VALUE)
+  @Transform(Clirio.TRANSFORM.KEY_VALUE)
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Validate((v) => v === null)
+  @Validate(Clirio.VALIDATE.LOGICAL)
   @Transform(Clirio.TRANSFORM.LOGICAL)
   readonly silent?: boolean;
 

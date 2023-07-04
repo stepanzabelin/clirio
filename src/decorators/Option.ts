@@ -2,36 +2,30 @@ import { optionReg } from '../constrains/regexp.config';
 import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 import { optionTargetMetadata } from '../metadata';
 
-import { Constructor } from '../types';
+import { Constructor, OptionTargetData } from '../types';
 
 export const Option = function (
   optionLine?: string,
-  {
-    isArray = false,
-    nullableValue,
-    variable = false,
-  }: { isArray?: boolean; nullableValue?: any; variable?: boolean } = {}
+  { cast = null }: Partial<Omit<OptionTargetData, 'keys'>> = {}
 ) {
   return function (target: Constructor['prototype'], propertyName: string) {
-    if (isArray && variable) {
-      throw new ClirioDebugError('The configuration is not correct', {
-        entity: target.constructor.name,
-        property: propertyName,
-        decorator: 'Option',
-      });
-    }
+    // if (isArray && variable) {
+    //   throw new ClirioDebugError('The configuration is not correct', {
+    //     entity: target.constructor.name,
+    //     property: propertyName,
+    //     decorator: 'Option',
+    //   });
+    // }
 
     if (!optionLine) {
       optionTargetMetadata.setData(target, propertyName, {
-        aliases: null,
-        isArray,
-        nullableValue,
-        variable,
+        keys: null,
+        cast,
       });
       return;
     }
 
-    const aliases = optionLine
+    const keys = optionLine
       .split(/\s*,\s*/)
       .filter((f) => f)
       .map((option) => {
@@ -50,10 +44,8 @@ export const Option = function (
       });
 
     optionTargetMetadata.setData(target, propertyName, {
-      aliases,
-      isArray,
-      nullableValue,
-      variable,
+      keys,
+      cast,
     });
   };
 };

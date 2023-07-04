@@ -1,6 +1,6 @@
 import { Param } from '../../../../../index';
 
 export class MigrationToParamsDto {
-  @Param('name', { isArray: true })
+  @Param('name', { cast: 'array' })
   readonly name!: number;
 }

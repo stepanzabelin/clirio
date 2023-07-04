@@ -1,5 +1,5 @@
 export type LinkedArg = {
   type: 'param' | 'option';
   key: string;
-  value: string | null;
+  value: (string | null) | (string | null)[];
 };

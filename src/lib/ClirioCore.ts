@@ -18,7 +18,7 @@ import {
   Result,
   Module,
   LinkedArg,
-  MappedLink,
+  Row,
 } from '../types';
 import { getProcessArgs } from './getProcessArgs';
 import { ClirioConfig, clirioConfig } from './clirioConfig';
@@ -143,7 +143,7 @@ export class ClirioCore {
           switch (input.type) {
             case InputTypeEnum.Params:
               {
-                const transformedParams = this.handler.validateParams(
+                const transformedParams = this.handler.handleParams(
                   paramLinkedArgs,
                   input.dto
                 );
@@ -161,7 +161,7 @@ export class ClirioCore {
               break;
             case InputTypeEnum.Options:
               {
-                const transformedOptions = this.handler.validateOptions(
+                const transformedOptions = this.handler.handleOptions(
                   optionLinkedArgs,
                   input.dto
                 );

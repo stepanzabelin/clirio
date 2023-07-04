@@ -1,8 +1,8 @@
-export type MappedLink = {
+export type Row = {
   type: 'param' | 'option';
   key: string;
+  value: any;
   definedKeys: string[];
   propertyName: string | null;
-  value: any;
   mapped: boolean;
 };

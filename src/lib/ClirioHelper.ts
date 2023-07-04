@@ -100,7 +100,7 @@ export class ClirioHelper {
         optionTargetMetadata.getMap(dto.prototype)
       );
 
-      for (const [property, { aliases }] of optionsList) {
+      for (const [property, { keys }] of optionsList) {
         const description =
           descriptionTargetMetadata.getDataField(
             module.prototype,
@@ -118,8 +118,8 @@ export class ClirioHelper {
           continue;
         }
 
-        const options = (aliases ?? [property]).map((alias) =>
-          alias.length > 1 ? `--${alias}` : `-${alias}`
+        const options = (keys ?? [property]).map((key) =>
+          key.length > 1 ? `--${key}` : `-${key}`
         );
 
         optionDescription.push({

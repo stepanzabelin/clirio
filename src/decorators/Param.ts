@@ -1,14 +1,14 @@
 import { paramTargetMetadata } from '../metadata';
-import { Constructor } from '../types';
+import { Constructor, ParamTargetData } from '../types';
 
 export const Param = function (
-  paramName: string | null = null,
-  { isArray = false }: { isArray?: boolean } = {}
+  key: ParamTargetData['key'] = null,
+  { cast = null }: Partial<Omit<ParamTargetData, 'key'>> = {}
 ) {
   return function (target: Constructor['prototype'], propertyName: string) {
     paramTargetMetadata.setData(target, propertyName, {
-      paramName,
-      isArray,
+      key,
+      cast,
     });
   };
 };

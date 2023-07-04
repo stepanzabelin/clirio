@@ -7,3 +7,4 @@ export const argReg = new RegExp(
   `^\\s*(${actionReg.source}|${optionReg.source}|${paramReg.source})\\s*`,
   'i'
 );
+export const keyValueReg = /^(?<key>[^=]+)(=(?<value>[\s\S]*))?$/;

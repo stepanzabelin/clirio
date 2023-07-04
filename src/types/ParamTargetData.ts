@@ -1,4 +1,4 @@
 export type ParamTargetData = {
-  paramName: null | string;
-  isArray: boolean;
+  key: null | string;
+  cast: null | 'array' | 'plain';
 };

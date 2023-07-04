@@ -36,4 +36,4 @@ export * from './ParamsArgData';
 export * from './Module';
 export * from './ModuleData';
 export * from './LinkedArg';
-export * from './MappedLink';
+export * from './Row';
