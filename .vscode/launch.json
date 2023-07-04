@@ -2,10 +2,47 @@
   "version": "0.2.0",
   "configurations": [
     // To debug, make sure a *.spec.ts file is active in the editor, then run a configuration
+
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug with ts-node",
+      "name": "Debug with ts-node 1 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
+        "migration",
+        "run",
+        "-e",
+        "DB_NAME=db-name",
+        "--env",
+        "DB_USER=db-user",
+        "--silent"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug with ts-node 1 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
+        "hello",
+        "--first-name=Alex",
+        "--last-name=Smith"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug with ts-node 2",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
         "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",

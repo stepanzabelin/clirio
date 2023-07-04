@@ -147,7 +147,7 @@ export class ClirioHandler {
   public handleOptions(linkedArgs: LinkedArg[], dto: Constructor): Row[] {
     const rows: Row[] = [];
 
-    const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
+    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
     const optionTargetDataList = this.isDto(dto)
       ? [...optionTargetMetadata.getMap(dto.prototype)]
@@ -156,18 +156,26 @@ export class ClirioHandler {
     for (const [propertyName, optionData] of optionTargetDataList) {
       const keys = optionData.keys ?? [propertyName];
 
-      const index = parsedLinkedArgs.findIndex((linkedArg) =>
+      const filteredLinkedArgs = parsedLinkedArgs.filter((linkedArg) =>
         keys.includes(linkedArg.key)
       );
 
-      if (index === -1) {
+      parsedLinkedArgs = parsedLinkedArgs.filter(
+        (linkedArg) => !keys.includes(linkedArg.key)
+      );
+
+      if (filteredLinkedArgs.length === 0) {
         continue;
       }
 
-      const linkedArg = parsedLinkedArgs[index];
-      parsedLinkedArgs.splice(index, 1);
+      const linkedArg = filteredLinkedArgs[0];
 
-      const value = this.cast(linkedArg.value, optionData.cast);
+      const value = this.cast(
+        filteredLinkedArgs.length > 1
+          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value)
+          : linkedArg.value,
+        optionData.cast
+      );
 
       rows.push({
         type: 'option',
@@ -407,16 +415,6 @@ export class ClirioHandler {
       (attributes) => attributes.type === ArgType.Option
     );
 
-    // for (let index = 0; index < parsedOptions.length; index++) {
-    //   const attributes = parsedOptions[index];
-
-    //   linkedArgs.push({
-    //     type: 'option',
-    //     key: attributes.key,
-    //     value: attributes.value,
-    //   });
-    // }
-
     const optionMap = new Map<string, any>();
 
     for (let index = 0; index < parsedOptions.length; index++) {
@@ -427,15 +425,13 @@ export class ClirioHandler {
       optionMap.set(attributes.key, values);
     }
 
-    linkedArgs.concat(
-      [...optionMap].map(([key, values]) => ({
+    for (const [key, values] of optionMap) {
+      linkedArgs.push({
         type: 'option',
         key,
         value: values.length > 2 ? values : values[0],
-        propertyName: null,
-        mapped: false,
-      }))
-    );
+      });
+    }
 
     return linkedArgs;
   }

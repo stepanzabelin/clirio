@@ -1,7 +1,7 @@
 import { Description, Option } from '../../../../../index';
 
 export class HelloOptionsDto {
-  @Option('--first-name, -f', { cast: 'array' })
+  @Option('--first-name, -f')
   @Description('First name')
   readonly firstName?: string;
 
