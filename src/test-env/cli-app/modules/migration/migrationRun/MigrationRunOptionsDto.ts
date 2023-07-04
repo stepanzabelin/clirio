@@ -10,10 +10,6 @@ export class MigrationRunOptionsDto {
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Validate([
-    Clirio.VALIDATOR.REQUIRED,
-    Clirio.VALIDATOR.NULLABLE,
-    Clirio.VALIDATOR.BOOLEAN,
-  ])
+  @Validate(Clirio.VALIDATOR.NULL)
   readonly silent?: boolean;
 }

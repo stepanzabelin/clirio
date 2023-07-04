@@ -19,6 +19,10 @@ export const VALIDATOR: Validator = {
     return value === null ? true : null;
   },
 
+  NULL: (value: any) => {
+    return value === null;
+  },
+
   LOGICAL: (value: any) => {
     return [null, 'true', 'false'].includes(String(value));
   },
