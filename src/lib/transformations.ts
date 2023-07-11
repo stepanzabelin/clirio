@@ -1,7 +1,19 @@
 import { keyValueReg } from '../constrains/regexp.config';
 
-export const TRANSFORMER = {
-  LOGICAL: (value: string | null): boolean => {
+export const transformations = {
+  NUMBER: (value: any) => {
+    return Number(value) || 0;
+  },
+
+  STRING: (value: any) => {
+    return String(value ?? '');
+  },
+
+  BOOLEAN: (value: any) => {
+    return Boolean(value);
+  },
+
+  FLAG: (value: string | null): boolean => {
     switch (true) {
       case value === null: {
         return true;

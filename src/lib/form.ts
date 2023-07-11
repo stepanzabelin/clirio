@@ -1,9 +1,9 @@
-import { TRANSFORMER } from './TRANSFORMER';
+import { transformations } from './transformations';
 
-type KeyName = keyof typeof TRANSFORMER;
+type KeyName = keyof typeof transformations;
 
 export const form = (keyOrKeys: KeyName | KeyName[]): any => {
   const keys = Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys];
   return (value: any) =>
-    keys.reduce((value, key) => TRANSFORMER[key](value), value);
+    keys.reduce((value, key) => transformations[key](value), value);
 };

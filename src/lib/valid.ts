@@ -1,9 +1,9 @@
 import { Validation } from '../types';
-import { VALIDATOR } from './VALIDATOR';
+import { validations } from './validations';
 
-type RuleName = keyof typeof VALIDATOR;
+type RuleName = keyof typeof validations;
 
 export const valid = (ruleOrRules: RuleName | RuleName[]): Validation => {
   const rules = Array.isArray(ruleOrRules) ? ruleOrRules : [ruleOrRules];
-  return (value) => rules.every((key) => VALIDATOR[key](value));
+  return (value) => rules.every((key) => validations[key](value));
 };
