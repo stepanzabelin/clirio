@@ -1,9 +1,4 @@
-import {
-  Clirio,
-  ClirioError,
-  ClirioRouteError,
-  ClirioValidationError,
-} from '../../index';
+import { Clirio, ClirioError, ClirioValidationError } from '../../index';
 import { ClirioConfig } from '../../lib/clirioConfig';
 import { ClirioException } from '../../types';
 import { CommonModule } from './modules/common/CommonModule';

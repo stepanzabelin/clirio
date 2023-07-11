@@ -1,5 +1,4 @@
-import { Transform, Validate } from '../../../../../decorators';
-import { Clirio, Option } from '../../../../../index';
+import { Transform, Validate, Clirio, Option } from '../../../../../index';
 
 export class MigrationRunOptionsDto {
   @Option('--env, -e', {

@@ -1,4 +1,5 @@
 type Payload = {
+  errCode: string;
   [key: string]: any;
 };
 

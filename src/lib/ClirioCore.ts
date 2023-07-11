@@ -33,7 +33,7 @@ import {
 } from '../metadata';
 import { ClirioHelper } from './ClirioHelper';
 import { ClirioHandler } from './ClirioHandler';
-import { ClirioRouteError } from '../exceptions';
+import { ClirioError } from '../exceptions';
 import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioDefaultException } from './ClirioDefaultException';
 import { Clirio } from './Clirio';
@@ -119,7 +119,9 @@ export class ClirioCore {
           optionsArgMap.size === 0 &&
           optionLinkedArgs.length > 0
         ) {
-          throw new ClirioRouteError('Invalid options received');
+          throw new ClirioError('Invalid options received', {
+            errCode: 'INVALID_OPTIONS',
+          });
         }
 
         const pipeScopeList = this.handler.collectPipes(
@@ -277,7 +279,9 @@ export class ClirioCore {
     );
 
     this.handler.handleExceptions(
-      new ClirioRouteError('Incorrect command specified'),
+      new ClirioError('Incorrect command specified', {
+        errCode: 'INCORRECT_COMMAND',
+      }),
       exceptionScopeList
     );
 

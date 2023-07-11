@@ -1,4 +1,3 @@
-import { ClirioError } from '../../../../../exceptions';
 import { ClirioPipe, PipeContext } from '../../../../../index';
 
 export class MigrationToPipe implements ClirioPipe {
