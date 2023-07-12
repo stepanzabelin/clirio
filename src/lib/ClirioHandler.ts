@@ -91,7 +91,11 @@ export class ClirioHandler {
     );
   }
 
-  public handleParams(linkedArgs: LinkedArg[], dto: Constructor): Row[] {
+  public handleParams(
+    linkedArgs: LinkedArg[],
+    dto: Constructor,
+    dataType: DataTypeEnum
+  ): Row[] {
     const rows: Row[] = [];
 
     const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
@@ -139,12 +143,18 @@ export class ClirioHandler {
       });
     }
 
-    const handledParams = this.handle(rows, dto, DataTypeEnum.Params);
+    this.validate(rows, dto, dataType);
 
-    return handledParams;
+    const transformRows = this.transform(rows, dto);
+
+    return transformRows;
   }
 
-  public handleOptions(linkedArgs: LinkedArg[], dto: Constructor): Row[] {
+  public handleOptions(
+    linkedArgs: LinkedArg[],
+    dto: Constructor,
+    dataType: DataTypeEnum
+  ): Row[] {
     const rows: Row[] = [];
 
     let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
@@ -200,64 +210,119 @@ export class ClirioHandler {
       });
     }
 
-    const handledOptions = this.handle(rows, dto, DataTypeEnum.Options);
+    this.validate(rows, dto, dataType);
 
-    return handledOptions;
+    const transformRows = this.transform(rows, dto);
+
+    return transformRows;
   }
 
-  public handle(
-    linkedArgs: Row[],
+  public validate(
+    rows: Row[],
     dto: Constructor<any>,
     dataType: DataTypeEnum
-  ): Row[] {
-    const handledLinkedArgs = [...linkedArgs];
+  ): void {
+    const validationMap = validateTargetMetadata.getMap(dto.prototype);
 
-    for (const linkedArg of linkedArgs) {
-      if (!linkedArg.propertyName) {
-        handledLinkedArgs.push(linkedArg);
+    for (const [propertyName, data] of validationMap) {
+      const row = rows.find((row) => row.propertyName === propertyName);
+
+      if (!row) {
         continue;
       }
 
-      const rules = validateTargetMetadata.getDataField(
-        dto.prototype,
-        linkedArg.propertyName,
-        'rules'
-      );
-      console.log({ rules });
-
-      // TODO MAP metadata
-
-      if (rules) {
-        for (const validate of rules) {
-          if (validate(linkedArg.value) === false) {
-            throw new ClirioValidationError(
-              `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
-              {
-                dataType,
-                ...linkedArg,
-              }
-            );
-          }
+      for (const check of data.checks) {
+        if (check(row.value) === false) {
+          throw new ClirioValidationError(
+            `The "${row.key}" ${dataType.toLowerCase()} is wrong`,
+            {
+              dataType,
+              ...row,
+            }
+          );
         }
       }
+    }
+  }
 
-      const transform = transformTargetMetadata.getDataField(
-        dto.prototype,
-        linkedArg.propertyName,
-        'transform'
+  public transform(rows: Row[], dto: Constructor<any>): Row[] {
+    const transformedRows = [...rows];
+
+    const transformMap = transformTargetMetadata.getMap(dto.prototype);
+
+    for (const [propertyName, data] of transformMap) {
+      const index = transformedRows.findIndex(
+        (row) => row.propertyName === propertyName
       );
 
-      const transformedLinkedArg = { ...linkedArg };
-
-      if (transform) {
-        transformedLinkedArg.value = transform(transformedLinkedArg.value);
+      if (index === -1) {
+        continue;
       }
 
-      handledLinkedArgs.push(transformedLinkedArg);
+      const transformedRow = transformedRows[index];
+
+      transformedRows[index] = {
+        ...transformedRow,
+        value: data.transform(transformedRow.value),
+      };
     }
 
-    return handledLinkedArgs;
+    return transformedRows;
   }
+
+  // public handle(
+  //   linkedArgs: Row[],
+  //   dto: Constructor<any>,
+  //   dataType: DataTypeEnum
+  // ): Row[] {
+  //   const handledLinkedArgs = [...linkedArgs];
+
+  //   for (const linkedArg of linkedArgs) {
+  //     if (!linkedArg.propertyName) {
+  //       handledLinkedArgs.push(linkedArg);
+  //       continue;
+  //     }
+
+  //     const checks = validateTargetMetadata.getDataField(
+  //       dto.prototype,
+  //       linkedArg.propertyName,
+  //       'checks'
+  //     );
+  //     console.log({ checks });
+
+  //     // TODO MAP metadata
+
+  //     if (checks) {
+  //       for (const validate of checks) {
+  //         if (validate(linkedArg.value) === false) {
+  //           throw new ClirioValidationError(
+  //             `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
+  //             {
+  //               dataType,
+  //               ...linkedArg,
+  //             }
+  //           );
+  //         }
+  //       }
+  //     }
+
+  //     const transform = transformTargetMetadata.getDataField(
+  //       dto.prototype,
+  //       linkedArg.propertyName,
+  //       'transform'
+  //     );
+
+  //     const transformedLinkedArg = { ...linkedArg };
+
+  //     if (transform) {
+  //       transformedLinkedArg.value = transform(transformedLinkedArg.value);
+  //     }
+
+  //     handledLinkedArgs.push(transformedLinkedArg);
+  //   }
+
+  //   return handledLinkedArgs;
+  // }
 
   public passPipes(
     rows: Row[],
@@ -279,6 +344,7 @@ export class ClirioHandler {
         dataType,
         scope,
         dto,
+        rows,
       });
     }
 

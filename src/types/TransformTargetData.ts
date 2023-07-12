@@ -1,3 +1,3 @@
 export type TransformTargetData = {
-  transform: null | ((data: any) => any);
+  transform: (data: any) => any;
 };

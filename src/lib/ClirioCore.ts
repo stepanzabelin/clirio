@@ -143,13 +143,14 @@ export class ClirioCore {
           switch (input.type) {
             case InputTypeEnum.Params:
               {
-                const transformedParams = this.handler.handleParams(
+                const handledParamRows = this.handler.handleParams(
                   paramLinkedArgs,
-                  input.dto
+                  input.dto,
+                  DataTypeEnum.Params
                 );
 
                 const pipedParams = this.handler.passPipes(
-                  transformedParams,
+                  handledParamRows,
                   input.dto,
                   DataTypeEnum.Params,
                   pipeScopeList
@@ -161,13 +162,14 @@ export class ClirioCore {
               break;
             case InputTypeEnum.Options:
               {
-                const transformedOptions = this.handler.handleOptions(
+                const handledOptionRows = this.handler.handleOptions(
                   optionLinkedArgs,
-                  input.dto
+                  input.dto,
+                  DataTypeEnum.Options
                 );
 
                 const pipedOptions = this.handler.passPipes(
-                  transformedOptions,
+                  handledOptionRows,
                   input.dto,
                   DataTypeEnum.Options,
                   pipeScopeList
