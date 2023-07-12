@@ -1,18 +1,13 @@
-import { Args, OptionalKeys, Result, Pipe, Exception, Module } from '../types';
+import { OptionalKeys, Result, Pipe, Exception, Module, Args } from '../types';
 import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 import { valid } from './valid';
 import { form } from './form';
-import { ClirioDebugError } from '../exceptions/ClirioDebugError';
+import { getProcessArgs } from './getProcessArgs';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
     this.config = { ...this.config, ...partialConfig };
-    return this;
-  }
-
-  public setArgs(args: Args): this {
-    this.args = args;
     return this;
   }
 
@@ -41,13 +36,15 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public async build() {
+  public async execute(args?: Args): Promise<never | void> {
     this.debug();
 
-    await this.execute();
+    await super.execute(args);
   }
 
   public static valid = valid;
 
   public static form = form;
+
+  public static getProcessArgs = getProcessArgs;
 }

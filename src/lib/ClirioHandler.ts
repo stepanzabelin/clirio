@@ -104,8 +104,6 @@ export class ClirioHandler {
       ? [...paramTargetMetadata.getMap(dto.prototype)]
       : [];
 
-    // const paramsList = Array.from(paramTargetMetadata.getMap(dto.prototype));
-
     for (const [propertyName, paramData] of paramTargetDataList) {
       const key = paramData.key ?? propertyName;
 
@@ -197,8 +195,6 @@ export class ClirioHandler {
       });
     }
 
-    console.log({ parsedLinkedArgs });
-
     for (const linkedArg of parsedLinkedArgs) {
       rows.push({
         type: 'option',
@@ -270,60 +266,6 @@ export class ClirioHandler {
     return transformedRows;
   }
 
-  // public handle(
-  //   linkedArgs: Row[],
-  //   dto: Constructor<any>,
-  //   dataType: DataTypeEnum
-  // ): Row[] {
-  //   const handledLinkedArgs = [...linkedArgs];
-
-  //   for (const linkedArg of linkedArgs) {
-  //     if (!linkedArg.propertyName) {
-  //       handledLinkedArgs.push(linkedArg);
-  //       continue;
-  //     }
-
-  //     const checks = validateTargetMetadata.getDataField(
-  //       dto.prototype,
-  //       linkedArg.propertyName,
-  //       'checks'
-  //     );
-  //     console.log({ checks });
-
-  //     // TODO MAP metadata
-
-  //     if (checks) {
-  //       for (const validate of checks) {
-  //         if (validate(linkedArg.value) === false) {
-  //           throw new ClirioValidationError(
-  //             `The "${linkedArg.key}" ${dataType.toLowerCase()} is wrong`,
-  //             {
-  //               dataType,
-  //               ...linkedArg,
-  //             }
-  //           );
-  //         }
-  //       }
-  //     }
-
-  //     const transform = transformTargetMetadata.getDataField(
-  //       dto.prototype,
-  //       linkedArg.propertyName,
-  //       'transform'
-  //     );
-
-  //     const transformedLinkedArg = { ...linkedArg };
-
-  //     if (transform) {
-  //       transformedLinkedArg.value = transform(transformedLinkedArg.value);
-  //     }
-
-  //     handledLinkedArgs.push(transformedLinkedArg);
-  //   }
-
-  //   return handledLinkedArgs;
-  // }
-
   public passPipes(
     rows: Row[],
     dto: Constructor,
@@ -333,8 +275,6 @@ export class ClirioHandler {
     let data = Object.fromEntries(
       rows.map((row) => [row.propertyName ?? row.key, row.value])
     );
-
-    console.log({ data });
 
     for (const { pipe, scope } of pipeList) {
       const pipeInst: ClirioPipe =

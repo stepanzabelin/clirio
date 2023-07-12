@@ -10,8 +10,6 @@ export const validations: Validations = {
   },
 
   REQUIRED: (value: any) => {
-    console.log('value', value);
-
     return value === undefined ? false : null;
   },
 

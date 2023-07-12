@@ -13,17 +13,6 @@ export class TargetMetadata<Data extends Record<string, unknown>> {
     this.setMap(target, map);
   }
 
-  // mergeData(
-  //   target: Constructor['prototype'],
-  //   propertyName: string,
-  //   data: Partial<Data>
-  // ) {
-  //   const map = this.getMap(target);
-  //   const oldData: Partial<Data> = map.get(propertyName) ?? this.defaultData;
-  //   map.set(propertyName, { ...oldData, ...data });
-  //   this.setMap(target, map);
-  // }
-
   getData(target: Constructor['prototype'], propertyName: string) {
     return this.getMap(target).get(propertyName);
   }

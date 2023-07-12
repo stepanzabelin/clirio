@@ -32,6 +32,6 @@ export const cliApp = async ({
   }
 
   cli.setConfig(config);
-  await cli.build();
+  await cli.execute();
   return cli;
 };

@@ -40,7 +40,6 @@ import { Clirio } from './Clirio';
 import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 
 export class ClirioCore {
-  protected args?: Args;
   protected modules: Module[] = [];
   protected config: ClirioConfig = clirioConfig;
   protected handler = new ClirioHandler();
@@ -63,8 +62,8 @@ export class ClirioCore {
     }
   }
 
-  protected async execute(): Promise<never | null> {
-    const parsedArgs = ClirioCore.describe(this.args ?? getProcessArgs());
+  protected async execute(args?: Args): Promise<never | void> {
+    const parsedArgs = ClirioCore.describe(args ?? Clirio.getProcessArgs());
 
     // COMMAND ACTION
 
@@ -204,7 +203,7 @@ export class ClirioCore {
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
-        return null;
+        return;
       }
     }
 
@@ -236,7 +235,7 @@ export class ClirioCore {
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
-        return null;
+        return;
       }
     }
 
@@ -274,7 +273,7 @@ export class ClirioCore {
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
-        return null;
+        return;
       }
     }
 
@@ -289,7 +288,7 @@ export class ClirioCore {
       exceptionScopeList
     );
 
-    return null;
+    return;
   }
 
   public debug() {
