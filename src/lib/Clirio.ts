@@ -3,6 +3,7 @@ import { ClirioConfig } from './clirioConfig';
 import { ClirioCore } from './ClirioCore';
 import { valid } from './valid';
 import { form } from './form';
+import { ClirioDebugError } from '../exceptions/ClirioDebugError';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
@@ -41,8 +42,8 @@ export class Clirio extends ClirioCore {
   }
 
   public async build() {
-    // TODO exception
     this.debug();
+
     await this.execute();
   }
 

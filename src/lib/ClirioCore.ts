@@ -74,18 +74,18 @@ export class ClirioCore {
       actionName,
       actionData,
     } of this.iterateData()) {
+      if (actionData.type !== ActionType.Command) {
+        continue;
+      }
+
+      const links = [...moduleData.links, ...actionData.links];
+      const linkedArgs = this.handler.linkArgs(parsedArgs, links);
+
+      if (!linkedArgs) {
+        continue;
+      }
+
       try {
-        if (actionData.type !== ActionType.Command) {
-          continue;
-        }
-
-        const links = [...moduleData.links, ...actionData.links];
-        const linkedArgs = this.handler.linkArgs(parsedArgs, links);
-
-        if (!linkedArgs) {
-          continue;
-        }
-
         const paramLinkedArgs = linkedArgs.filter(
           (linkedArg) => linkedArg.type === 'param'
         );
@@ -196,7 +196,6 @@ export class ClirioCore {
           actionName,
           transformedArguments
         );
-        return null;
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
@@ -204,6 +203,7 @@ export class ClirioCore {
           actionName
         );
         this.handler.handleExceptions(err, exceptionScopeList);
+      } finally {
         return null;
       }
     }
@@ -216,17 +216,17 @@ export class ClirioCore {
       actionName,
       actionData,
     } of this.iterateData()) {
+      if (actionData.type !== ActionType.Empty) {
+        continue;
+      }
+
+      const data = this.handler.matchRoute(parsedArgs, moduleData.links);
+
+      if (!data) {
+        continue;
+      }
+
       try {
-        if (actionData.type !== ActionType.Empty) {
-          continue;
-        }
-
-        const data = this.handler.matchRoute(parsedArgs, moduleData.links);
-
-        if (!data) {
-          continue;
-        }
-
         await this.handler.applyAction(module, actionName, []);
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
@@ -235,6 +235,7 @@ export class ClirioCore {
           actionName
         );
         this.handler.handleExceptions(err, exceptionScopeList);
+      } finally {
         return null;
       }
     }
@@ -262,9 +263,9 @@ export class ClirioCore {
       const { module, actionName } = failures.sort(
         (a, b) => b.count - a.count
       )[0]!;
+
       try {
         await this.handler.applyAction(module, actionName, []);
-        return null;
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
@@ -272,6 +273,7 @@ export class ClirioCore {
           actionName
         );
         this.handler.handleExceptions(err, exceptionScopeList);
+      } finally {
         return null;
       }
     }
