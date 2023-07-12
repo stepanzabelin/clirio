@@ -1,2 +1,3 @@
-export * from './ClirioValidationError';
-export * from './ClirioError';
+export * from './ClirioValidationError'
+export * from './ClirioError'
+export * from './ClirioDebugError'
