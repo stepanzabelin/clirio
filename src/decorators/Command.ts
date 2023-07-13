@@ -4,7 +4,7 @@ import { actionTargetMetadata } from '../metadata'
 import { ClirioDebugError } from '../exceptions'
 
 export const Command = function (rawCommand: string) {
-  return function (target: Constructor['prototype'], propertyKey: string) {
+  return function (target: Constructor<any>['prototype'], propertyKey: string) {
     const links: Link[] = []
 
     const devErrorData = {

@@ -5,7 +5,7 @@ import { moduleEntityMetadata } from '../metadata'
 import { Constructor, Link, LinkType } from '../types'
 
 export const Module = function (rawCommand?: string) {
-  return function (constructor: Constructor) {
+  return function (constructor: Constructor<any>) {
     const links: Link[] = []
 
     const command = rawCommand?.trim?.() ?? null

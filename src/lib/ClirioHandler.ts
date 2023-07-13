@@ -28,7 +28,7 @@ import { ClirioValidationError } from '../exceptions'
 import { ClirioDefaultException } from './ClirioDefaultException'
 
 export class ClirioHandler {
-  public isDto(dto: Constructor) {
+  public isDto(dto: Constructor<any>) {
     return dto && dto !== Object && typeof dto === 'function'
   }
 
@@ -47,7 +47,7 @@ export class ClirioHandler {
       dto = null,
       dataType = null,
     }: {
-      dto?: Constructor | null
+      dto?: Constructor<any> | null
       dataType?: DataTypeEnum | null
     } = {}
   ) {
@@ -83,7 +83,11 @@ export class ClirioHandler {
     )
   }
 
-  public handleParams(linkedArgs: LinkedArg[], dto: Constructor, dataType: DataTypeEnum): Row[] {
+  public handleParams(
+    linkedArgs: LinkedArg[],
+    dto: Constructor<any>,
+    dataType: DataTypeEnum
+  ): Row[] {
     const rows: Row[] = []
 
     const parsedLinkedArgs: LinkedArg[] = [...linkedArgs]
@@ -134,7 +138,11 @@ export class ClirioHandler {
     return transformRows
   }
 
-  public handleOptions(linkedArgs: LinkedArg[], dto: Constructor, dataType: DataTypeEnum): Row[] {
+  public handleOptions(
+    linkedArgs: LinkedArg[],
+    dto: Constructor<any>,
+    dataType: DataTypeEnum
+  ): Row[] {
     const rows: Row[] = []
 
     let parsedLinkedArgs: LinkedArg[] = [...linkedArgs]

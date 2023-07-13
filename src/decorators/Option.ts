@@ -8,15 +8,7 @@ export const Option = function (
   optionLine?: string,
   { cast = null }: Partial<Omit<OptionTargetData, 'keys'>> = {}
 ) {
-  return function (target: Constructor['prototype'], propertyName: string) {
-    // if (isArray && variable) {
-    //   throw new ClirioDebugError('The configuration is not correct', {
-    //     entity: target.constructor.name,
-    //     property: propertyName,
-    //     decorator: 'Option',
-    //   });
-    // }
-
+  return function (target: Constructor<any>['prototype'], propertyName: string) {
     if (!optionLine) {
       optionTargetMetadata.setData(target, propertyName, {
         keys: null,
