@@ -88,9 +88,9 @@
     },
     "testEnvironment": "node"
   },
-  "husky": {   
-    "hooks": {  
-       "pre-commit": "yarn test:eslint"        
-     }   
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test:eslint"
+    }
   }
 }
