@@ -36,7 +36,8 @@
     "test": "run-s build test:*",
     "postinstall": "husky install",
     "prepack": "pinst --disable",
-    "postpack": "pinst --enable"
+    "postpack": "pinst --enable",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=10"
@@ -87,10 +88,5 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "testEnvironment": "node"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn test:eslint"
-    }
   }
 }
