@@ -16,7 +16,7 @@ describe('Args Clirio.parser', () => {
     ]);
 
     expect(
-      Clirio.parse('moo --honk cow -p 55 66 --tacos=good --verbose --count 5')
+      Clirio.parse('moo --honk cow -p 55 66 --tacos=good --verbose --count 5'),
     ).toEqual([
       { type: 'action', key: '0', value: 'moo' },
       { type: 'option', key: 'honk', value: 'cow' },

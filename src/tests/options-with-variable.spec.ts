@@ -15,7 +15,7 @@ describe('Options with variable', () => {
 
     emulateArgv(
       sandbox,
-      'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent'
+      'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent',
     );
     await cliApp();
 
@@ -45,7 +45,7 @@ describe('Options with variable', () => {
     entryStub.restore();
   });
 
-  it('correct input only one variable', async () => {
+  it('correct input only one variable 2', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
     emulateArgv(sandbox, 'migration run');

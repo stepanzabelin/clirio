@@ -19,30 +19,30 @@ import {
 } from '../types';
 
 export const resultTargetMetadata = new TargetMetadata<ResultTargetData>(
-  'result'
+  'result',
 );
 export const exceptionTargetMetadata = new TargetMetadata<ExceptionTargetData>(
-  'exception'
+  'exception',
 );
 export const pipeTargetMetadata = new TargetMetadata<PipeTargetData>('pipe');
 export const validateTargetMetadata = new TargetMetadata<ValidateTargetData>(
-  'validate'
+  'validate',
 );
 export const transformTargetMetadata = new TargetMetadata<TransformTargetData>(
-  'transform'
+  'transform',
 );
 
 export const paramTargetMetadata = new TargetMetadata<ParamTargetData>('param');
 export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
-  'option'
+  'option',
 );
 export const actionTargetMetadata = new TargetMetadata<ActionTargetData>(
-  'command'
+  'command',
 );
 export const descriptionTargetMetadata =
   new TargetMetadata<DescriptionTargetData>('description');
 export const hiddenTargetMetadata = new TargetMetadata<HiddenTargetData>(
-  'hidden'
+  'hidden',
 );
 
 export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');

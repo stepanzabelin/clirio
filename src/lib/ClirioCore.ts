@@ -50,10 +50,10 @@ export class ClirioCore {
   private *iterateData() {
     for (const module of this.modules) {
       const moduleData = moduleEntityMetadata.get(
-        this.handler.getPrototype(module)
+        this.handler.getPrototype(module),
       )!;
       const actionMap = actionTargetMetadata.getMap(
-        this.handler.getPrototype(module)
+        this.handler.getPrototype(module),
       );
 
       for (const [actionName, actionData] of actionMap) {
@@ -86,25 +86,25 @@ export class ClirioCore {
 
       try {
         const paramLinkedArgs = linkedArgs.filter(
-          (linkedArg) => linkedArg.type === 'param'
+          (linkedArg) => linkedArg.type === 'param',
         );
         const optionLinkedArgs = linkedArgs.filter(
-          (linkedArg) => linkedArg.type === 'option'
+          (linkedArg) => linkedArg.type === 'option',
         );
 
         const optionsArgMap = optionsArgMetadata.getArgMap(
           this.handler.getPrototype(module),
-          actionName
+          actionName,
         );
 
         const paramsArgMap = paramsArgMetadata.getArgMap(
           this.handler.getPrototype(module),
-          actionName
+          actionName,
         );
 
         const helperArgMap = helperArgMetadata.getArgMap(
           this.handler.getPrototype(module),
-          actionName
+          actionName,
         );
 
         const combinedArguments = [
@@ -126,7 +126,7 @@ export class ClirioCore {
         const pipeScopeList = this.handler.collectPipes(
           this.globalPipe,
           module,
-          actionName
+          actionName,
         );
 
         const maxIndex = combinedArguments.reduce((max, [argumentIndex]) => {
@@ -135,7 +135,7 @@ export class ClirioCore {
 
         const transformedArguments: any[] = Array.from(
           { length: maxIndex + 0 },
-          () => null
+          () => null,
         );
 
         for (const [argumentIndex, input] of combinedArguments) {
@@ -145,14 +145,14 @@ export class ClirioCore {
                 const handledParamRows = this.handler.handleParams(
                   paramLinkedArgs,
                   input.dto,
-                  DataTypeEnum.Params
+                  DataTypeEnum.Params,
                 );
 
                 const pipedParams = this.handler.passPipes(
                   handledParamRows,
                   input.dto,
                   DataTypeEnum.Params,
-                  pipeScopeList
+                  pipeScopeList,
                 );
 
                 transformedArguments[argumentIndex] = pipedParams;
@@ -164,14 +164,14 @@ export class ClirioCore {
                 const handledOptionRows = this.handler.handleOptions(
                   optionLinkedArgs,
                   input.dto,
-                  DataTypeEnum.Options
+                  DataTypeEnum.Options,
                 );
 
                 const pipedOptions = this.handler.passPipes(
                   handledOptionRows,
                   input.dto,
                   DataTypeEnum.Options,
-                  pipeScopeList
+                  pipeScopeList,
                 );
 
                 transformedArguments[argumentIndex] = pipedOptions;
@@ -193,13 +193,13 @@ export class ClirioCore {
         await this.handler.applyAction(
           module,
           actionName,
-          transformedArguments
+          transformedArguments,
         );
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
           module,
-          actionName
+          actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
@@ -231,7 +231,7 @@ export class ClirioCore {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
           module,
-          actionName
+          actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
@@ -260,7 +260,7 @@ export class ClirioCore {
 
     if (failures.length > 0) {
       const { module, actionName } = failures.sort(
-        (a, b) => b.count - a.count
+        (a, b) => b.count - a.count,
       )[0]!;
 
       try {
@@ -269,7 +269,7 @@ export class ClirioCore {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
           module,
-          actionName
+          actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
       } finally {
@@ -278,14 +278,14 @@ export class ClirioCore {
     }
 
     const exceptionScopeList = this.handler.collectExceptions(
-      this.globalException
+      this.globalException,
     );
 
     this.handler.handleExceptions(
       new ClirioError('Incorrect command specified', {
         errCode: 'INCORRECT_COMMAND',
       }),
-      exceptionScopeList
+      exceptionScopeList,
     );
 
     return;
@@ -302,7 +302,7 @@ export class ClirioCore {
           'A constructor is not specified as a module. use @Module() decorator',
           {
             moduleName: module.name,
-          }
+          },
         );
       }
     }
@@ -317,12 +317,12 @@ export class ClirioCore {
 
       const isActionMask =
         links.findIndex((link) =>
-          [LinkType.List, LinkType.Param].includes(link.type)
+          [LinkType.List, LinkType.Param].includes(link.type),
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
         this.handler.getPrototype(module),
-        actionName
+        actionName,
       );
 
       const isInputParams = paramsArgMap.size > 0;
@@ -340,7 +340,7 @@ export class ClirioCore {
           {
             moduleName: module.name,
             actionName,
-          }
+          },
         );
       }
     }
@@ -365,7 +365,7 @@ export class ClirioCore {
 
     for (const arg of args) {
       const match = arg.match(
-        /^(--(?<optionKey>[^=]+)|(?<emptyKey>-{1,2})|-(?<optionKeys>[^=]+))(=(?<value>[\s\S]*))?$/
+        /^(--(?<optionKey>[^=]+)|(?<emptyKey>-{1,2})|-(?<optionKeys>[^=]+))(=(?<value>[\s\S]*))?$/,
       );
 
       if (nextData) {

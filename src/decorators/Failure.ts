@@ -1,5 +1,5 @@
-import { actionTargetMetadata } from '../metadata'
-import { ActionType, Constructor } from '../types'
+import { actionTargetMetadata } from '../metadata';
+import { ActionType, Constructor } from '../types';
 
 export const Failure = function () {
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
@@ -7,6 +7,6 @@ export const Failure = function () {
       type: ActionType.Failure,
       links: [],
       command: null,
-    })
-  }
-}
+    });
+  };
+};

@@ -5,7 +5,7 @@ import { ExceptionContext } from '../types/ExceptionContext';
 export class ClirioDefaultException implements ClirioException {
   catch(
     error: Error | ClirioError | ClirioValidationError,
-    context: ExceptionContext
+    context: ExceptionContext,
   ): void | never {
     if (
       error instanceof ClirioError ||

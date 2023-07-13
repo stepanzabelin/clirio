@@ -22,7 +22,7 @@ export class GitModule {
   @Command('add <...all-files>')
   public add(
     @Params() params: GitAddParamsDto,
-    @Options() options: GitAddOptionsDto
+    @Options() options: GitAddOptionsDto,
   ) {
     this.gitAddService.add(params, options);
   }

@@ -5,39 +5,39 @@ import { moduleEntityMetadata } from '../metadata';
 import { Constructor, Link, LinkType } from '../types';
 
 export const Module = function (rawCommand?: string) {
-    return function (constructor: Constructor<any>) {
-        const links: Link[] = [];
+  return function (constructor: Constructor<any>) {
+    const links: Link[] = [];
 
-        const command = rawCommand?.trim?.() ?? null;
+    const command = rawCommand?.trim?.() ?? null;
 
-        let sub = command;
+    let sub = command;
 
-        while (sub) {
-            const commandMatch = sub.match(
-                new RegExp(`^\\s*${moduleCommandReg.source}$\\s*`),
-            );
+    while (sub) {
+      const commandMatch = sub.match(
+        new RegExp(`^\\s*${moduleCommandReg.source}$\\s*`),
+      );
 
-            if (!commandMatch) {
-                throw new ClirioDebugError('Command value is invalid', {
-                    entity: constructor.name,
-                    value: command,
-                    decorator: 'Module',
-                });
-            }
-
-            const { action } = commandMatch.groups!;
-
-            links.push({
-                type: LinkType.Action,
-                values: [action],
-            });
-
-            sub = sub.slice(commandMatch[0].length);
-        }
-
-        moduleEntityMetadata.set(constructor.prototype, {
-            links,
-            command,
+      if (!commandMatch) {
+        throw new ClirioDebugError('Command value is invalid', {
+          entity: constructor.name,
+          value: command,
+          decorator: 'Module',
         });
-    };
+      }
+
+      const { action } = commandMatch.groups!;
+
+      links.push({
+        type: LinkType.Action,
+        values: [action],
+      });
+
+      sub = sub.slice(commandMatch[0].length);
+    }
+
+    moduleEntityMetadata.set(constructor.prototype, {
+      links,
+      command,
+    });
+  };
 };

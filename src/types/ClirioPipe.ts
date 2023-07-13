@@ -1,5 +1,5 @@
-import { PipeContext } from './PipeContext'
+import { PipeContext } from './PipeContext';
 
 export interface ClirioPipe {
-  transform(data: any, context: PipeContext): any | never
+  transform(data: any, context: PipeContext): any | never;
 }

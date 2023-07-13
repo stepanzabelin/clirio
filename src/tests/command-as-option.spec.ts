@@ -22,7 +22,7 @@ describe('Command as option', () => {
     entryStub.restore();
   });
 
-  it('correct input version, short options', async () => {
+  it('correct input version, short options 2', async () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
     emulateArgv(sandbox, '--version');

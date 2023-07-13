@@ -35,7 +35,7 @@ export class MigrationModule {
   @Pipe(MigrationToPipe)
   public to(
     @Params() params: MigrationToParamsDto,
-    @Options() options: MigrationToOptionsDto
+    @Options() options: MigrationToOptionsDto,
   ) {
     this.migrationToService.entry(params, options);
   }

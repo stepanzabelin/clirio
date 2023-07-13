@@ -1,50 +1,50 @@
-import { OptionalKeys, Result, Pipe, Exception, Module, Args } from '../types'
-import { ClirioConfig } from './clirioConfig'
-import { ClirioCore } from './ClirioCore'
-import { valid } from './valid'
-import { form } from './form'
-import { getProcessArgs } from './getProcessArgs'
+import { OptionalKeys, Result, Pipe, Exception, Module, Args } from '../types';
+import { ClirioConfig } from './clirioConfig';
+import { ClirioCore } from './ClirioCore';
+import { valid } from './valid';
+import { form } from './form';
+import { getProcessArgs } from './getProcessArgs';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
-    this.config = { ...this.config, ...partialConfig }
-    return this
+    this.config = { ...this.config, ...partialConfig };
+    return this;
   }
 
   public setGlobalPipe(globalPipe: Pipe): this {
-    this.globalPipe = globalPipe
-    return this
+    this.globalPipe = globalPipe;
+    return this;
   }
 
   public setGlobalException(globalException: Exception): this {
-    this.globalException = globalException
-    return this
+    this.globalException = globalException;
+    return this;
   }
 
   public setGlobalResult(globalResult: Result): this {
-    this.globalResult = globalResult
-    return this
+    this.globalResult = globalResult;
+    return this;
   }
 
   public addModule(module: Module): this {
-    this.modules.push(module)
-    return this
+    this.modules.push(module);
+    return this;
   }
 
   public setModules(modules: Module[]): this {
-    this.modules = modules
-    return this
+    this.modules = modules;
+    return this;
   }
 
   public async execute(args?: Args): Promise<never | void> {
-    this.debug()
+    this.debug();
 
-    await super.execute(args)
+    await super.execute(args);
   }
 
-  public static valid = valid
+  public static valid = valid;
 
-  public static form = form
+  public static form = form;
 
-  public static getProcessArgs = getProcessArgs
+  public static getProcessArgs = getProcessArgs;
 }

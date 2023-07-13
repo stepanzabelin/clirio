@@ -8,7 +8,10 @@ type Payload = {
 export class ClirioValidationError extends Error {
   public propertyName: string | null;
   public dataType: DataTypeEnum;
-  constructor(message: string, public readonly payload: Payload) {
+  constructor(
+    message: string,
+    public readonly payload: Payload,
+  ) {
     super(message);
     this.name = 'ClirioValidationError';
     this.propertyName = payload.propertyName;

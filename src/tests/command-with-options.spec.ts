@@ -31,7 +31,7 @@ describe('Command with options without layers', () => {
 
     emulateArgv(
       sandbox,
-      'hello --first-name=Alex --last-name=Smith --middle-name=123'
+      'hello --first-name=Alex --last-name=Smith --middle-name=123',
     );
     await cliApp();
 

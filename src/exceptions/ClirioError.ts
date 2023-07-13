@@ -4,7 +4,10 @@ type Payload = {
 };
 
 export class ClirioError extends Error {
-  constructor(message: string, public readonly payload: Payload) {
+  constructor(
+    message: string,
+    public readonly payload: Payload,
+  ) {
     super(message);
     this.name = 'ClirioError';
   }

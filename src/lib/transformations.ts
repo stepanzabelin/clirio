@@ -1,49 +1,50 @@
-import { keyValueReg } from '../constrains'
+import { keyValueReg } from '../constrains';
 
 export const transformations = {
   NUMBER: (value: any) => {
-    return Number(value) || 0
+    return Number(value) || 0;
   },
 
   STRING: (value: any) => {
-    return String(value ?? '')
+    return String(value ?? '');
   },
 
   BOOLEAN: (value: any) => {
-    return Boolean(value)
+    return Boolean(value);
   },
 
   FLAG: (value: string | null): boolean => {
     switch (true) {
       case value === null: {
-        return true
+        return true;
       }
       case value === 'true': {
-        return true
+        return true;
       }
 
       default:
-        return false
+        return false;
     }
   },
 
-  KEY_VALUE: (values: string | null | (string | null)[]): Record<string, string> => {
-    const obj: Record<string, string> = {}
+  KEY_VALUE: (
+    values: string | null | (string | null)[],
+  ): Record<string, string> => {
+    const obj: Record<string, string> = {};
 
     if (!Array.isArray(values)) {
-      return obj
+      return obj;
     }
 
     for (const value of values) {
-      const matchVariable = String(value).match(keyValueReg)
+      const matchVariable = String(value).match(keyValueReg);
 
       if (matchVariable) {
-        const { key, value } = matchVariable.groups!
-        obj[key] = value
+        const { key, value } = matchVariable.groups!;
+        obj[key] = value;
       }
-    } 
+    }
 
-    return obj
+    return obj;
   },
-}
- 
+};
