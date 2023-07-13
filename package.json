@@ -26,15 +26,17 @@
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "watch:build": "tsc -p tsconfig.json -w",
-    "check:eslint": "eslint ./src --quiet -c .eslintrc.json",
-    "check:typescript": "tsc -p tsconfig.json --noEmit",
-    "check:cspell": "cspell \"{./**/*.js,./**/*.ts}\" --no-progress",
-    "check": "npm-run-all -p check:* -c",
     "fix:prettier": "prettier --write \"./src/**/*.js\"",
     "fix:eslint": "eslint ./src --ext .ts --fix -c .eslintrc.json",
-    "fix": "npm-run-all -p fix:* -c",
+    "fix": "npm-run-all --serial fix:*",
+    "test:eslint": "eslint ./src --quiet -c .eslintrc.json",
+    "test:typescript": "tsc -p tsconfig.json --noEmit",
+    "test:cspell": "cspell \"{./**/*.js,./**/*.ts}\" --no-progress",
+    "test:unit": "jest --silent=false --bail",
     "test": "run-s build test:*",
-    "test:unit": "jest --silent=false --bail"
+    "postinstall": "husky install",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable"
   },
   "engines": {
     "node": ">=10"
@@ -55,6 +57,7 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^27.2.3",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
     "jest": "^27.4.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.0",
@@ -84,5 +87,10 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "testEnvironment": "node"
+  },
+  "husky": {   
+    "hooks": {  
+       "pre-commit": "yarn test:eslint"        
+     }   
   }
 }

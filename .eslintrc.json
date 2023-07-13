@@ -19,10 +19,7 @@
     "parserOptions": {
         "project": "tsconfig.json",
         "sourceType": "module",
-        "ecmaVersion": 2020,
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
+        "ecmaVersion": 2021
     },
     "env": {
         "commonjs": true,
@@ -150,7 +147,7 @@
         "prefer-exponentiation-operator": "warn",
         "no-extra-semi": "warn",
 
-        "prettier/prettier": ["warn"],
+        "prettier/prettier": ["error"],
 
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-empty-function": "off",
