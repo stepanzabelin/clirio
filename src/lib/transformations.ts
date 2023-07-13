@@ -38,11 +38,12 @@ export const transformations = {
       const matchVariable = String(value).match(keyValueReg)
 
       if (matchVariable) {
-        const { key, value } = matchVariable!.groups!
+        const { key, value } = matchVariable.groups!
         obj[key] = value
       }
-    }
+    } 
 
     return obj
   },
 }
+ 

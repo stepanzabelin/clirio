@@ -1,3 +1,3 @@
-export interface Constructor<T = any> extends Function {
-  new (...args: any[]): T
+export interface Constructor<T = any> {
+    new (...args: any[]): T;
 }
