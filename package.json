@@ -30,7 +30,7 @@
     "check:typescript": "tsc -p tsconfig.json --noEmit",
     "check:cspell": "cspell \"{./**/*.js,./**/*.ts}\" --no-progress",
     "check": "npm-run-all -p check:* -c",
-    "fix:prettier": "prettier --write \"./**/*.js\"",
+    "fix:prettier": "prettier --write \"./src/**/*.js\"",
     "fix:eslint": "eslint ./src --ext .ts --fix -c .eslintrc.json",
     "fix": "npm-run-all -p fix:* -c",
     "test": "run-s build test:*",
