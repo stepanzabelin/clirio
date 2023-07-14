@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { Clirio } from '../index';
+import { Clirio } from '@clirio';
 import { CheckService } from '../test-cli-app/modules/common/check';
 import { CommonModule } from '../test-cli-app/modules/common/common.module';
 import { VersionService } from '../test-cli-app/modules/common/version';

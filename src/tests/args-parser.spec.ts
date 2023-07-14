@@ -1,4 +1,4 @@
-import { Clirio } from '../index';
+import { Clirio } from '@clirio';
 
 describe('Args Clirio.parser', () => {
   it('Clirio.parse command', () => {

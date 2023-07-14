@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { Clirio } from '../index';
+import { Clirio } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { HelloService } from '../test-cli-app/modules/hello/hello';
 

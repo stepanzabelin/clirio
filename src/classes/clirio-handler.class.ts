@@ -44,17 +44,7 @@ export class ClirioHandler {
     return typeof entity === 'function' ? new entity() : entity;
   }
 
-  public handleExceptions(
-    rawErr: any,
-    exceptionList: ExceptionScope[] = [],
-    {
-      dto = null,
-      dataType = null,
-    }: {
-      dto?: Constructor<any> | null;
-      dataType?: DataTypeEnum | null;
-    } = {},
-  ) {
+  public handleExceptions(rawErr: any, exceptionList: ExceptionScope[] = []) {
     let currentErr = rawErr;
 
     for (const { exception, scope } of exceptionList) {
@@ -63,9 +53,7 @@ export class ClirioHandler {
 
       try {
         exceptionInst.catch(currentErr, {
-          dataType,
           scope,
-          dto,
         });
       } catch (err) {
         currentErr = err;
@@ -73,9 +61,7 @@ export class ClirioHandler {
     }
 
     new ClirioDefaultException().catch(currentErr, {
-      dataType,
       scope: 'default',
-      dto,
     });
   }
 
