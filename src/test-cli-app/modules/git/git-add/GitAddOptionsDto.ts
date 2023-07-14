@@ -1,4 +1,4 @@
-import { Option, Validate } from '../../../../../index';
+import { Option, Validate } from '@clirio';
 
 export class GitAddOptionsDto {
   @Option('--verbose, -v')

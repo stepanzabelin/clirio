@@ -1,6 +1,6 @@
 import sinon from 'sinon';
-import { cliApp } from '../test-env/cli-app/cliApp';
-import { MigrationRunService } from '../test-env/cli-app/modules/migration/migrationRun';
+import { cliApp } from '../test-cli-app/cliApp';
+import { MigrationRunService } from '../test-cli-app/modules/migration/migrationRun';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Options with variable', () => {

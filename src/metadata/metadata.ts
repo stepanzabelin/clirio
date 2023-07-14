@@ -1,6 +1,4 @@
-import { ArgMetadata } from '../lib/ArgMetadata';
-import { EntityMetadata } from '../lib/EntityMetadata';
-import { TargetMetadata } from '../lib/TargetMetadata';
+import { ArgMetadata, EntityMetadata, TargetMetadata } from '../classes';
 import {
   ExceptionTargetData,
   PipeTargetData,

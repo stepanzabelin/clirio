@@ -1,7 +1,7 @@
 import sinon from 'sinon';
-import { cliApp } from '../test-env/cli-app/cliApp';
-import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
-import { MigrationFailureService } from '../test-env/cli-app/modules/migration/failure';
+import { cliApp } from '../test-cli-app/cliApp';
+import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { MigrationFailureService } from '../test-cli-app/modules/migration/failure';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Failure command', () => {

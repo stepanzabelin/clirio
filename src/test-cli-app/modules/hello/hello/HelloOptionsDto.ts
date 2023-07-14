@@ -1,4 +1,4 @@
-import { Description, Option } from '../../../../../index';
+import { Description, Option } from '@clirio';
 
 export class HelloOptionsDto {
   @Option('--first-name, -f')

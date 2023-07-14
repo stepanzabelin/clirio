@@ -1,6 +1,6 @@
-import { Clirio } from '../../index';
-import { ClirioConfig } from '../../lib/clirioConfig';
-import { ClirioException } from '../../types';
+import { Clirio } from '@clirio';
+import { ClirioConfig } from '../core/clirio.config';
+import { ClirioException } from '../types';
 import { CommonModule } from './modules/common/CommonModule';
 import { GitModule } from './modules/git/GitModule';
 import { HelloModule } from './modules/hello/HelloModule';

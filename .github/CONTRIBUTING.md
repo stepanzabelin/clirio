@@ -17,5 +17,5 @@ in progress
 
 ```bash
 yarn watch:build
-node build/main/test-env/cli-app/runComplexCli
+node build/main/test-cli-app/runComplexCli
 ```

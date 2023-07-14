@@ -1,4 +1,4 @@
-import { ArgMetadata } from '../lib/ArgMetadata';
+import { ArgMetadata } from '../classes';
 import { helperArgMetadata } from '../metadata';
 import { Constructor, InputTypeEnum } from '../types';
 

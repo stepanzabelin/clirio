@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
-export * from './lib/Clirio';
-export * from './lib/ClirioHelper';
+export * from './classes/clirio.class';
+export * from './classes/clirio-helper.class';
 export * from './decorators';
 export * from './exceptions';
 export * from './types/clirio-pipe.type';

@@ -1,7 +1,7 @@
 import sinon from 'sinon';
-import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
-import { HelloThereService } from '../test-env/cli-app/modules/hello/hello-there';
-import { cliApp } from '../test-env/cli-app/cliApp';
+import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
+import { cliApp } from '../test-cli-app/cliApp';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Exact command', () => {

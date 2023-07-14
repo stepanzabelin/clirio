@@ -1,5 +1,5 @@
 import { Validation } from '../types';
-import { validations } from './validations';
+import { validations } from './validations.util';
 
 type CheckName = keyof typeof validations;
 

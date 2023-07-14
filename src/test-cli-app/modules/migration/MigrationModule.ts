@@ -7,7 +7,7 @@ import {
   Hidden,
   Pipe,
   Params,
-} from '../../../../index';
+} from '@clirio';
 import { MigrationEmptyService } from './empty';
 import { MigrationFailureService } from './failure';
 import { MigrationRunOptionsDto, MigrationRunService } from './migrationRun';

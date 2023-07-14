@@ -1,8 +1,8 @@
 import sinon from 'sinon';
-import { cliApp } from '../test-env/cli-app/cliApp';
-import { CommonEmptyService } from '../test-env/cli-app/modules/common/empty';
-import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
-import { MigrationEmptyService } from '../test-env/cli-app/modules/migration/empty';
+import { cliApp } from '../test-cli-app/cliApp';
+import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
+import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';
 import { emulateArgv } from '../test-env/utils/emulateArgv';
 
 describe('Empty command', () => {

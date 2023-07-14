@@ -1,9 +1,9 @@
 import sinon from 'sinon';
 import { Clirio } from '../index';
-import { cliApp } from '../test-env/cli-app/cliApp';
-import { HelloModule } from '../test-env/cli-app/modules/hello';
-import { CommonFailureService } from '../test-env/cli-app/modules/common/failure';
-import { HelloToService } from '../test-env/cli-app/modules/hello/helloTo';
+import { cliApp } from '../test-cli-app/cliApp';
+import { HelloModule } from '../test-cli-app/modules/hello';
+import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { HelloToService } from '../test-cli-app/modules/hello/helloTo';
 
 const buildCli = () => {
   const cli = new Clirio();

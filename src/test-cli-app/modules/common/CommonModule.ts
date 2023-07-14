@@ -7,7 +7,7 @@ import {
   Options,
   Helper,
   ClirioHelper,
-} from '../../../../index';
+} from '@clirio';
 
 import { VersionService } from './version';
 import { HelpService } from './help';

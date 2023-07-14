@@ -6,7 +6,7 @@ import {
   optionTargetMetadata,
   optionsArgMetadata,
 } from '../metadata';
-import { ActionType, Constructor, InputTypeEnum } from '../types';
+import { ActionType, Constructor } from '../types';
 
 type OptionsData = {
   options: string[];

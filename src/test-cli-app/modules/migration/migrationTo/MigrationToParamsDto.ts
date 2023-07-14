@@ -1,4 +1,4 @@
-import { Param } from '../../../../../index';
+import { Param } from '@clirio';
 
 export class MigrationToParamsDto {
   @Param('name', { cast: 'array' })

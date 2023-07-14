@@ -1,4 +1,4 @@
-import { Validate, Clirio, Option, Transform } from '../../../../../index';
+import { Validate, Clirio, Option, Transform } from '@clirio';
 
 export class MigrationToOptionsDto {
   @Option('--env, -e', {

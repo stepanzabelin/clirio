@@ -2,42 +2,27 @@ import {
   ActionType,
   Args,
   ArgType,
-  Constructor,
   InputTypeEnum,
-  Link,
   LinkType,
   ParsedArg,
-  RawOptions,
-  RawParams,
-  ClirioPipe,
   Pipe,
-  PipeScope,
-  ExceptionScope,
   Exception,
-  ClirioException,
   Result,
   Module,
-  LinkedArg,
-  Row,
+  DataTypeEnum,
 } from '../types';
-import { getProcessArgs } from './getProcessArgs';
-import { ClirioConfig, clirioConfig } from './clirioConfig';
+import { ClirioConfig, clirioConfig } from '../core/clirio.config';
 import {
   actionTargetMetadata,
-  exceptionTargetMetadata,
   helperArgMetadata,
   moduleEntityMetadata,
   optionsArgMetadata,
   paramsArgMetadata,
-  pipeTargetMetadata,
 } from '../metadata';
-import { ClirioHelper } from './ClirioHelper';
-import { ClirioHandler } from './ClirioHandler';
-import { ClirioError } from '../exceptions';
-import { DataTypeEnum } from '../types/data-type-enum.type';
-import { ClirioDefaultException } from './ClirioDefaultException';
-import { Clirio } from './Clirio';
-import { ClirioDebugError } from '../exceptions/ClirioDebugError';
+import { ClirioHelper } from './clirio-helper.class';
+import { ClirioHandler } from './clirio-handler.class';
+import { ClirioError, ClirioDebugError } from '../exceptions';
+import { Clirio } from './clirio.class';
 
 export class ClirioCore {
   protected modules: Module[] = [];

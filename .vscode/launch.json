@@ -9,7 +9,7 @@
       "name": "Debug with ts-node 1 ",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
+        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
         "migration",
         "run",
         "-e",
@@ -29,7 +29,7 @@
       "name": "Debug with ts-node 1 ",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
+        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
         "hello",
         "--first-name=Alex",
         "--last-name=Smith"
@@ -45,7 +45,7 @@
       "name": "Debug with ts-node 2",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-env/cli-app/runCliApp.ts",
+        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
         "migration",
         "to",
         "test1",

@@ -1,4 +1,4 @@
-import { Option } from '../../../../../index';
+import { Option } from '@clirio';
 
 export class GitStatusOptionsDto {
   @Option('--branch, -b')

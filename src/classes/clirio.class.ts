@@ -1,9 +1,7 @@
+import { ClirioCore } from './clirio-core.class';
 import { OptionalKeys, Result, Pipe, Exception, Module, Args } from '../types';
-import { ClirioConfig } from './clirioConfig';
-import { ClirioCore } from './ClirioCore';
-import { valid } from './valid';
-import { form } from './form';
-import { getProcessArgs } from './getProcessArgs';
+import { ClirioConfig } from '../core/clirio.config';
+import { valid, form, getProcessArgs } from '../utils';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {

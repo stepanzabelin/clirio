@@ -1,4 +1,4 @@
-import { transformations } from './transformations';
+import { transformations } from './transformations.util';
 
 type KeyName = keyof typeof transformations;
 

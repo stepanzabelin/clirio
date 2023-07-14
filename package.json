@@ -87,6 +87,9 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@clirio$": "<rootDir>/index.ts"
+    }
   }
 }

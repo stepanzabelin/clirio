@@ -1,6 +1,6 @@
 import { keyValueReg } from '../constrains';
 import { Validation } from '../types';
-import { isBoolean, isNumber, isString } from './typeValidations';
+import { isBoolean, isNumber, isString } from './type-validations.util';
 
 type Validations = { [key: string]: Validation };
 

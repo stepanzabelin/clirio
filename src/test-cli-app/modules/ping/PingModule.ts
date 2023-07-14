@@ -1,4 +1,4 @@
-import { Module, Command } from '../../../../index';
+import { Module, Command } from '@clirio';
 import { CheckPingService } from './check-ping';
 
 @Module()
