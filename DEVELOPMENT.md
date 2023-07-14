@@ -8,3 +8,5 @@ ts-node src/test-env/cli-app/runComplexCli hello --first-name=Alex --last-name=S
 - tests
 - starter kit
 - README
+- result?
+- renaming
