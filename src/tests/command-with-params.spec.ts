@@ -2,7 +2,6 @@ import sinon from 'sinon';
 import { Clirio } from '../index';
 import { cliApp } from '../test-cli-app/cli-app';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloToService } from '../test-cli-app/modules/hello/hello-to';
 
 const buildCli = () => {

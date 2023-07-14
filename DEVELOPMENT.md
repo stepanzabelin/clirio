@@ -1,6 +1,9 @@
-Example
-run
-ts-node src/test-cli-app/runComplexCli hello --first-name=Alex --last-name=Smith --middle-name=123
+### Launch test-cli-app
+
+```bash
+yarn dev ... # command
+yarn dev hello --first-name=Alex --last-name=Smith --middle-name=123
+```
 
 # TODO
 

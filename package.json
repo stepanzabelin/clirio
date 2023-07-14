@@ -37,7 +37,8 @@
     "postinstall": "husky install",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "ts-node -r tsconfig-paths/register src/test-cli-app/run"
   },
   "engines": {
     "node": ">=10"
