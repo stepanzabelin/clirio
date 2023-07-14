@@ -180,7 +180,7 @@ export class ClirioHandler {
 
       const value = this.cast(
         filteredLinkedArgs.length > 1
-          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value)
+          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value).flat()
           : linkedArg.value,
         optionData.cast,
       );
@@ -442,7 +442,7 @@ export class ClirioHandler {
       linkedArgs.push({
         type: 'option',
         key,
-        value: values.length > 2 ? values : values[0],
+        value: values.length > 1 ? values : values[0],
       });
     }
 

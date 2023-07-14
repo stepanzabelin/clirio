@@ -1,4 +1,4 @@
-import { moduleCommandReg } from '../constrains/regexp.config';
+import { moduleCommandReg } from '../constrains/regexp.constrains';
 import { ClirioDebugError } from '../exceptions';
 
 import { moduleEntityMetadata } from '../metadata';

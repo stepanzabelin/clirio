@@ -1,20 +1,27 @@
 import sinon from 'sinon';
-import { cliApp } from '../test-env/cli-app/cliApp';
+import { Clirio } from '../lib/Clirio';
+import { HelloModule } from '../test-env/cli-app/modules/hello';
 import { HelloService } from '../test-env/cli-app/modules/hello/hello';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
 
-describe('Command with options without layers', () => {
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([HelloModule]);
+  return cli;
+};
+
+describe('Command with options without handlers', () => {
   const sandbox = sinon.createSandbox();
 
   beforeEach(() => {
     sandbox.restore();
   });
 
-  it('correct input', async () => {
+  it('Test 1.1. Positive', async () => {
     const entryStub = sandbox.stub(HelloService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'hello --first-name=Alex --last-name=Smith');
-    await cliApp();
+    await buildCli().execute(
+      Clirio.split('hello --first-name=Alex --last-name=Smith'),
+    );
 
     const [options] = entryStub.getCall(0).args;
 
@@ -26,14 +33,61 @@ describe('Command with options without layers', () => {
     entryStub.restore();
   });
 
-  it('correct input with unknown parameters', async () => {
+  it('Test 1.2. Positive', async () => {
     const entryStub = sandbox.stub(HelloService.prototype, 'entry');
 
-    emulateArgv(
-      sandbox,
-      'hello --first-name=Alex --last-name=Smith --middle-name=123',
+    await buildCli().execute(
+      Clirio.split('hello --first-name Alex --last-name Smith'),
     );
-    await cliApp();
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      lastName: 'Smith',
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 1.3. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello -f Alex -l Smith'));
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      lastName: 'Smith',
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 1.4. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello --first-name Alex -l Smith'));
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      lastName: 'Smith',
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 2.1. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex --last-name=Smith --middle-name=123 -u 4 -z --yes',
+      ),
+    );
 
     const [options] = entryStub.getCall(0).args;
 
@@ -41,17 +95,177 @@ describe('Command with options without layers', () => {
       firstName: 'Alex',
       lastName: 'Smith',
       'middle-name': '123',
+      u: '4',
+      z: null,
+      yes: null,
     });
 
     entryStub.restore();
   });
 
-  // it('invalid input with unknown option', async () => {
+  it('Test 2.2. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex -l Smith --middle-name=123 -u 4 -z --yes',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      lastName: 'Smith',
+      'middle-name': '123',
+      u: '4',
+      z: null,
+      yes: null,
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 2.3. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex -l Smith --middle-name=123 -u 4 -z --yes',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      lastName: 'Smith',
+      'middle-name': '123',
+      u: '4',
+      z: null,
+      yes: null,
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 3.1. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split("hello --first-name=John --last-name=John's --verbose"),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'John',
+      lastName: "John's",
+      verbose: null,
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 3.2. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split("hello -f John -l John's -v"));
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'John',
+      lastName: "John's",
+      verbose: null,
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 3.3. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split("hello -f John --last-name=John's -v"),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'John',
+      lastName: "John's",
+      verbose: null,
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 4.1. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex --first-name=John --first-name=Max --last-name=Smith --verbose --verbose',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: ['Alex', 'John', 'Max'],
+      lastName: 'Smith',
+      verbose: [null, null],
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 4.2. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split('hello -f Alex -f John -f Max -l Smith -v -v'),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: ['Alex', 'John', 'Max'],
+      lastName: 'Smith',
+      verbose: [null, null],
+    });
+
+    entryStub.restore();
+  });
+
+  it('Test 4.3. Positive', async () => {
+    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex -f John --first-name Max -l Smith --verbose -v',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: ['Alex', 'Max', 'John'],
+      lastName: 'Smith',
+      verbose: [null, null],
+    });
+
+    entryStub.restore();
+  });
+
+  // it('Test #3. Negative', async () => {
   //   const errorCallbackStub = sinon.stub();
 
-  //   emulateArgv(
-  //     sandbox,
-  //     'hello --first-name=Alex --last-name=Smith --middle-name=123'
+  //   await buildCli().execute(
+  //     Clirio.split(
+  //       'hello --first-name=Alex --last-name=Smith --middle-name=123',
+  //     ),
   //   );
 
   //   await cliApp(errorCallbackStub);

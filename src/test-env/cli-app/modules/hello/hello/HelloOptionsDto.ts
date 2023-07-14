@@ -9,7 +9,7 @@ export class HelloOptionsDto {
   @Description('Last name')
   readonly lastName?: string;
 
-  @Option('--verbose')
+  @Option('--verbose, -v')
   @Description('Verbose')
   readonly verbose?: boolean;
 }

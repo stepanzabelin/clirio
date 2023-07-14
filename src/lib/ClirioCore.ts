@@ -88,6 +88,7 @@ export class ClirioCore {
         const paramLinkedArgs = linkedArgs.filter(
           (linkedArg) => linkedArg.type === 'param',
         );
+
         const optionLinkedArgs = linkedArgs.filter(
           (linkedArg) => linkedArg.type === 'option',
         );

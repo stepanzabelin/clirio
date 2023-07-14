@@ -1,8 +1,15 @@
 import sinon from 'sinon';
+import { Clirio } from '../index';
 import { cliApp } from '../test-env/cli-app/cliApp';
 import { CheckService } from '../test-env/cli-app/modules/common/check';
+import { CommonModule } from '../test-env/cli-app/modules/common/CommonModule';
 import { VersionService } from '../test-env/cli-app/modules/common/version';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([CommonModule]);
+  return cli;
+};
 
 describe('Command as option', () => {
   const sandbox = sinon.createSandbox();
@@ -11,33 +18,30 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('correct input version, short options', async () => {
+  it('Test #1', async () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
-    emulateArgv(sandbox, '-v');
-    await cliApp();
+    await buildCli().execute(Clirio.split('-v'));
 
     expect(entryStub.calledOnce).toBeTruthy();
 
     entryStub.restore();
   });
 
-  it('correct input version, short options 2', async () => {
+  it('Test #2', async () => {
     const entryStub = sandbox.stub(VersionService.prototype, 'entry');
 
-    emulateArgv(sandbox, '--version');
-    await cliApp();
+    await buildCli().execute(Clirio.split('--version'));
 
     expect(entryStub.calledOnce).toBeTruthy();
 
     entryStub.restore();
   });
 
-  it('correct input command as option and extra options', async () => {
+  it('Test #3', async () => {
     const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
-    emulateArgv(sandbox, '--check --pool=5 -v');
-    await cliApp();
+    await buildCli().execute(Clirio.split('--check --pool=5 -v'));
 
     const [options] = entryStub.getCall(0).args;
 
@@ -49,11 +53,10 @@ describe('Command as option', () => {
     entryStub.restore();
   });
 
-  it('correct input command as option and extra options 2', async () => {
+  it('Test #4', async () => {
     const entryStub = sandbox.stub(CheckService.prototype, 'entry');
 
-    emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-    await cliApp();
+    await buildCli().execute(Clirio.split('--check --unknown --pool=5 -v'));
 
     const [options] = entryStub.getCall(0).args;
 

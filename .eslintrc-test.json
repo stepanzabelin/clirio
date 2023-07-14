@@ -1,0 +1,8 @@
+{
+  "root": true,
+  "extends": [".eslintrc.json"],
+  "rules": {
+    "prettier/prettier": "error",
+    "jest/no-focused-tests": "error"
+  }
+}
