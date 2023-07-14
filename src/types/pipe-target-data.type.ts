@@ -1,4 +1,4 @@
-import { Pipe } from './Pipe';
+import { Pipe } from './pipe.type';
 
 export type PipeTargetData = {
   overwriteGlobal: boolean;

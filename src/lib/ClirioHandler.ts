@@ -14,6 +14,7 @@ import {
   Exception,
   Pipe,
   ClirioPipe,
+  DataTypeEnum,
 } from '../types';
 import {
   validateTargetMetadata,
@@ -23,7 +24,6 @@ import {
   exceptionTargetMetadata,
   pipeTargetMetadata,
 } from '../metadata';
-import { DataTypeEnum } from '../types/DataTypeEnum';
 import { ClirioValidationError } from '../exceptions';
 import { ClirioDefaultException } from './ClirioDefaultException';
 

@@ -1,5 +1,5 @@
-import { Constructor } from './Constructor';
-import { DataTypeEnum } from './DataTypeEnum';
+import { Constructor } from './constructor.type';
+import { DataTypeEnum } from './data-type-enum.type';
 
 export type ExceptionContext = {
   dataType: DataTypeEnum | null;

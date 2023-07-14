@@ -1,4 +1,4 @@
-import { ArgType } from './ArgType';
+import { ArgType } from './arg-type.type';
 
 export type ParsedArg = {
   type: ArgType;

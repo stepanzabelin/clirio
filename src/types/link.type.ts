@@ -1,4 +1,4 @@
-import { LinkType } from './LinkType';
+import { LinkType } from './link-type.type';
 
 export type Link = {
   type: LinkType;

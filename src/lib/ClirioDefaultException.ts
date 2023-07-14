@@ -1,6 +1,5 @@
 import { ClirioError, ClirioValidationError } from '../exceptions';
-import { ClirioException } from '../types';
-import { ExceptionContext } from '../types/ExceptionContext';
+import { ClirioException, ExceptionContext } from '../types';
 
 export class ClirioDefaultException implements ClirioException {
   catch(

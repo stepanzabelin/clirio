@@ -1,4 +1,4 @@
-import { Constructor } from './Constructor';
+import { Constructor } from './constructor.type';
 
 export type ResultContext = {
   moduleName: Constructor;

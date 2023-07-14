@@ -4,5 +4,5 @@ export * from './lib/Clirio';
 export * from './lib/ClirioHelper';
 export * from './decorators';
 export * from './exceptions';
-export * from './types/ClirioPipe';
-export * from './types/PipeContext';
+export * from './types/clirio-pipe.type';
+export * from './types/pipe-context.type';

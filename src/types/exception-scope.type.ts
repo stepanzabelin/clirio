@@ -1,4 +1,4 @@
-import { Exception } from './Exception';
+import { Exception } from './exception.type';
 
 export type ExceptionScope = {
   scope: 'global' | 'command';

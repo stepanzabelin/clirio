@@ -1,5 +1,5 @@
 import { ClirioError, ClirioValidationError } from '../exceptions';
-import { ExceptionContext } from './ExceptionContext';
+import { ExceptionContext } from './exception-context.type';
 
 export interface ClirioException {
   catch(
