@@ -32,7 +32,7 @@ describe('Exact command', () => {
   //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
   //   emulateArgv(sandbox, 'hello there --name=Alex');
-  //   await cliApp();
+  //
 
   //   expect(entryStub.calledOnce).toBeTruthy();
   // });

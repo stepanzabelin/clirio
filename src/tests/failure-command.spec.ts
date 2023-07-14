@@ -43,8 +43,6 @@ describe('Failure command', () => {
 
     await buildCli().execute(Clirio.split('migration cactus'));
 
-    await cliApp();
-
     expect(entryStub.calledOnce).toBeTruthy();
   });
 

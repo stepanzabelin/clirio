@@ -22,8 +22,6 @@ describe('Command with params', () => {
 
     await buildCli().execute(Clirio.split('hello to Alex Smith'));
 
-    await cliApp();
-
     const [params] = entrySpy.getCall(0).args;
 
     expect(params).toStrictEqual({
@@ -34,21 +32,21 @@ describe('Command with params', () => {
     entrySpy.restore();
   });
 
-  // it('Test 1.2. Negative', async () => {
-  //   const catchSpy = sandbox.spy();
+  it('Test 1.2. Negative', async () => {
+    const catchSpy = sandbox.spy();
 
-  //   await buildCli()
-  //     .setGlobalException({
-  //       catch: catchSpy,
-  //     })
-  //     .execute(Clirio.split('hello to Alex'));
+    await buildCli()
+      .setGlobalException({
+        catch: catchSpy,
+      })
+      .execute(Clirio.split('hello to Alex'));
 
-  //   const [err] = catchSpy.getCall(0).args;
+    const [err] = catchSpy.getCall(0).args;
 
-  //   expect(
-  //     err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
-  //   ).toBeTruthy();
-  // });
+    expect(
+      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+    ).toBeTruthy();
+  });
 
   // it('invalid input extra param', async () => {
   //   const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');

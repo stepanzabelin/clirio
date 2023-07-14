@@ -43,8 +43,6 @@ describe('Options with variable', () => {
       Clirio.split('migration run -e DB_NAME=db-name --silent'),
     );
 
-    await cliApp();
-
     const [options] = entryStub.getCall(0).args;
 
     expect(options).toStrictEqual({

@@ -40,8 +40,6 @@ describe('Empty command', () => {
       ),
     );
 
-    await cliApp();
-
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
@@ -50,8 +48,6 @@ describe('Empty command', () => {
 
     await buildCli().execute(Clirio.split('migration'));
 
-    await cliApp();
-
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
@@ -59,7 +55,6 @@ describe('Empty command', () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
     await buildCli().execute(Clirio.split('git'));
-    await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

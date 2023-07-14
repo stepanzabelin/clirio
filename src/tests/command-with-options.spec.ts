@@ -280,7 +280,7 @@ describe('Command with options without handlers', () => {
   //   const errorCallbackStub = sinon.stub();
 
   //   emulateArgv(sandbox, 'hello --first-name');
-  //   await cliApp();
+  //
 
   //   await cliApp(errorCallbackStub);
 
