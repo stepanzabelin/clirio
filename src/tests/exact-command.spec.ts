@@ -1,8 +1,15 @@
 import sinon from 'sinon';
+import { Clirio } from '@clirio';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
 import { cliApp } from '../test-cli-app/cli-app';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+import { HelloModule } from '../test-cli-app/modules/hello';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([HelloModule]);
+  return cli;
+};
 
 describe('Exact command', () => {
   const sandbox = sinon.createSandbox();
@@ -14,8 +21,7 @@ describe('Exact command', () => {
   it('correct input compound command', async () => {
     const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'hello there');
-    await cliApp();
+    await buildCli().execute(Clirio.split('hello there'));
 
     expect(entryStub.calledOnce).toBeTruthy();
 
@@ -34,8 +40,7 @@ describe('Exact command', () => {
   it('invalid input simple command with extra param', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'hello Alex');
-    await cliApp();
+    await buildCli().execute(Clirio.split('hello Alex'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

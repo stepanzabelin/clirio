@@ -1,8 +1,15 @@
+import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { cliApp } from '../test-cli-app/cli-app';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationFailureService } from '../test-cli-app/modules/migration/failure';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([HelloModule]);
+  return cli;
+};
 
 describe('Failure command', () => {
   const sandbox = sinon.createSandbox();
@@ -26,8 +33,7 @@ describe('Failure command', () => {
   it('Failure with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'cactus');
-    await cliApp();
+    await buildCli().execute(Clirio.split('cactus'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
@@ -35,7 +41,8 @@ describe('Failure command', () => {
   it('Failure with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationFailureService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'migration cactus');
+    await buildCli().execute(Clirio.split('migration cactus'));
+
     await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
@@ -44,8 +51,7 @@ describe('Failure command', () => {
   it('Failure without handler in nested module', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'git cactus');
-    await cliApp();
+    await buildCli().execute(Clirio.split('git cactus'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

@@ -1,9 +1,16 @@
+import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { cliApp } from '../test-cli-app/cli-app';
 import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([HelloModule]);
+  return cli;
+};
 
 describe('Empty command', () => {
   const sandbox = sinon.createSandbox();
@@ -27,7 +34,12 @@ describe('Empty command', () => {
   it('Empty with handler in the root', async () => {
     const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
 
-    emulateArgv(sandbox, '');
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name=Alex -f John --first-name Max -l Smith --verbose -v',
+      ),
+    );
+
     await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
@@ -36,7 +48,8 @@ describe('Empty command', () => {
   it('Empty with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'migration');
+    await buildCli().execute(Clirio.split('migration'));
+
     await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();
@@ -45,7 +58,7 @@ describe('Empty command', () => {
   it('Empty without handler in nested module', async () => {
     const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'git');
+    await buildCli().execute(Clirio.split('git'));
     await cliApp();
 
     expect(entryStub.calledOnce).toBeTruthy();

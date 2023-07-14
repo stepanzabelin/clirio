@@ -1,7 +1,14 @@
+import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { cliApp } from '../test-cli-app/cli-app';
+import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationRunService } from '../test-cli-app/modules/migration/migration-run';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([HelloModule]);
+  return cli;
+};
 
 describe('Options with variable', () => {
   const sandbox = sinon.createSandbox();
@@ -13,11 +20,11 @@ describe('Options with variable', () => {
   it('correct input long and short variables', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
-    emulateArgv(
-      sandbox,
-      'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent',
+    await buildCli().execute(
+      Clirio.split(
+        'migration run -e DB_NAME=db-name --env DB_USER=db-user --silent',
+      ),
     );
-    await cliApp();
 
     const [options] = entryStub.getCall(0).args;
 
@@ -32,7 +39,10 @@ describe('Options with variable', () => {
   it('correct input only one variable', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'migration run -e DB_NAME=db-name --silent');
+    await buildCli().execute(
+      Clirio.split('migration run -e DB_NAME=db-name --silent'),
+    );
+
     await cliApp();
 
     const [options] = entryStub.getCall(0).args;
@@ -48,8 +58,7 @@ describe('Options with variable', () => {
   it('correct input only one variable 2', async () => {
     const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
 
-    emulateArgv(sandbox, 'migration run');
-    await cliApp();
+    await buildCli().execute(Clirio.split('migration run'));
 
     const [options] = entryStub.getCall(0).args;
 
