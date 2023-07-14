@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { cliApp } from '../test-cli-app/cliApp';
+import { cliApp } from '../test-cli-app/cli-app';
 import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';

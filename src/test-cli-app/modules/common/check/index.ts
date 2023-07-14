@@ -1,2 +1,2 @@
-export * from './CheckService';
-export * from './CheckOptionsDto';
+export * from './check.service';
+export * from './check-options.dto';

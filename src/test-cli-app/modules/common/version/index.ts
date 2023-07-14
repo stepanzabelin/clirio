@@ -1,1 +1,1 @@
-export * from './VersionService';
+export * from './version.service';

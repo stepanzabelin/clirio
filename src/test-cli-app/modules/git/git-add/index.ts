@@ -1,3 +1,3 @@
-export * from './GitAddOptionsDto';
-export * from './GitAddParamsDto';
-export * from './GitAddService';
+export * from './git-add-options.dto';
+export * from './git-add-params.dto';
+export * from './git-add.service';

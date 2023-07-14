@@ -1,4 +1,4 @@
-import { CheckOptionsDto } from './CheckOptionsDto';
+import { CheckOptionsDto } from './check-options.dto';
 
 export class CheckService {
   public entry(options: CheckOptionsDto) {

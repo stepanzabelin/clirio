@@ -21,7 +21,7 @@ export const Module = function (rawCommand?: string) {
         throw new ClirioDebugError('Command value is invalid', {
           entity: constructor.name,
           value: command,
-          decorator: 'Module',
+          decorator: '.module',
         });
       }
 

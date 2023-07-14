@@ -1,1 +1,1 @@
-export * from './MigrationEmptyService';
+export * from './migration-empty.service';

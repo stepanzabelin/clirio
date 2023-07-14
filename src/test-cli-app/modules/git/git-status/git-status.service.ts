@@ -1,4 +1,4 @@
-import { GitStatusOptionsDto } from './GitStatusOptionsDto';
+import { GitStatusOptionsDto } from './git-status-options.dto';
 
 export class GitStatusService {
   public status(options: GitStatusOptionsDto) {

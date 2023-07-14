@@ -1,4 +1,4 @@
-import { MigrationRunOptionsDto } from './MigrationRunOptionsDto';
+import { MigrationRunOptionsDto } from './migration-run-options.dto';
 
 export class MigrationRunService {
   public entry(options: MigrationRunOptionsDto) {

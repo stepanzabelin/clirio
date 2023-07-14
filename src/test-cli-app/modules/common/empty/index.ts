@@ -1,1 +1,1 @@
-export * from './CommonEmptyService';
+export * from './common-empty.service';

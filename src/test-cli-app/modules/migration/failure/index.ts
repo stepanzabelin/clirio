@@ -1,1 +1,1 @@
-export * from './MigrationFailureService';
+export * from './migration-failure.service';

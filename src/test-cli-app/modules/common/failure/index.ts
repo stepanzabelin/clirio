@@ -1,1 +1,1 @@
-export * from './CommonFailureService';
+export * from './common-failure.service';

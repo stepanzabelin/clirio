@@ -1,2 +1,2 @@
-export * from './GitCheckoutParamsDto';
-export * from './GitCheckoutService';
+export * from './git-checkout-params.dto';
+export * from './git-checkout.service';

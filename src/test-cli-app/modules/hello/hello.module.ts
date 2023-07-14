@@ -1,9 +1,9 @@
 import { Module, Command, Options, Params, Description } from '@clirio';
 import { HelloService, HelloOptionsDto } from './hello';
 import { HelloThereService } from './hello-there';
-import { HelloToService, HelloToParamsDto } from './helloTo';
-import { HelloGuysParamsDto, HelloGuysService } from './helloGuys';
-import { HelloPeopleOptionsDto, HelloPeopleService } from './helloPeople';
+import { HelloToService, HelloToParamsDto } from './hello-to';
+import { HelloGuysParamsDto, HelloGuysService } from './hello-guys';
+import { HelloPeopleOptionsDto, HelloPeopleService } from './hello-people';
 
 @Module()
 export class HelloModule {

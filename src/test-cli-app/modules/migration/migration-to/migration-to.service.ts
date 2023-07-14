@@ -1,5 +1,5 @@
-import { MigrationToOptionsDto } from './MigrationToOptionsDto';
-import { MigrationToParamsDto } from './MigrationToParamsDto';
+import { MigrationToOptionsDto } from './migration-to-options.dto';
+import { MigrationToParamsDto } from './migration-to-params.dto';
 
 export class MigrationToService {
   public entry(params: MigrationToParamsDto, options: MigrationToOptionsDto) {

@@ -1,1 +1,1 @@
-export * from './HelloModule';
+export * from './hello.module';

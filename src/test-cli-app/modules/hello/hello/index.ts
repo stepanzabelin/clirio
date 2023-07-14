@@ -1,2 +1,2 @@
-export * from './HelloService';
-export * from './HelloOptionsDto';
+export * from './hello.service';
+export * from './hello-options.dto';

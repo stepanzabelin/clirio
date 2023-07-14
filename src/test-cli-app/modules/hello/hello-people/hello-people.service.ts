@@ -1,4 +1,4 @@
-import { HelloPeopleOptionsDto } from './HelloPeopleOptionsDto';
+import { HelloPeopleOptionsDto } from './hello-people-options.dto';
 
 export class HelloPeopleService {
   public entry(options: HelloPeopleOptionsDto) {

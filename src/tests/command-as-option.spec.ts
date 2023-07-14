@@ -1,8 +1,8 @@
 import sinon from 'sinon';
 import { Clirio } from '../index';
-import { cliApp } from '../test-cli-app/cliApp';
+import { cliApp } from '../test-cli-app/cli-app';
 import { CheckService } from '../test-cli-app/modules/common/check';
-import { CommonModule } from '../test-cli-app/modules/common/CommonModule';
+import { CommonModule } from '../test-cli-app/modules/common/common.module';
 import { VersionService } from '../test-cli-app/modules/common/version';
 
 const buildCli = () => {

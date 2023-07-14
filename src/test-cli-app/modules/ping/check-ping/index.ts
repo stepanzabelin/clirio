@@ -1,1 +1,1 @@
-export * from './CheckPingService';
+export * from './check-ping.service';

@@ -1,1 +1,1 @@
-export * from './MigrationModule';
+export * from './migration.module';

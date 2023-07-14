@@ -1,1 +1,1 @@
-export * from './GitModule';
+export * from './git.module';

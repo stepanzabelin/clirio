@@ -1,1 +1,1 @@
-export * from './PingModule';
+export * from './ping.module';

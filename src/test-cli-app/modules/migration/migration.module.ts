@@ -10,13 +10,13 @@ import {
 } from '@clirio';
 import { MigrationEmptyService } from './empty';
 import { MigrationFailureService } from './failure';
-import { MigrationRunOptionsDto, MigrationRunService } from './migrationRun';
+import { MigrationRunOptionsDto, MigrationRunService } from './migration-run';
 import {
   MigrationToService,
   MigrationToPipe,
   MigrationToParamsDto,
   MigrationToOptionsDto,
-} from './migrationTo';
+} from './migration-to';
 
 @Module('migration')
 export class MigrationModule {
