@@ -27,6 +27,21 @@ describe('Args Clirio.parser', () => {
       { type: 'option', key: 'count', value: '5' },
     ]);
 
+    expect(
+      Clirio.parse(
+        'animal "moo moo" --honk "cow and cow" -p 55 66 --tacos=good --verbose --count 5',
+      ),
+    ).toEqual([
+      { type: 'action', key: '0', value: 'animal' },
+      { type: 'action', key: '1', value: 'moo moo' },
+      { type: 'option', key: 'honk', value: 'cow and cow' },
+      { type: 'option', key: 'p', value: '55' },
+      { type: 'action', key: '2', value: '66' },
+      { type: 'option', key: 'tacos', value: 'good' },
+      { type: 'option', key: 'verbose', value: null },
+      { type: 'option', key: 'count', value: '5' },
+    ]);
+
     expect(Clirio.parse('-a - b')).toEqual([
       { type: 'option', key: 'a', value: null },
       { type: 'option', key: '-', value: null },
