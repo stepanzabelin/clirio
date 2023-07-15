@@ -1,6 +1,5 @@
 import { Clirio } from '@clirio';
 import sinon from 'sinon';
-import { cliApp } from '../test-cli-app/cli-app';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationFailureService } from '../test-cli-app/modules/migration/failure';

@@ -176,5 +176,13 @@
     "jest/prefer-to-have-length": "warn",
     "jest/no-identical-title": "error",
     "jest/valid-expect": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["./src/test-cli-app/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }
