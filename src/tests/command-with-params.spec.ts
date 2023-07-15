@@ -165,6 +165,20 @@ describe('Command with params', () => {
     });
   });
 
+  it('Test 4.3. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloUnknownGuys');
+
+    await buildCli().execute(
+      Clirio.split('hello unknown-guys "Alex Smith" Jack "Max Martinez"'),
+    );
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      'all-names': ['Alex Smith', 'Jack', 'Max Martinez'],
+    });
+  });
+
   it('Test 5.1. Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'universalHello');
 

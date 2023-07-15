@@ -43,6 +43,12 @@ export class HelloModule {
     console.log('helloGuys', params);
   }
 
+  @Command('hello unknown-guys <...all-names>')
+  @Description('Say hello to guys')
+  public helloUnknownGuys(@Params() params: unknown) {
+    console.log('helloUnknownGuys', params);
+  }
+
   @Command('hello people')
   @Description('Say hello to some people')
   public helloPeople(@Options() options: HelloPeopleOptionsDto) {
