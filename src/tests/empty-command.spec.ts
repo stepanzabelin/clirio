@@ -48,9 +48,7 @@ describe('Empty command', () => {
   it('Empty with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'empty');
 
-    await buildCli()
-      .execute(Clirio.split('migration'))
-      .catch((err) => null);
+    await buildCli().execute(Clirio.split('migration'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
