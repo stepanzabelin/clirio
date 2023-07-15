@@ -38,7 +38,7 @@ export const validations: Validations = {
   },
 
   FLAG: (value: any) => {
-    return [null, 'true', 'false'].includes(String(value));
+    return [null, 'true', 'false'].includes(value);
   },
 
   KEY_VALUE: (values: any) => {

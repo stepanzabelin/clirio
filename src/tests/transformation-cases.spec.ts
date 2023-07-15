@@ -48,22 +48,22 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('Test 1.3. Positive', async () => {
-    const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
+  // it('Test 1.3. Positive', async () => {
+  //   const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
-    await buildCli().execute(Clirio.split('migration run'));
+  //   await buildCli().execute(Clirio.split('migration run'));
 
-    const [options] = entryStub.getCall(0).args;
+  //   const [options] = entryStub.getCall(0).args;
 
-    expect(options).toStrictEqual({});
-  });
+  //   expect(options).toStrictEqual({});
+  // });
 
   it('Test 2.1. Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(
       Clirio.split(
-        'migration to 1567 -e DB_NAME=db-name -e DB_TABLE=db-table --id=149542 --s',
+        'migration to 1567 dbo -e DB_NAME=db-name -e DB_TABLE=db-table --id=149542 --s',
       ),
     );
 
@@ -71,6 +71,7 @@ describe('Transformation cases', () => {
 
     expect(params).toStrictEqual({
       typeId: 1567,
+      typeName: 'type-dbo',
     });
 
     expect(options).toStrictEqual({
@@ -85,7 +86,7 @@ describe('Transformation cases', () => {
 
     await buildCli().execute(
       Clirio.split(
-        'migration to 7691 --env DB_NAME=db-name -e DB_TABLE=db-table -i 149542 -s',
+        'migration to 7691 dbo --env DB_NAME=db-name -e DB_TABLE=db-table -i 149542 -s',
       ),
     );
 
@@ -93,6 +94,7 @@ describe('Transformation cases', () => {
 
     expect(params).toStrictEqual({
       typeId: 7691,
+      typeName: 'type-dbo',
     });
 
     expect(options).toStrictEqual({

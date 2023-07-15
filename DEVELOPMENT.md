@@ -9,5 +9,6 @@ yarn dev hello --first-name=Alex --last-name=Smith --middle-name=123
 
 - helper
 - tests: validate, pipe, exception, helper
+- ValidationError data
 - starter kit
 - README

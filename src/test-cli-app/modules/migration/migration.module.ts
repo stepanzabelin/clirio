@@ -13,12 +13,17 @@ import {
   MigrationStatusOptionsDto,
   MigrationStatusParamsDto,
 } from './migration-status';
+import { MigrationToParamsDto, MigrationToOptionsDto } from './migration-to';
 import {
-  MigrationToPipe,
-  MigrationToParamsDto,
-  MigrationToOptionsDto,
-} from './migration-to';
+  MigrationFromParamsDto,
+  MigrationFromOptionsDto,
+} from './migration-from';
 
+import {
+  MigrationUpPipe,
+  MigrationUpParamsDto,
+  MigrationUpOptionsDto,
+} from './migration-up';
 @Module('migration')
 export class MigrationModule {
   @Command('run')
@@ -27,8 +32,24 @@ export class MigrationModule {
     console.log('migration run', options);
   }
 
-  @Command('to <type-id>')
-  @Pipe(MigrationToPipe)
+  // @Command('up <type-id>')
+  // @Pipe(MigrationUpPipe)
+  // public from(
+  //   @Params() params: MigrationUpParamsDto,
+  //   @Options() options: MigrationUpOptionsDto,
+  // ) {
+  //   console.log('migration from', params, options);
+  // }
+
+  @Command('from <type-id> <type-name>')
+  public from(
+    @Params() params: MigrationFromParamsDto,
+    @Options() options: MigrationFromOptionsDto,
+  ) {
+    console.log('migration from', params, options);
+  }
+
+  @Command('to <type-id> <type-name>')
   public to(
     @Params() params: MigrationToParamsDto,
     @Options() options: MigrationToOptionsDto,

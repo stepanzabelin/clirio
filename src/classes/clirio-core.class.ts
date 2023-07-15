@@ -181,6 +181,7 @@ export class ClirioCore {
           actionName,
           transformedArguments,
         );
+        return;
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
@@ -188,7 +189,6 @@ export class ClirioCore {
           actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
-      } finally {
         return;
       }
     }
@@ -225,6 +225,7 @@ export class ClirioCore {
 
       try {
         await this.handler.applyAction(module, actionName, []);
+        return;
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
@@ -232,7 +233,6 @@ export class ClirioCore {
           actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
-      } finally {
         return;
       }
     }
@@ -274,6 +274,7 @@ export class ClirioCore {
 
       try {
         await this.handler.applyAction(module, actionName, []);
+        return;
       } catch (err: any) {
         const exceptionScopeList = this.handler.collectExceptions(
           this.globalException,
@@ -281,7 +282,6 @@ export class ClirioCore {
           actionName,
         );
         this.handler.handleExceptions(err, exceptionScopeList);
-      } finally {
         return;
       }
     }

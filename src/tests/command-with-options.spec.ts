@@ -136,7 +136,7 @@ describe('Command with options without handlers', () => {
 
     await buildCli().execute(
       Clirio.split(
-        'hello --first-name=Alex -l Smith --middle-name=123 -u 4 -z --yes',
+        'hello --fname=Alex -l Smith --middle-name=123 -u 4 -z --yes',
       ),
     );
 
@@ -249,34 +249,4 @@ describe('Command with options without handlers', () => {
       verbose: [null, null],
     });
   });
-
-  // it('Test #3. Negative', async () => {
-  //   const errorCallbackStub = sinon.stub();
-
-  //   await buildCli().execute(
-  //     Clirio.split(
-  //       'hello --first-name=Alex --last-name=Smith --middle-name=123',
-  //     ),
-  //   );
-
-  //   await cliApp(errorCallbackStub);
-
-  //   const err = errorCallbackStub.getCall(0).args[0];
-  //   console.log({ err });
-
-  //   expect(err.message).toEqual('"middle-name" is not allowed');
-  // });
-
-  // it('incorrect input', async () => {
-  //   const errorCallbackStub = sinon.stub();
-
-  //   emulateArgv(sandbox, 'hello --first-name');
-  //
-
-  //   await cliApp(errorCallbackStub);
-
-  //   const err = errorCallbackStub.getCall(0).args[0];
-
-  //   expect(err.message).toEqual('"--first-name, -f" must be a string');
-  // });
 });

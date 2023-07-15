@@ -3,7 +3,15 @@ import { validations } from './validations.util';
 
 type CheckName = keyof typeof validations;
 
-export const valid = (checkOrChecks: CheckName | CheckName[]): Validation => {
+export type ValidArg1 = CheckName | CheckName[];
+export type Valid = (checkOrChecks: ValidArg1) => Validation[];
+
+export const valid = (checkOrChecks: ValidArg1): Validation[] => {
   const checks = Array.isArray(checkOrChecks) ? checkOrChecks : [checkOrChecks];
-  return (value) => checks.every((key) => validations[key](value));
+  return checks.map((key) => validations[key]);
+
+  // return (value) =>
+  //   checks
+  //     .every((key) => validations[key](value) !== false)
+  //     .some((key) => validations[key](value));
 };

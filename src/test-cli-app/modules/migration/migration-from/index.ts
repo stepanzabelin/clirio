@@ -1,2 +1,2 @@
 export * from './migration-from-options.dto';
-export * from './migration-from.pipe';
+export * from './migration-from-params.dto';

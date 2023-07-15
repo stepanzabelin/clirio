@@ -121,7 +121,6 @@
     "no-empty": "off",
     "no-shadow": "off",
     "no-constant-condition": "off",
-    "no-unsafe-finally": "off",
     "no-case-declarations": "off",
     "id-length": "off",
     "no-unused-expressions": "warn",
@@ -147,6 +146,7 @@
     "generator-star-spacing": "warn",
     "prefer-exponentiation-operator": "warn",
     "no-extra-semi": "warn",
+    "no-unsafe-finally": "warn",
 
     "prettier/prettier": ["off"],
 

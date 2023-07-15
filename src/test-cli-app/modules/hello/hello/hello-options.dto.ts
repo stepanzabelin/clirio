@@ -1,7 +1,7 @@
 import { Description, Option } from '@clirio';
 
 export class HelloOptionsDto {
-  @Option('--first-name, -f')
+  @Option('--first-name, -f, --fname')
   @Description('First name')
   readonly firstName?: string;
 

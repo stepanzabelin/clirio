@@ -7,7 +7,7 @@ import {
   Args,
   ClirioConfig,
 } from '../types';
-import { valid, form, getProcessArgs } from '../utils';
+import { valid, form, getProcessArgs, Valid } from '../utils';
 
 export class Clirio extends ClirioCore {
   public setConfig(partialConfig: OptionalKeys<ClirioConfig>): this {
@@ -41,7 +41,7 @@ export class Clirio extends ClirioCore {
     await super.execute(args);
   }
 
-  public static valid = valid;
+  public static valid: Valid = valid;
 
   public static form = form;
 

@@ -206,19 +206,21 @@ export class ClirioHandler {
     for (const [propertyName, data] of validationMap) {
       const row = rows.find((row) => row.propertyName === propertyName);
 
-      if (!row) {
-        continue;
-      }
-
       for (const check of data.checks) {
-        if (check(row.value) === false) {
+        const result = check(row?.value);
+
+        if (result === false) {
           throw new ClirioValidationError(
-            `The "${row.key}" ${dataType.toLowerCase()} is wrong`,
+            `The "${
+              row?.key ?? propertyName
+            }" ${dataType.toLowerCase()} is wrong`,
             {
               dataType,
-              ...row,
+              propertyName,
             },
           );
+        } else if (result === true) {
+          break;
         }
       }
     }

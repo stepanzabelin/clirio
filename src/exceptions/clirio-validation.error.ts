@@ -2,12 +2,15 @@ import { DataTypeEnum, LinkedArg } from '../types';
 
 type Payload = {
   dataType: DataTypeEnum;
+  propertyName: string;
   [key: string]: any;
-} & LinkedArg;
+};
 
+//  & LinkedArg
 export class ClirioValidationError extends Error {
   public propertyName: string | null;
   public dataType: DataTypeEnum;
+
   constructor(
     message: string,
     public readonly payload: Payload,

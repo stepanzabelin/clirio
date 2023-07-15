@@ -9,78 +9,23 @@
       "name": "Debug with ts-node 1 ",
       "runtimeArgs": [
         "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
+        "-r",
+        "tsconfig-paths/register",
+        "${workspaceFolder}/src/test-cli-app/run.ts",
         "migration",
-        "run",
+        "from",
+        "1567",
+        "type-dbo",
         "-e",
         "DB_NAME=db-name",
-        "--env",
-        "DB_USER=db-user",
-        "--silent"
+        "--id=149542",
+        "-s",
+        "--start-date=1"
       ],
       "cwd": "${workspaceFolder}",
       "protocol": "inspector",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug with ts-node 1 ",
-      "runtimeArgs": [
-        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
-        "hello",
-        "--first-name=Alex",
-        "--last-name=Smith"
-      ],
-      "cwd": "${workspaceFolder}",
-      "protocol": "inspector",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug with ts-node 2",
-      "runtimeArgs": [
-        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
-        "${workspaceFolder}/src/test-cli-app/runCliApp.ts",
-        "migration",
-        "to",
-        "test1",
-        "test2",
-        "--id=222",
-        "-s"
-      ],
-      "cwd": "${workspaceFolder}",
-      "protocol": "inspector",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Active Spec",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "port": 9229,
-      "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"],
-      "preLaunchTask": "npm: build"
-      // "smartStep": true
-    },
-    {
-      // Use this one if you're already running `yarn watch`
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Active Spec (no build)",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "port": 9229,
-      "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"]
-      // "smartStep": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { Validate, Clirio, Option } from '@clirio';
 
-export class MigrationFromOptionsDto {
+export class MigrationUpOptionsDto {
   @Option('--env, -e', {
     cast: 'array',
   })
@@ -24,6 +24,6 @@ export class MigrationFromOptionsDto {
   readonly endDate?: string;
 
   @Option('--algorithm, -a')
-  @Validate((v) => v === undefined || ['a', 'b', 'c'].includes(v))
-  readonly algorithm?: 'a' | 'b' | 'c';
+  @Validate((v) => ['a', 'b', 'c'].includes(String(v)))
+  readonly algorithm!: null | 'a' | 'b' | 'c';
 }
