@@ -416,7 +416,10 @@ export class ClirioCore {
             key: optionKey,
           };
         } else {
-          const letters = optionKeys.slice(0, -1).split('');
+          const letters = optionKeys
+            .slice(0, -1)
+            .split('')
+            .filter((letter) => letter !== '-');
 
           for (const letter of letters) {
             rows.push({
