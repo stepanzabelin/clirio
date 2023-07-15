@@ -24,8 +24,6 @@ describe('Command with params', () => {
     await buildCli().execute(Clirio.split('hello there'));
 
     expect(entrySpy.calledOnce).toBeTruthy();
-
-    entrySpy.restore();
   });
 
   it('Test 2.1. Positive', async () => {
@@ -34,8 +32,6 @@ describe('Command with params', () => {
     await buildCli().execute(Clirio.split('hello venus'));
 
     expect(entrySpy.calledOnce).toBeTruthy();
-
-    entrySpy.restore();
   });
 
   it('Test 2.2. Positive', async () => {
@@ -44,8 +40,6 @@ describe('Command with params', () => {
     await buildCli().execute(Clirio.split('hello earth'));
 
     expect(entrySpy.calledOnce).toBeTruthy();
-
-    entrySpy.restore();
   });
 
   it('Test 2.3. Positive', async () => {
@@ -54,8 +48,6 @@ describe('Command with params', () => {
     await buildCli().execute(Clirio.split('hello mars'));
 
     expect(entrySpy.calledOnce).toBeTruthy();
-
-    entrySpy.restore();
   });
 
   it('Test 2.4. Negative', async () => {
@@ -86,8 +78,6 @@ describe('Command with params', () => {
       firstName: 'Alex',
       'last-name': 'Smith',
     });
-
-    entrySpy.restore();
   });
 
   it('Test 3.2. Negative', async () => {

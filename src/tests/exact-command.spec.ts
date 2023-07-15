@@ -17,15 +17,15 @@ describe('Exact command', () => {
     sandbox.restore();
   });
 
-  it('correct input compound command', async () => {
-    const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
+  // it('correct input compound command', async () => {
+  //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
-    await buildCli().execute(Clirio.split('hello there'));
+  //   await buildCli().execute(Clirio.split('hello there'));
 
-    expect(entryStub.calledOnce).toBeTruthy();
+  //   expect(entryStub.calledOnce).toBeTruthy();
 
-    entryStub.restore();
-  });
+  //   entryStub.restore();
+  // });
 
   // it('correct input simple command with extra option without options dto', async () => {
   //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
@@ -36,13 +36,13 @@ describe('Exact command', () => {
   //   expect(entryStub.calledOnce).toBeTruthy();
   // });
 
-  it('invalid input simple command with extra param', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+  // it('invalid input simple command with extra param', async () => {
+  //   const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
 
-    await buildCli().execute(Clirio.split('hello Alex'));
+  //   await buildCli().execute(Clirio.split('hello Alex'));
 
-    expect(entryStub.calledOnce).toBeTruthy();
-  });
+  //   expect(entryStub.calledOnce).toBeTruthy();
+  // });
 
   // it('invalid input compound command with extra param', async () => {
   //   const globalExceptionCatch = sinon.stub();

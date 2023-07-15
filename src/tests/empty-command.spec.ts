@@ -1,5 +1,6 @@
 import { Clirio } from '@clirio';
 import sinon from 'sinon';
+import { CommonModule } from 'src/test-cli-app/modules/common/common.module';
 import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
 import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloModule } from '../test-cli-app/modules/hello';
@@ -7,7 +8,7 @@ import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';
 
 const buildCli = () => {
   const cli = new Clirio();
-  cli.setModules([HelloModule]);
+  cli.setModules([HelloModule, CommonModule]);
   return cli;
 };
 
