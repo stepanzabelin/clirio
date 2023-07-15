@@ -5,6 +5,7 @@ import { HelloToService } from '../test-cli-app/modules/hello/hello-to';
 import { HelloPlanetService } from '../test-cli-app/modules/hello/hello-planet';
 import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
 import { HelloGuysService } from '../test-cli-app/modules/hello/hello-guys';
+import { HelloUniversalService } from '../test-cli-app/modules/hello/hello-universal';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -136,6 +137,23 @@ describe('Command with params', () => {
 
     expect(params).toStrictEqual({
       names: ['Alex Smith', 'Jack', 'Max Martinez'],
+    });
+  });
+
+  it('Test 5.1. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloUniversalService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello people from Earth to "Alex Smith" Jack "Max Martinez"',
+      ),
+    );
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      planet: 'Earth',
+      creatureNames: ['Alex Smith', 'Jack', 'Max Martinez'],
     });
   });
 });

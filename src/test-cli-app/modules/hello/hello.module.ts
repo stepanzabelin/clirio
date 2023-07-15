@@ -5,6 +5,10 @@ import { HelloToService, HelloToParamsDto } from './hello-to';
 import { HelloGuysParamsDto, HelloGuysService } from './hello-guys';
 import { HelloPeopleOptionsDto, HelloPeopleService } from './hello-people';
 import { HelloPlanetService } from './hello-planet';
+import {
+  HelloUniversalService,
+  HelloUniversalParamsDto,
+} from './hello-universal';
 
 @Module()
 export class HelloModule {
@@ -14,6 +18,7 @@ export class HelloModule {
   private readonly helloGuysService = new HelloGuysService();
   private readonly helloPeopleService = new HelloPeopleService();
   private readonly helloPlanetService = new HelloPlanetService();
+  private readonly helloUniversalService = new HelloUniversalService();
 
   @Command('hello there')
   @Description('Say hello there')
@@ -40,7 +45,7 @@ export class HelloModule {
   }
 
   @Command('hello guys <...all-names>')
-  @Description('Say hello to some people')
+  @Description('Say hello to guys')
   public helloGuys(@Params() params: HelloGuysParamsDto) {
     this.helloGuysService.entry(params);
   }
@@ -49,5 +54,11 @@ export class HelloModule {
   @Description('Say hello to some people')
   public helloPeople(@Options() options: HelloPeopleOptionsDto) {
     this.helloPeopleService.entry(options);
+  }
+
+  @Command('hello people|aliens from <planet-name> to <...creature-names>')
+  @Description('Say hello to whoever you want')
+  public universalHello(@Params() params: HelloUniversalParamsDto) {
+    this.helloUniversalService.entry(params);
   }
 }
