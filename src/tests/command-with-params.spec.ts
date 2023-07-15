@@ -39,7 +39,10 @@ describe('Command with params', () => {
       .setGlobalException({
         catch: catchSpy,
       })
-      .execute(Clirio.split('hello to Alex'));
+      .execute(Clirio.split('hello to Alex'))
+      .catch((err) => {
+        console.log('???', err);
+      });
 
     const [err] = catchSpy.getCall(0).args;
 

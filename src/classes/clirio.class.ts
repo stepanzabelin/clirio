@@ -1,6 +1,13 @@
 import { ClirioCore } from './clirio-core.class';
-import { OptionalKeys, Result, Pipe, Exception, Module, Args } from '../types';
-import { ClirioConfig } from '../core/clirio.config';
+import {
+  OptionalKeys,
+  Result,
+  Pipe,
+  Exception,
+  Module,
+  Args,
+  ClirioConfig,
+} from '../types';
 import { valid, form, getProcessArgs } from '../utils';
 
 export class Clirio extends ClirioCore {

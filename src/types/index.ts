@@ -40,3 +40,4 @@ export * from './row.type';
 export * from './validation.type';
 export * from './exception-context.type';
 export * from './result-context.type';
+export * from './clirio-config.type';

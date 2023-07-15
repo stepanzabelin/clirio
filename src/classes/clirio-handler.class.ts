@@ -25,7 +25,6 @@ import {
   pipeTargetMetadata,
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
-import { ClirioDefaultException } from '../core/clirio-default.exception';
 
 export class ClirioHandler {
   public isDto(dto: Constructor<any>) {
@@ -60,9 +59,7 @@ export class ClirioHandler {
       }
     }
 
-    new ClirioDefaultException().catch(currentErr, {
-      scope: 'default',
-    });
+    throw currentErr;
   }
 
   async applyAction(

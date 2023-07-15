@@ -10,8 +10,8 @@ import {
   Result,
   Module,
   DataTypeEnum,
+  ClirioConfig,
 } from '../types';
-import { ClirioConfig, clirioConfig } from '../core/clirio.config';
 import {
   actionTargetMetadata,
   helperArgMetadata,
@@ -26,7 +26,9 @@ import { Clirio } from './clirio.class';
 
 export class ClirioCore {
   protected modules: Module[] = [];
-  protected config: ClirioConfig = clirioConfig;
+  protected config: ClirioConfig = {
+    allowUncontrolledOptions: false,
+  };
   protected handler = new ClirioHandler();
   protected globalPipe: Pipe | null = null;
   protected globalException: Exception | null = null;
