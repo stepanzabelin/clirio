@@ -40,9 +40,24 @@ describe('Command with params', () => {
         catch: catchSpy,
       })
       .execute(Clirio.split('hello to Alex'))
-      .catch((err) => {
-        console.log('???', err);
-      });
+      .catch(() => null);
+
+    const [err] = catchSpy.getCall(0).args;
+
+    expect(
+      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+    ).toBeTruthy();
+  });
+
+  it('Test 1.3 Negative', async () => {
+    const catchSpy = sandbox.spy();
+
+    await buildCli()
+      .setGlobalException({
+        catch: catchSpy,
+      })
+      .execute(Clirio.split('hello to Alex Smith Junior'))
+      .catch(() => null);
 
     const [err] = catchSpy.getCall(0).args;
 
