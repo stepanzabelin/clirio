@@ -7,7 +7,6 @@ import {
   ParsedArg,
   Pipe,
   Exception,
-  Result,
   Module,
   DataTypeEnum,
   ClirioConfig,
@@ -32,7 +31,6 @@ export class ClirioCore {
   protected handler = new ClirioHandler();
   protected globalPipe: Pipe | null = null;
   protected globalException: Exception | null = null;
-  protected globalResult: Result | null = null;
 
   private *iterateData() {
     for (const module of this.modules) {

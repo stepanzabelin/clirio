@@ -1,7 +1,6 @@
 import { ClirioCore } from './clirio-core.class';
 import {
   OptionalKeys,
-  Result,
   Pipe,
   Exception,
   Module,
@@ -23,11 +22,6 @@ export class Clirio extends ClirioCore {
 
   public setGlobalException(globalException: Exception): this {
     this.globalException = globalException;
-    return this;
-  }
-
-  public setGlobalResult(globalResult: Result): this {
-    this.globalResult = globalResult;
     return this;
   }
 

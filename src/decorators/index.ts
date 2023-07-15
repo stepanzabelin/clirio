@@ -13,6 +13,5 @@ export * from './transform.decorator';
 export * from './validate.decorator';
 export * from './pipe.decorator';
 export * from './exception.decorator';
-export * from './result.decorator';
 export * from './transform.decorator';
 export * from './validate.decorator';

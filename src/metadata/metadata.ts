@@ -2,7 +2,6 @@ import { ArgMetadata, EntityMetadata, TargetMetadata } from '../classes';
 import {
   ExceptionTargetData,
   PipeTargetData,
-  ResultTargetData,
   TransformTargetData,
   ValidateTargetData,
   ParamTargetData,
@@ -16,9 +15,6 @@ import {
   ModuleData,
 } from '../types';
 
-export const resultTargetMetadata = new TargetMetadata<ResultTargetData>(
-  'result',
-);
 export const exceptionTargetMetadata = new TargetMetadata<ExceptionTargetData>(
   'exception',
 );
