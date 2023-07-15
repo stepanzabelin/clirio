@@ -111,6 +111,36 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
+  it('Test 3.4. Negative', async () => {
+    const catchSpy = sandbox.spy();
+
+    await buildCli()
+      .setGlobalException({
+        catch: catchSpy,
+      })
+      .execute(Clirio.split('hello to'))
+      .catch(() => null);
+
+    const [err] = catchSpy.getCall(0).args;
+
+    expect(
+      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+    ).toBeTruthy();
+  });
+
+  it('Test 3.5. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloToUnknown');
+
+    await buildCli().execute(Clirio.split('hello to-unknown Alex Smith'));
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      'first-name': 'Alex',
+      'last-name': 'Smith',
+    });
+  });
+
   it('Test 4.1. Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
@@ -141,6 +171,26 @@ describe('Command with params', () => {
     await buildCli().execute(
       Clirio.split(
         'hello people from Earth to "Alex Smith" Jack "Max Martinez"',
+      ),
+    );
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      planet: 'Earth',
+      creatureNames: ['Alex Smith', 'Jack', 'Max Martinez'],
+    });
+  });
+
+  it('Test 5.2. Positive', async () => {
+    const entrySpy = sandbox.stub(
+      HelloModule.prototype,
+      'helloPlanetCreatures',
+    );
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello planet-creatures Earth "Alex Smith" Jack "Max Martinez"',
       ),
     );
 

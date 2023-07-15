@@ -14,7 +14,7 @@ export class HelloModule {
   }
 
   @Command('hello venus|earth|mars')
-  @Description('Say hello there')
+  @Description('Say hello to the planet')
   public helloPlanet() {
     console.log('helloPlanet');
   }
@@ -29,6 +29,12 @@ export class HelloModule {
   @Description('Say hello in person using command')
   public helloTo(@Params() params: HelloToParamsDto) {
     console.log('helloTo', params);
+  }
+
+  @Command('hello to-unknown <first-name> <last-name>')
+  @Description('Say hello in person using command')
+  public helloToUnknown(@Params() params: unknown) {
+    console.log('helloToUnc', params);
   }
 
   @Command('hello guys <...all-names>')
@@ -47,5 +53,11 @@ export class HelloModule {
   @Description('Say hello to whoever you want')
   public universalHello(@Params() params: HelloUniversalParamsDto) {
     console.log('universalHello', params);
+  }
+
+  @Command('hello planet-creatures <planet-name> <...creature-names>')
+  @Description('Say hello to whoever you want')
+  public helloPlanetCreatures(@Params() params: HelloUniversalParamsDto) {
+    console.log('shortUniversalHello', params);
   }
 }
