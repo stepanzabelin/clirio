@@ -1,17 +1,17 @@
-import { Clirio, Option, Transform } from '@clirio';
+import { Validate, Clirio, Option, Transform } from '@clirio';
 
-export class MigrationToOptionsDto {
+export class MigrationFromOptionsDto {
   @Option('--env, -e', {
     cast: 'array',
   })
-  @Transform(Clirio.form('KEY_VALUE'))
+  @Validate(Clirio.valid('KEY_VALUE'))
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Transform(Clirio.form('FLAG'))
+  @Validate(Clirio.valid('FLAG'))
   readonly silent?: boolean;
 
-  @Option('-i, --id')
+  @Option('--id')
   @Transform(Number)
   readonly id!: number;
 

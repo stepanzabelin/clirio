@@ -27,7 +27,7 @@ export class MigrationModule {
     console.log('migration run', options);
   }
 
-  @Command('to <...name>')
+  @Command('to <type-id>')
   @Pipe(MigrationToPipe)
   public to(
     @Params() params: MigrationToParamsDto,

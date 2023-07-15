@@ -15,7 +15,7 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('Test 1.1', async () => {
+  it('Test 1.1. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('-v'));
@@ -23,7 +23,7 @@ describe('Command as option', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 1.2', async () => {
+  it('Test 1.2. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('--version'));
@@ -31,7 +31,7 @@ describe('Command as option', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.1', async () => {
+  it('Test 2.1. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --pool=5 -v'));
@@ -44,7 +44,7 @@ describe('Command as option', () => {
     });
   });
 
-  it('Test 2.2', async () => {
+  it('Test 2.2. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(
@@ -60,15 +60,4 @@ describe('Command as option', () => {
       'test-arg': '1',
     });
   });
-
-  // it('invalid input command as option and extra options', async () => {
-  //   const errorCallbackStub = sinon.stub();
-
-  //   emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-  //   await cliApp(errorCallbackStub);
-
-  //   const err = errorCallbackStub.getCall(0).args[0];
-
-  //   expect(err.message).toEqual('"unknown" is not allowed');
-  // });
 });

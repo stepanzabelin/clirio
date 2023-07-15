@@ -18,39 +18,17 @@ describe('Failure command', () => {
     sandbox.restore();
   });
 
-  // it('Failure without handler', async () => {
-  //   const errorCallbackStub = sinon.stub();
-
-  //   emulateArgv(sandbox, 'cactus');
-
-  //   await simpleCli(errorCallbackStub);
-
-  //   const err = errorCallbackStub.getCall(0).args[0];
-
-  //   expect(err.message).toEqual('Incorrect command specified');
-  // });
-
-  it('Failure with handler in the root', async () => {
+  it('Test 1.1. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('cactus'))
-      .catch((err) => null);
-
-    expect(entryStub.calledOnce).toBeTruthy();
-  });
-
-  it('Failure with handler in nested module', async () => {
-    const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
-
-    await buildCli()
-      .execute(Clirio.split('migration cactus'))
       .catch(() => null);
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Failure without handler in nested module', async () => {
+  it('Test 1.2. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
@@ -60,11 +38,51 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Empty without handler in nested module', async () => {
+  it('Test 1.3. Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('git'))
+      .catch(() => null);
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('Test 1.4. Positive', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
+
+    await buildCli()
+      .execute(Clirio.split('git migration'))
+      .catch(() => null);
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('Test 2.1. Positive', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
+
+    await buildCli()
+      .execute(Clirio.split('migration cactus'))
+      .catch(() => null);
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('Test 2.2. Positive', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
+
+    await buildCli()
+      .execute(Clirio.split('migration migration git'))
+      .catch(() => null);
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('Test 2.3. Positive', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
+
+    await buildCli()
+      .execute(Clirio.split('migration git'))
       .catch(() => null);
 
     expect(entryStub.calledOnce).toBeTruthy();

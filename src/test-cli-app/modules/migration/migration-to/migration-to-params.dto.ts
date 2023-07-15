@@ -1,6 +1,7 @@
-import { Param } from '@clirio';
+import { Param, Transform } from '@clirio';
 
 export class MigrationToParamsDto {
-  @Param('name', { cast: 'array' })
-  readonly name!: number;
+  @Param('type-id')
+  @Transform(Number)
+  readonly typeId!: number;
 }
