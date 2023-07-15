@@ -2,9 +2,7 @@ import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationModule } from '../test-cli-app/modules/migration';
-import { MigrationFailureService } from '../test-cli-app/modules/migration/failure';
 import { CommonModule } from '../test-cli-app/modules/common/common.module';
-import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { GitModule } from '../test-cli-app/modules/git';
 
 const buildCli = () => {
@@ -33,7 +31,7 @@ describe('Failure command', () => {
   // });
 
   it('Failure with handler in the root', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('cactus'))
@@ -43,7 +41,7 @@ describe('Failure command', () => {
   });
 
   it('Failure with handler in nested module', async () => {
-    const entryStub = sandbox.stub(MigrationFailureService.prototype, 'entry');
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('migration cactus'))
@@ -53,7 +51,7 @@ describe('Failure command', () => {
   });
 
   it('Failure without handler in nested module', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('git cactus'))
@@ -63,7 +61,7 @@ describe('Failure command', () => {
   });
 
   it('Empty without handler in nested module', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli()
       .execute(Clirio.split('git'))

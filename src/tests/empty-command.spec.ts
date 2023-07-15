@@ -5,7 +5,6 @@ import { CommonModule } from '../test-cli-app/modules/common/common.module';
 // import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
 // import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';
 import { GitModule } from '../test-cli-app/modules/git';
 
 const buildCli = () => {
@@ -47,7 +46,7 @@ describe('Empty command', () => {
   // });
 
   it('Empty with handler in nested module', async () => {
-    const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'empty');
 
     await buildCli()
       .execute(Clirio.split('migration'))

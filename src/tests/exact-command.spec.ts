@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
 import { GitModule } from '../test-cli-app/modules/git';
 import { MigrationModule } from '../test-cli-app/modules/migration';
 import { PingModule } from '../test-cli-app/modules/ping';
@@ -27,7 +26,7 @@ describe('Exact command', () => {
   });
 
   it('Test 1.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloThereService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloThere');
 
     await buildCli().execute(Clirio.split('hello there'));
 

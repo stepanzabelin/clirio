@@ -1,8 +1,6 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
-import { CheckService } from '../test-cli-app/modules/common/check';
 import { CommonModule } from '../test-cli-app/modules/common/common.module';
-import { VersionService } from '../test-cli-app/modules/common/version';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -18,7 +16,7 @@ describe('Command as option', () => {
   });
 
   it('Test #1', async () => {
-    const entryStub = sandbox.stub(VersionService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('-v'));
 
@@ -28,7 +26,7 @@ describe('Command as option', () => {
   });
 
   it('Test #2', async () => {
-    const entryStub = sandbox.stub(VersionService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('--version'));
 
@@ -38,7 +36,7 @@ describe('Command as option', () => {
   });
 
   it('Test #3', async () => {
-    const entryStub = sandbox.stub(CheckService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --pool=5 -v'));
 
@@ -53,7 +51,7 @@ describe('Command as option', () => {
   });
 
   it('Test #4', async () => {
-    const entryStub = sandbox.stub(CheckService.prototype, 'entry');
+    const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --unknown --pool=5 -v'));
 

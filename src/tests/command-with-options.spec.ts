@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { HelloService } from '../test-cli-app/modules/hello/hello';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -17,7 +16,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 1.1. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split('hello --first-name=Alex --last-name=Smith'),
@@ -34,7 +33,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 1.2. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split('hello --first-name Alex --last-name Smith'),
@@ -51,7 +50,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 1.3. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(Clirio.split('hello -f Alex -l Smith'));
 
@@ -66,7 +65,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 1.4. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(Clirio.split('hello --first-name Alex -l Smith'));
 
@@ -81,7 +80,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 2.1. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split(
@@ -104,7 +103,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 2.2. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split(
@@ -127,7 +126,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 2.3. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split(
@@ -150,7 +149,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 3.1. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split("hello --first-name=John --last-name=John's --verbose"),
@@ -168,7 +167,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 3.2. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(Clirio.split("hello -f John -l John's -v"));
 
@@ -184,7 +183,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 3.3. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split("hello -f John --last-name=John's -v"),
@@ -202,7 +201,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 4.1. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split(
@@ -222,7 +221,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 4.2. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split('hello -f Alex -f John -f Max -l Smith -v -v'),
@@ -240,7 +239,7 @@ describe('Command with options without handlers', () => {
   });
 
   it('Test 4.3. Positive', async () => {
-    const entryStub = sandbox.stub(HelloService.prototype, 'entry');
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
     await buildCli().execute(
       Clirio.split(

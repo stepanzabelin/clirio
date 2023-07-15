@@ -1,22 +1,18 @@
 import { Module, Command, Options, Params } from '@clirio';
-import { GitAddOptionsDto, GitAddParamsDto, GitAddService } from './git-add';
-import { GitCheckoutParamsDto, GitCheckoutService } from './git-checkout';
-import { GitStatusOptionsDto, GitStatusService } from './git-status';
+import { GitAddOptionsDto, GitAddParamsDto } from './git-add';
+import { GitCheckoutParamsDto } from './git-checkout';
+import { GitStatusOptionsDto } from './git-status';
 
 @Module('git')
 export class GitModule {
-  private readonly gitStatusService = new GitStatusService();
-  private readonly gitCheckoutService = new GitCheckoutService();
-  private readonly gitAddService = new GitAddService();
-
   @Command('status')
   public status(@Options() options: GitStatusOptionsDto) {
-    this.gitStatusService.status(options);
+    console.log('git status', options);
   }
 
   @Command('checkout <branch>')
   public checkout(@Params() params: GitCheckoutParamsDto) {
-    this.gitCheckoutService.checkout(params);
+    console.log('git checkout', params);
   }
 
   @Command('add <...all-files>')
@@ -24,6 +20,6 @@ export class GitModule {
     @Params() params: GitAddParamsDto,
     @Options() options: GitAddOptionsDto,
   ) {
-    this.gitAddService.add(params, options);
+    console.log('git add', params, options);
   }
 }

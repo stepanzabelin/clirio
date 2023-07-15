@@ -8,11 +8,8 @@ import {
   Pipe,
   Params,
 } from '@clirio';
-import { MigrationEmptyService } from './empty';
-import { MigrationFailureService } from './failure';
-import { MigrationRunOptionsDto, MigrationRunService } from './migration-run';
+import { MigrationRunOptionsDto } from './migration-run';
 import {
-  MigrationToService,
   MigrationToPipe,
   MigrationToParamsDto,
   MigrationToOptionsDto,
@@ -20,15 +17,10 @@ import {
 
 @Module('migration')
 export class MigrationModule {
-  private readonly migrationRunService = new MigrationRunService();
-  private readonly migrationEmptyService = new MigrationEmptyService();
-  private readonly migrationFailureService = new MigrationFailureService();
-  private readonly migrationToService = new MigrationToService();
-
   @Command('run')
   @Hidden()
   public run(@Options() options: MigrationRunOptionsDto) {
-    this.migrationRunService.entry(options);
+    console.log('migration run', options);
   }
 
   @Command('to <...name>')
@@ -37,16 +29,16 @@ export class MigrationModule {
     @Params() params: MigrationToParamsDto,
     @Options() options: MigrationToOptionsDto,
   ) {
-    this.migrationToService.entry(params, options);
+    console.log('migration to', params, options);
   }
 
   @Empty()
   public empty() {
-    this.migrationEmptyService.entry();
+    console.log('migration empty');
   }
 
   @Failure()
   public failure() {
-    this.migrationFailureService.entry();
+    console.log('migration failure');
   }
 }

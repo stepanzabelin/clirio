@@ -2,7 +2,6 @@ import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { MigrationModule } from '../test-cli-app/modules/migration';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { MigrationRunService } from '../test-cli-app/modules/migration/migration-run';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -37,7 +36,7 @@ describe('Options with variable', () => {
   // });
 
   it('correct input only one variable', async () => {
-    const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(
       Clirio.split('migration run -e DB_NAME=db-name --silent'),
@@ -54,7 +53,7 @@ describe('Options with variable', () => {
   });
 
   it('correct input only one variable 2', async () => {
-    const entryStub = sandbox.stub(MigrationRunService.prototype, 'entry');
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(Clirio.split('migration run'));
 

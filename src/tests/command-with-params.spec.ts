@@ -1,11 +1,6 @@
 import sinon from 'sinon';
 import { Clirio, ClirioError } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
-import { HelloToService } from '../test-cli-app/modules/hello/hello-to';
-import { HelloPlanetService } from '../test-cli-app/modules/hello/hello-planet';
-import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
-import { HelloGuysService } from '../test-cli-app/modules/hello/hello-guys';
-import { HelloUniversalService } from '../test-cli-app/modules/hello/hello-universal';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -21,7 +16,7 @@ describe('Command with params', () => {
   });
 
   it('Test 1.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloThereService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloThere');
 
     await buildCli().execute(Clirio.split('hello there'));
 
@@ -29,7 +24,7 @@ describe('Command with params', () => {
   });
 
   it('Test 2.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello venus'));
 
@@ -37,7 +32,7 @@ describe('Command with params', () => {
   });
 
   it('Test 2.2. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello earth'));
 
@@ -45,7 +40,7 @@ describe('Command with params', () => {
   });
 
   it('Test 2.3. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello mars'));
 
@@ -70,7 +65,7 @@ describe('Command with params', () => {
   });
 
   it('Test 3.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloToService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloTo');
 
     await buildCli().execute(Clirio.split('hello to Alex Smith'));
 
@@ -117,7 +112,7 @@ describe('Command with params', () => {
   });
 
   it('Test 4.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloGuysService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(Clirio.split('hello guys Alex Jack Max'));
 
@@ -127,7 +122,7 @@ describe('Command with params', () => {
   });
 
   it('Test 4.2. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloGuysService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(
       Clirio.split('hello guys "Alex Smith" Jack "Max Martinez"'),
@@ -141,7 +136,7 @@ describe('Command with params', () => {
   });
 
   it('Test 5.1. Positive', async () => {
-    const entrySpy = sandbox.stub(HelloUniversalService.prototype, 'entry');
+    const entrySpy = sandbox.stub(HelloModule.prototype, 'universalHello');
 
     await buildCli().execute(
       Clirio.split(
