@@ -13,12 +13,12 @@ const buildCli = () => {
     GitModule,
     new MigrationModule(),
     PingModule,
-    CommonModule,
+    new CommonModule(),
   ]);
   return cli;
 };
 
-describe('Exact command', () => {
+describe('Composed of several modules', () => {
   const sandbox = sinon.createSandbox();
 
   beforeEach(() => {
@@ -33,6 +33,14 @@ describe('Exact command', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
+  it('Test 2.1. Positive', async () => {
+    const entrySpy = sandbox.stub(GitModule.prototype, 'status');
+
+    await buildCli().execute(Clirio.split('git status'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
+  });
+
   // it('correct input compound command', async () => {
   //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
 
@@ -40,7 +48,7 @@ describe('Exact command', () => {
 
   //   expect(entryStub.calledOnce).toBeTruthy();
 
-  //   entryStub.restore();
+  //
   // });
 
   // it('correct input simple command with extra option without options dto', async () => {

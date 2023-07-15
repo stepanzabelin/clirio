@@ -32,7 +32,7 @@ describe('Options with variable', () => {
   //     silent: null,
   //   });
 
-  //   entryStub.restore();
+  //
   // });
 
   it('correct input only one variable', async () => {
@@ -48,8 +48,6 @@ describe('Options with variable', () => {
       envs: { DB_NAME: 'db-name' },
       silent: null,
     });
-
-    entryStub.restore();
   });
 
   it('correct input only one variable 2', async () => {
@@ -60,7 +58,5 @@ describe('Options with variable', () => {
     const [options] = entryStub.getCall(0).args;
 
     expect(options).toStrictEqual({});
-
-    entryStub.restore();
   });
 });

@@ -28,8 +28,6 @@ describe('Command with options without handlers', () => {
       firstName: 'Alex',
       lastName: 'Smith',
     });
-
-    entryStub.restore();
   });
 
   it('Test 1.2. Positive', async () => {
@@ -45,8 +43,6 @@ describe('Command with options without handlers', () => {
       firstName: 'Alex',
       lastName: 'Smith',
     });
-
-    entryStub.restore();
   });
 
   it('Test 1.3. Positive', async () => {
@@ -60,8 +56,6 @@ describe('Command with options without handlers', () => {
       firstName: 'Alex',
       lastName: 'Smith',
     });
-
-    entryStub.restore();
   });
 
   it('Test 1.4. Positive', async () => {
@@ -75,8 +69,6 @@ describe('Command with options without handlers', () => {
       firstName: 'Alex',
       lastName: 'Smith',
     });
-
-    entryStub.restore();
   });
 
   it('Test 2.1. Positive', async () => {
@@ -98,8 +90,6 @@ describe('Command with options without handlers', () => {
       z: null,
       yes: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 2.2. Positive', async () => {
@@ -121,8 +111,6 @@ describe('Command with options without handlers', () => {
       z: null,
       yes: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 2.3. Positive', async () => {
@@ -144,8 +132,6 @@ describe('Command with options without handlers', () => {
       z: null,
       yes: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 3.1. Positive', async () => {
@@ -162,8 +148,6 @@ describe('Command with options without handlers', () => {
       lastName: "John's",
       verbose: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 3.2. Positive', async () => {
@@ -178,8 +162,6 @@ describe('Command with options without handlers', () => {
       lastName: "John's",
       verbose: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 3.3. Positive', async () => {
@@ -196,8 +178,6 @@ describe('Command with options without handlers', () => {
       lastName: "John's",
       verbose: null,
     });
-
-    entryStub.restore();
   });
 
   it('Test 4.1. Positive', async () => {
@@ -216,8 +196,6 @@ describe('Command with options without handlers', () => {
       lastName: 'Smith',
       verbose: [null, null],
     });
-
-    entryStub.restore();
   });
 
   it('Test 4.2. Positive', async () => {
@@ -234,8 +212,6 @@ describe('Command with options without handlers', () => {
       lastName: 'Smith',
       verbose: [null, null],
     });
-
-    entryStub.restore();
   });
 
   it('Test 4.3. Positive', async () => {
@@ -254,8 +230,6 @@ describe('Command with options without handlers', () => {
       lastName: 'Smith',
       verbose: [null, null],
     });
-
-    entryStub.restore();
   });
 
   // it('Test #3. Negative', async () => {

@@ -13,4 +13,4 @@ yarn dev hello --first-name=Alex --last-name=Smith --middle-name=123
 - README
 - result?
 - renaming
-- input args driven?
+- input args driven? independent pipe?

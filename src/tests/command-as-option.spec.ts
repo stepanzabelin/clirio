@@ -15,27 +15,23 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('Test #1', async () => {
+  it('Test 1.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('-v'));
 
     expect(entryStub.calledOnce).toBeTruthy();
-
-    entryStub.restore();
   });
 
-  it('Test #2', async () => {
+  it('Test 1.2', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('--version'));
 
     expect(entryStub.calledOnce).toBeTruthy();
-
-    entryStub.restore();
   });
 
-  it('Test #3', async () => {
+  it('Test 2.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --pool=5 -v'));
@@ -46,14 +42,14 @@ describe('Command as option', () => {
       verbose: null,
       pool: '5',
     });
-
-    entryStub.restore();
   });
 
-  it('Test #4', async () => {
+  it('Test 2.2', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
-    await buildCli().execute(Clirio.split('--check --unknown --pool=5 -v'));
+    await buildCli().execute(
+      Clirio.split('--check --unknown --pool=5 -v --test-arg=1'),
+    );
 
     const [options] = entryStub.getCall(0).args;
 
@@ -61,9 +57,8 @@ describe('Command as option', () => {
       verbose: null,
       unknown: null,
       pool: '5',
+      'test-arg': '1',
     });
-
-    entryStub.restore();
   });
 
   // it('invalid input command as option and extra options', async () => {
