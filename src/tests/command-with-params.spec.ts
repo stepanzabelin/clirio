@@ -2,6 +2,8 @@ import sinon from 'sinon';
 import { Clirio, ClirioError } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { HelloToService } from '../test-cli-app/modules/hello/hello-to';
+import { HelloPlanetService } from '../test-cli-app/modules/hello/hello-planet';
+import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -17,6 +19,63 @@ describe('Command with params', () => {
   });
 
   it('Test 1.1. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloThereService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello there'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
+
+    entrySpy.restore();
+  });
+
+  it('Test 2.1. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello venus'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
+
+    entrySpy.restore();
+  });
+
+  it('Test 2.2. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello earth'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
+
+    entrySpy.restore();
+  });
+
+  it('Test 2.3. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloPlanetService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello mars'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
+
+    entrySpy.restore();
+  });
+
+  it('Test 2.4. Negative', async () => {
+    const catchSpy = sandbox.spy();
+
+    await buildCli()
+      .setGlobalException({
+        catch: catchSpy,
+      })
+      .execute(Clirio.split('hello jupiter'))
+      .catch(() => null);
+
+    const [err] = catchSpy.getCall(0).args;
+
+    expect(
+      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+    ).toBeTruthy();
+  });
+
+  it('Test 3.1. Positive', async () => {
     const entrySpy = sandbox.stub(HelloToService.prototype, 'entry');
 
     await buildCli().execute(Clirio.split('hello to Alex Smith'));
@@ -31,7 +90,7 @@ describe('Command with params', () => {
     entrySpy.restore();
   });
 
-  it('Test 1.2. Negative', async () => {
+  it('Test 3.2. Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -48,7 +107,7 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
-  it('Test 1.3 Negative', async () => {
+  it('Test 3.3. Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -64,12 +123,4 @@ describe('Command with params', () => {
       err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
-
-  // it('invalid input extra param', async () => {
-  //   const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
-
-  //   await buildCli().execute(Clirio.split('hello Alex'));
-
-  //   expect(entryStub.calledOnce).toBeTruthy();
-  // });
 });

@@ -4,6 +4,7 @@ import { HelloThereService } from './hello-there';
 import { HelloToService, HelloToParamsDto } from './hello-to';
 import { HelloGuysParamsDto, HelloGuysService } from './hello-guys';
 import { HelloPeopleOptionsDto, HelloPeopleService } from './hello-people';
+import { HelloPlanetService } from './hello-planet';
 
 @Module()
 export class HelloModule {
@@ -12,6 +13,7 @@ export class HelloModule {
   private readonly helloToService = new HelloToService();
   private readonly helloGuysService = new HelloGuysService();
   private readonly helloPeopleService = new HelloPeopleService();
+  private readonly helloPlanetService = new HelloPlanetService();
 
   @Command('hello there')
   @Description('Say hello there')
@@ -19,10 +21,10 @@ export class HelloModule {
     this.helloThereService.entry();
   }
 
-  @Command('hello world|mars')
+  @Command('hello venus|earth|mars')
   @Description('Say hello there')
-  public helloWorld() {
-    this.helloThereService.entry();
+  public helloPlanet() {
+    this.helloPlanetService.entry();
   }
 
   @Command('hello')
