@@ -25,6 +25,12 @@ export class HelloModule {
     console.log('hello', options);
   }
 
+  @Command('hello-unknown')
+  @Description('Say hello in person using options')
+  public helloUnknown(@Options() options: unknown) {
+    console.log('hello-unknown', options);
+  }
+
   @Command('hello to <first-name> <last-name>')
   @Description('Say hello in person using command')
   public helloTo(@Params() params: HelloToParamsDto) {

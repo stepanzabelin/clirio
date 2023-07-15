@@ -71,6 +71,24 @@ describe('Command with options without handlers', () => {
     });
   });
 
+  it('Test 1.5. Positive', async () => {
+    const entryStub = sandbox.stub(HelloModule.prototype, 'helloUnknown');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello-unknown --first-name Alex -l Smith --last-name=Smith',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      'first-name': 'Alex',
+      l: 'Smith',
+      'last-name': 'Smith',
+    });
+  });
+
   it('Test 2.1. Positive', async () => {
     const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
 
