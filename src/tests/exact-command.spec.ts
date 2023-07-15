@@ -1,7 +1,5 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
-import { CommonFailureService } from '../test-cli-app/modules/common/failure';
-import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
 import { HelloModule } from '../test-cli-app/modules/hello';
 
 const buildCli = () => {
