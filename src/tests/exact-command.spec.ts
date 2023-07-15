@@ -1,10 +1,21 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
+import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
+import { GitModule } from '../test-cli-app/modules/git';
+import { MigrationModule } from '../test-cli-app/modules/migration';
+import { PingModule } from '../test-cli-app/modules/ping';
+import { CommonModule } from '../test-cli-app/modules/common/common.module';
 
 const buildCli = () => {
   const cli = new Clirio();
-  cli.setModules([HelloModule]);
+  cli.setModules([
+    HelloModule,
+    GitModule,
+    new MigrationModule(),
+    PingModule,
+    CommonModule,
+  ]);
   return cli;
 };
 
@@ -13,6 +24,14 @@ describe('Exact command', () => {
 
   beforeEach(() => {
     sandbox.restore();
+  });
+
+  it('Test 1.1. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloThereService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello there'));
+
+    expect(entrySpy.calledOnce).toBeTruthy();
   });
 
   // it('correct input compound command', async () => {

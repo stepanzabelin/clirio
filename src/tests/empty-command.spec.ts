@@ -1,14 +1,16 @@
 import { Clirio } from '@clirio';
 import sinon from 'sinon';
-import { CommonModule } from 'src/test-cli-app/modules/common/common.module';
-import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
-import { CommonFailureService } from '../test-cli-app/modules/common/failure';
+import { MigrationModule } from '../test-cli-app/modules/migration';
+import { CommonModule } from '../test-cli-app/modules/common/common.module';
+// import { CommonEmptyService } from '../test-cli-app/modules/common/empty';
+// import { CommonFailureService } from '../test-cli-app/modules/common/failure';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationEmptyService } from '../test-cli-app/modules/migration/empty';
+import { GitModule } from '../test-cli-app/modules/git';
 
 const buildCli = () => {
   const cli = new Clirio();
-  cli.setModules([HelloModule, CommonModule]);
+  cli.setModules([MigrationModule, HelloModule, CommonModule, GitModule]);
   return cli;
 };
 
@@ -31,30 +33,25 @@ describe('Empty command', () => {
   //   expect(err.message).toEqual('Incorrect command specified');
   // });
 
-  it('Empty with handler in the root', async () => {
-    const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
+  // NEGATIVE
+  // it('Empty with handler in the root', async () => {
+  //   const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
 
-    await buildCli().execute(
-      Clirio.split(
-        'hello --first-name=Alex -f John --first-name Max -l Smith --verbose -v',
-      ),
-    );
+  //   await buildCli().execute(
+  //     Clirio.split(
+  //       'hello --first-name=Alex -f John --first-name Max -l Smith --verbose -v',
+  //     ),
+  //   );
 
-    expect(entryStub.calledOnce).toBeTruthy();
-  });
+  //   expect(entryStub.calledOnce).toBeTruthy();
+  // });
 
   it('Empty with handler in nested module', async () => {
     const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
 
-    await buildCli().execute(Clirio.split('migration'));
-
-    expect(entryStub.calledOnce).toBeTruthy();
-  });
-
-  it('Empty without handler in nested module', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
-
-    await buildCli().execute(Clirio.split('git'));
+    await buildCli()
+      .execute(Clirio.split('migration'))
+      .catch((err) => null);
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

@@ -59,8 +59,6 @@ describe('Command as option', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    console.log('options', options);
-
     expect(options).toStrictEqual({
       verbose: null,
       unknown: null,

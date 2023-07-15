@@ -432,46 +432,6 @@ export class ClirioHandler {
     return linkedArgs;
   }
 
-  public countMatchRoute(parsedArgs: ParsedArg[], links: Link[]): number {
-    let counter = 0;
-
-    let actionIndex = 0;
-
-    for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
-        return counter;
-      }
-
-      const attributes = parsedArgs[actionIndex];
-
-      switch (true) {
-        case this.compareOption(link, attributes):
-          break;
-        case this.compareAction(link, attributes):
-          break;
-        case this.compareParam(link, attributes):
-          break;
-        case this.compareParamList(link, attributes):
-          for (let index = actionIndex; index < parsedArgs.length; index++) {
-            const parsedArg = parsedArgs[index];
-            if (parsedArg.type === ArgType.Action) {
-              actionIndex = index;
-            } else {
-              break;
-            }
-          }
-          break;
-        default:
-          return counter;
-      }
-
-      actionIndex++;
-      counter++;
-    }
-
-    return counter;
-  }
-
   public matchRoute(
     parsedArgs: ParsedArg[],
     links: Link[],

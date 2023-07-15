@@ -9,10 +9,10 @@ export const cliApp = async () => {
   const cli = new Clirio();
   cli.setModules([
     HelloModule,
-    CommonModule,
     GitModule,
     new MigrationModule(),
     PingModule,
+    CommonModule,
   ]);
   await cli.execute();
   return cli;

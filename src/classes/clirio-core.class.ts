@@ -197,6 +197,8 @@ export class ClirioCore {
 
     // EMPTY ACTION
 
+    const empties = [];
+
     for (const {
       module,
       moduleData,
@@ -209,9 +211,19 @@ export class ClirioCore {
 
       const data = this.handler.matchRoute(parsedArgs, moduleData.links);
 
-      if (!data) {
-        continue;
+      if (data) {
+        empties.push({
+          length: moduleData.links.length,
+          module,
+          actionName,
+        });
       }
+    }
+
+    if (empties.length > 0) {
+      const { module, actionName } = empties.sort(
+        (a, b) => b.length - a.length,
+      )[0]!;
 
       try {
         await this.handler.applyAction(module, actionName, []);
@@ -241,14 +253,25 @@ export class ClirioCore {
         continue;
       }
 
-      const count = this.handler.countMatchRoute(parsedArgs, moduleData.links);
+      const length = moduleData.links.length;
 
-      failures.push({ count, module, actionName });
+      const data = this.handler.matchRoute(
+        parsedArgs.slice(0, length),
+        moduleData.links,
+      );
+
+      if (data) {
+        failures.push({
+          length,
+          module,
+          actionName,
+        });
+      }
     }
 
     if (failures.length > 0) {
       const { module, actionName } = failures.sort(
-        (a, b) => b.count - a.count,
+        (a, b) => b.length - a.length,
       )[0]!;
 
       try {
