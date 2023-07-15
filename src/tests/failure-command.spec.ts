@@ -4,10 +4,17 @@ import { HelloModule } from '../test-cli-app/modules/hello';
 import { MigrationModule } from '../test-cli-app/modules/migration';
 import { CommonModule } from '../test-cli-app/modules/common/common.module';
 import { GitModule } from '../test-cli-app/modules/git';
+import { PingModule } from '../test-cli-app/modules/ping';
 
 const buildCli = () => {
   const cli = new Clirio();
-  cli.setModules([HelloModule, MigrationModule, CommonModule, GitModule]);
+  cli.setModules([
+    HelloModule,
+    MigrationModule,
+    CommonModule,
+    GitModule,
+    PingModule,
+  ]);
   return cli;
 };
 
@@ -70,6 +77,14 @@ describe('Failure command', () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('migration git'));
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('Test 3.3. Positive', async () => {
+    const entryStub = sandbox.stub(PingModule.prototype, 'failure');
+
+    await buildCli().execute(Clirio.split('ping check'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });

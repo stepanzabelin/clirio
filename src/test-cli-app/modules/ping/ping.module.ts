@@ -1,9 +1,19 @@
-import { Module, Command } from '@clirio';
+import { Module, Command, Empty, Failure } from '@clirio';
 
-@Module()
+@Module('ping')
 export class PingModule {
-  @Command('ping')
-  public ping() {
-    console.log('ping');
+  @Command('test')
+  public test() {
+    console.log('ping test');
+  }
+
+  @Empty()
+  public empty() {
+    console.log('ping empty');
+  }
+
+  @Failure()
+  public failure() {
+    console.log('ping failure');
   }
 }

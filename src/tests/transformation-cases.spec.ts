@@ -9,7 +9,7 @@ const buildCli = () => {
   return cli;
 };
 
-describe('The "Transform" decorator cases', () => {
+describe('Transformation cases', () => {
   const sandbox = sinon.createSandbox();
 
   beforeEach(() => {
