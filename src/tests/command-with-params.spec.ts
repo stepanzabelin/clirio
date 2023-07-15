@@ -4,6 +4,7 @@ import { HelloModule } from '../test-cli-app/modules/hello';
 import { HelloToService } from '../test-cli-app/modules/hello/hello-to';
 import { HelloPlanetService } from '../test-cli-app/modules/hello/hello-planet';
 import { HelloThereService } from '../test-cli-app/modules/hello/hello-there';
+import { HelloGuysService } from '../test-cli-app/modules/hello/hello-guys';
 
 const buildCli = () => {
   const cli = new Clirio();
@@ -112,5 +113,29 @@ describe('Command with params', () => {
     expect(
       err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
+  });
+
+  it('Test 4.1. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloGuysService.prototype, 'entry');
+
+    await buildCli().execute(Clirio.split('hello guys Alex Jack Max'));
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({ names: ['Alex', 'Jack', 'Max'] });
+  });
+
+  it('Test 4.2. Positive', async () => {
+    const entrySpy = sandbox.stub(HelloGuysService.prototype, 'entry');
+
+    await buildCli().execute(
+      Clirio.split('hello guys "Alex Smith" Jack "Max Martinez"'),
+    );
+
+    const [params] = entrySpy.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      names: ['Alex Smith', 'Jack', 'Max Martinez'],
+    });
   });
 });
