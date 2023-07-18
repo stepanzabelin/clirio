@@ -25,7 +25,7 @@ type ActionData = {
 };
 
 type Scope = {
-  moduleEntity: Constructor;
+  moduleEntity: Constructor<any>;
   actionName: string;
 };
 
@@ -49,23 +49,27 @@ type DumpItem = {
 
 export class ClirioHelper {
   private readonly modules: Constructor<any>[];
-  private readonly scope: Scope;
+  private readonly scopedModuleEntity: Constructor<any>;
+  private readonly scopedActionName: string;
 
   constructor({
     modules,
-    scope,
+    scopedModuleEntity,
+    scopedActionName,
   }: {
+    scopedModuleEntity: Constructor<any>;
     modules: Constructor<any>[];
-    scope: Scope;
+    scopedActionName: string;
   }) {
     this.modules = modules;
-    this.scope = scope;
+    this.scopedActionName = scopedActionName;
+    this.scopedModuleEntity = scopedModuleEntity;
   }
 
-  public dumpScopedModule(module: Constructor<any>): DumpItem[] {
+  public dumpModule(module: Constructor<any>): DumpItem[] {
     const moduleData = moduleEntityMetadata.get(getPrototype(module))!;
     const actionMap = actionTargetMetadata.getMap(getPrototype(module));
-    const results: ModuleData[] = [];
+    const results: DumpItem[] = [];
 
     for (const [propertyKey, actionData] of actionMap) {
       if (actionData.type !== ActionType.Command) {
@@ -87,10 +91,10 @@ export class ClirioHelper {
       results.push({
         command,
         moduleCommand: moduleData.command,
-        actionCommand: actionData.command!,
+        actionCommand: actionData.command,
         description,
         optionDescription,
-      });
+      } as any);
     }
 
     return results;
@@ -130,8 +134,6 @@ export class ClirioHelper {
         optionDescription.push({
           options,
           description,
-          type: null,
-          itemType: null,
         });
       }
     }
@@ -140,29 +142,29 @@ export class ClirioHelper {
 
   public dumpAll(): DumpItem[] {
     return this.modules
-      .map((module) => this.dumpScopedModule(module))
+      .map((module) => this.dumpModule(module))
       .flatMap((f) => f);
   }
 
-  public getScope(): ModuleData[] {
-    return this.describeModule(this.scope.module);
-  }
+  // public getScope(): ModuleData[] {
+  //   return this.describeModule(this.scope.module);
+  // }
 
-  private static formatType(
-    type: string | null,
-    itemType: string | null,
-  ): string {
-    if (!type) {
-      return '';
-    } else if (['number', 'string'].includes(type)) {
-      return `<${type}>`;
-    } else if (type === 'array') {
-      const subType =
-        itemType && ['number', 'string'].includes(itemType) ? itemType : '';
-      return `<...${subType}>`;
-    }
-    return '';
-  }
+  // private static formatType(
+  //   type: string | null,
+  //   itemType: string | null,
+  // ): string {
+  //   if (!type) {
+  //     return '';
+  //   } else if (['number', 'string'].includes(type)) {
+  //     return `<${type}>`;
+  //   } else if (type === 'array') {
+  //     const subType =
+  //       itemType && ['number', 'string'].includes(itemType) ? itemType : '';
+  //     return `<...${subType}>`;
+  //   }
+  //   return '';
+  // }
 
   public static formatActionDescription(
     optionDescription: OptionsData[],
@@ -170,11 +172,8 @@ export class ClirioHelper {
   ): string {
     let content = '';
 
-    for (const { options, type, itemType, description } of optionDescription) {
-      const col1 =
-        options.join(', ') +
-        ' ' +
-        (showType ? this.formatType(type, itemType) : '');
+    for (const { options, description } of optionDescription) {
+      const col1 = options.join(', ') + ' ' + (showType ? '??' : '');
       content +=
         this.formatTwoCols([col1.trim(), description], {
           firstColLen: 22,
@@ -191,20 +190,20 @@ export class ClirioHelper {
   ): string {
     let content = '';
 
-    for (const dumpItem of dump) {
-      const { command, description, optionDescription } = dumpItem;
-      content +=
-        this.formatTwoCols([command, description], {
-          firstColLen: 24,
-          indent: 2,
-        }) + `\n`;
+    // for (const dumpItem of dump) {
+    //   const { command, description, optionDescription } = dumpItem;
+    //   content +=
+    //     this.formatTwoCols([command, description], {
+    //       firstColLen: 24,
+    //       indent: 2,
+    //     }) + `\n`;
 
-      if (showOptions && optionDescription.length > 0) {
-        content += `\n`;
-        content += this.formatActionDescription(optionDescription);
-        content += `\n`;
-      }
-    }
+    //   if (showOptions && optionDescription.length > 0) {
+    //     content += `\n`;
+    //     content += this.formatActionDescription(optionDescription);
+    //     content += `\n`;
+    //   }
+    // }
 
     return content;
   }
