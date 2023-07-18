@@ -26,6 +26,22 @@
       "protocol": "inspector",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug with ts-node 2 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "-r",
+        "tsconfig-paths/register",
+        "${workspaceFolder}/src/test-cli-app/run.ts",
+        "--help"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

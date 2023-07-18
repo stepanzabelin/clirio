@@ -22,6 +22,7 @@ import { ClirioHelper } from './clirio-helper.class';
 import { ClirioHandler } from './clirio-handler.class';
 import { ClirioError, ClirioDebugError } from '../exceptions';
 import { Clirio } from './clirio.class';
+import { getPrototype } from '../utils';
 
 export class ClirioCore {
   protected modules: Module[] = [];
@@ -34,12 +35,8 @@ export class ClirioCore {
 
   private *iterateData() {
     for (const module of this.modules) {
-      const moduleData = moduleEntityMetadata.get(
-        this.handler.getPrototype(module),
-      )!;
-      const actionMap = actionTargetMetadata.getMap(
-        this.handler.getPrototype(module),
-      );
+      const moduleData = moduleEntityMetadata.get(getPrototype(module))!;
+      const actionMap = actionTargetMetadata.getMap(getPrototype(module));
 
       for (const [actionName, actionData] of actionMap) {
         yield { module, moduleData, actionName, actionData };
@@ -79,17 +76,17 @@ export class ClirioCore {
         );
 
         const optionsArgMap = optionsArgMetadata.getArgMap(
-          this.handler.getPrototype(module),
+          getPrototype(module),
           actionName,
         );
 
         const paramsArgMap = paramsArgMetadata.getArgMap(
-          this.handler.getPrototype(module),
+          getPrototype(module),
           actionName,
         );
 
         const helperArgMap = helperArgMetadata.getArgMap(
-          this.handler.getPrototype(module),
+          getPrototype(module),
           actionName,
         );
 
@@ -130,13 +127,13 @@ export class ClirioCore {
               {
                 const handledParamRows = this.handler.handleParams(
                   paramLinkedArgs,
-                  input.dto,
+                  input.entity,
                   DataTypeEnum.Params,
                 );
 
                 const pipedParams = this.handler.passPipes(
                   handledParamRows,
-                  input.dto,
+                  input.entity,
                   DataTypeEnum.Params,
                   pipeScopeList,
                 );
@@ -149,13 +146,13 @@ export class ClirioCore {
               {
                 const handledOptionRows = this.handler.handleOptions(
                   optionLinkedArgs,
-                  input.dto,
+                  input.entity,
                   DataTypeEnum.Options,
                 );
 
                 const pipedOptions = this.handler.passPipes(
                   handledOptionRows,
-                  input.dto,
+                  input.entity,
                   DataTypeEnum.Options,
                   pipeScopeList,
                 );
@@ -165,11 +162,16 @@ export class ClirioCore {
               break;
 
             case InputTypeEnum.Helper:
-              transformedArguments[argumentIndex] = new ClirioHelper({
-                scoped: { module, actionName },
-                modules: this.modules,
-              });
+              {
+                console.log({ module, actionName });
 
+                transformedArguments[argumentIndex] = new ClirioHelper({
+                  scoped: { module, actionName },
+                  modules: this.modules,
+                });
+
+                console.log(transformedArguments[argumentIndex]);
+              }
               break;
             default:
               continue;
@@ -306,7 +308,7 @@ export class ClirioCore {
     }
 
     for (const module of this.modules) {
-      if (!moduleEntityMetadata.has(this.handler.getPrototype(module))) {
+      if (!moduleEntityMetadata.has(getPrototype(module))) {
         throw new ClirioDebugError(
           'A constructor is not specified as a module. use @Module() decorator',
           {
@@ -330,7 +332,7 @@ export class ClirioCore {
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
-        this.handler.getPrototype(module),
+        getPrototype(module),
         actionName,
       );
 

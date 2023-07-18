@@ -25,24 +25,9 @@ import {
   pipeTargetMetadata,
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
+import { getInstance, getPrototype, isEntity } from '../utils';
 
 export class ClirioHandler {
-  public isDto(dto: Constructor<any>) {
-    return dto && dto !== Object && typeof dto === 'function';
-  }
-
-  public getPrototype(
-    entity: Constructor<any> | Constructor<any>['prototype'],
-  ) {
-    return typeof entity === 'function'
-      ? entity.prototype
-      : entity.constructor.prototype;
-  }
-
-  public getInstance(entity: Constructor<any> | Constructor<any>['prototype']) {
-    return typeof entity === 'function' ? new entity() : entity;
-  }
-
   public handleExceptions(rawErr: any, exceptionList: ExceptionScope[] = []) {
     let currentErr = rawErr;
 
@@ -68,23 +53,23 @@ export class ClirioHandler {
     transformedArguments: any[],
   ) {
     await Reflect.apply(
-      this.getPrototype(module)[actionName],
-      this.getInstance(module),
+      getPrototype(module)[actionName],
+      getInstance(module),
       transformedArguments,
     );
   }
 
   public handleParams(
     linkedArgs: LinkedArg[],
-    dto: Constructor<any>,
+    entity: Constructor<any>,
     dataType: DataTypeEnum,
   ): Row[] {
     const rows: Row[] = [];
 
     const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    const paramTargetDataList = this.isDto(dto)
-      ? [...paramTargetMetadata.getMap(dto.prototype)]
+    const paramTargetDataList = isEntity(entity)
+      ? [...paramTargetMetadata.getMap(entity.prototype)]
       : [];
 
     for (const [propertyName, paramData] of paramTargetDataList) {
@@ -101,7 +86,7 @@ export class ClirioHandler {
       const linkedArg = parsedLinkedArgs[index];
       parsedLinkedArgs.splice(index, 1);
 
-      const value = this.cast(linkedArg.value, paramData.cast);
+      const value = linkedArg.value;
 
       rows.push({
         type: 'param',
@@ -124,24 +109,24 @@ export class ClirioHandler {
       });
     }
 
-    this.validate(rows, dto, dataType);
+    this.validate(rows, entity, dataType);
 
-    const transformRows = this.transform(rows, dto);
+    const transformRows = this.transform(rows, entity);
 
     return transformRows;
   }
 
   public handleOptions(
     linkedArgs: LinkedArg[],
-    dto: Constructor<any>,
+    entity: Constructor<any>,
     dataType: DataTypeEnum,
   ): Row[] {
     const rows: Row[] = [];
 
     let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    const optionTargetDataList = this.isDto(dto)
-      ? [...optionTargetMetadata.getMap(dto.prototype)]
+    const optionTargetDataList = isEntity(entity)
+      ? [...optionTargetMetadata.getMap(entity.prototype)]
       : [];
 
     for (const [propertyName, optionData] of optionTargetDataList) {
@@ -161,12 +146,7 @@ export class ClirioHandler {
 
       const linkedArg = filteredLinkedArgs[0];
 
-      const value = this.cast(
-        filteredLinkedArgs.length > 1
-          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value).flat()
-          : linkedArg.value,
-        optionData.cast,
-      );
+      const value = linkedArg.value;
 
       rows.push({
         type: 'option',
@@ -189,19 +169,19 @@ export class ClirioHandler {
       });
     }
 
-    this.validate(rows, dto, dataType);
+    this.validate(rows, entity, dataType);
 
-    const transformRows = this.transform(rows, dto);
+    const transformRows = this.transform(rows, entity);
 
     return transformRows;
   }
 
   public validate(
     rows: Row[],
-    dto: Constructor<any>,
+    entity: Constructor<any>,
     dataType: DataTypeEnum,
   ): void {
-    const validationMap = validateTargetMetadata.getMap(dto.prototype);
+    const validationMap = validateTargetMetadata.getMap(entity.prototype);
 
     for (const [propertyName, data] of validationMap) {
       const row = rows.find((row) => row.propertyName === propertyName);
@@ -226,10 +206,10 @@ export class ClirioHandler {
     }
   }
 
-  public transform(rows: Row[], dto: Constructor<any>): Row[] {
+  public transform(rows: Row[], entity: Constructor<any>): Row[] {
     const transformedRows = [...rows];
 
-    const transformMap = transformTargetMetadata.getMap(dto.prototype);
+    const transformMap = transformTargetMetadata.getMap(entity.prototype);
 
     for (const [propertyName, data] of transformMap) {
       const index = transformedRows.findIndex(
@@ -253,7 +233,7 @@ export class ClirioHandler {
 
   public passPipes(
     rows: Row[],
-    dto: Constructor,
+    entity: Constructor<any>,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = [],
   ) {
@@ -268,7 +248,7 @@ export class ClirioHandler {
       data = pipeInst.transform(data, {
         dataType,
         scope,
-        dto,
+        entity,
         rows,
       });
     }
@@ -284,7 +264,7 @@ export class ClirioHandler {
     let pipeScopeList: PipeScope[] = [];
 
     const pipeMetadata = pipeTargetMetadata.getData(
-      this.getPrototype(module),
+      getPrototype(module),
       actionName,
     );
 
@@ -319,7 +299,7 @@ export class ClirioHandler {
 
     if (module && actionName) {
       const exceptionMetadata = exceptionTargetMetadata.getData(
-        this.getPrototype(module),
+        getPrototype(module),
         actionName,
       );
 
@@ -544,18 +524,5 @@ export class ClirioHandler {
 
   private compareParamList(link: Link, attributes: ParsedArg): boolean {
     return link.type === LinkType.List && attributes.type === ArgType.Action;
-  }
-
-  private cast(value: any, cast: null | 'array' | 'plain'): any {
-    switch (cast) {
-      case 'array': {
-        return Array.isArray(value) ? value : [value];
-      }
-      case 'plain': {
-        return Array.isArray(value) ? value[0] : value;
-      }
-      default:
-        return value;
-    }
   }
 }

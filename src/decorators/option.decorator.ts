@@ -6,7 +6,10 @@ import { Constructor, OptionTargetData } from '../types';
 
 export const Option = function (
   optionLine?: string,
-  { cast = null }: Partial<Omit<OptionTargetData, 'keys'>> = {},
+  {
+    description = null,
+    hidden = false,
+  }: Partial<Omit<OptionTargetData, 'keys'>> = {},
 ) {
   return function (
     target: Constructor<any>['prototype'],
@@ -15,7 +18,8 @@ export const Option = function (
     if (!optionLine) {
       optionTargetMetadata.setData(target, propertyName, {
         keys: null,
-        cast,
+        description,
+        hidden,
       });
       return;
     }
@@ -41,7 +45,8 @@ export const Option = function (
 
     optionTargetMetadata.setData(target, propertyName, {
       keys,
-      cast,
+      description,
+      hidden,
     });
   };
 };

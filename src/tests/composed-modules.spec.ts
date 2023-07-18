@@ -41,42 +41,37 @@ describe('Composed of several modules', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  // it('correct input compound command', async () => {
-  //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
+  it('Test 3.1. Positive', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'status');
 
-  //   await buildCli().execute(Clirio.split('hello there'));
+    await buildCli().execute(
+      Clirio.split(
+        'migration status users --id=17 -d 22.12.22 -f A --format B --verbose',
+      ),
+    );
 
-  //   expect(entryStub.calledOnce).toBeTruthy();
+    const [params, options] = entryStub.getCall(0).args;
 
-  //
-  // });
+    expect(params).toStrictEqual({ tables: 'users' });
 
-  // it('correct input simple command with extra option without options dto', async () => {
-  //   const entryStub = sandbox.stub(HelloThereService.prototype, 'entry');
+    expect(options).toStrictEqual({
+      id: ['17'],
+      d: '22.12.22',
+      format: 'A',
+      silent: null,
+    });
+  });
 
-  //   emulateArgv(sandbox, 'hello there --name=Alex');
-  //
+  it('Test 4.1. Positive', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
-  //   expect(entryStub.calledOnce).toBeTruthy();
-  // });
+    await buildCli().execute(Clirio.split('--check --pool=7 -v'));
 
-  // it('invalid input simple command with extra param', async () => {
-  //   const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+    const [options] = entryStub.getCall(0).args;
 
-  //   await buildCli().execute(Clirio.split('hello Alex'));
-
-  //   expect(entryStub.calledOnce).toBeTruthy();
-  // });
-
-  // it('invalid input compound command with extra param', async () => {
-  //   const globalExceptionCatch = sinon.stub();
-
-  //   emulateArgv(sandbox, 'ping ping');
-
-  //   await cliApp({ globalExceptionCatch });
-
-  //   const err = globalExceptionCatch.getCall(0).args[0];
-
-  //   expect(err.message).toEqual('Incorrect command specified');
-  // });
+    expect(options).toStrictEqual({
+      verbose: null,
+      pool: '7',
+    });
+  });
 });

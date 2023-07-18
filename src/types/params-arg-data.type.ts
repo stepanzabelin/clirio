@@ -3,5 +3,5 @@ import { Constructor } from './constructor.type';
 
 export type ParamsArgData = {
   type: InputTypeEnum.Params;
-  dto: Constructor<any>;
+  entity: Constructor<any>;
 };

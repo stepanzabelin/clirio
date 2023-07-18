@@ -47,4 +47,12 @@ export const transformations = {
 
     return obj;
   },
+
+  ARRAY: (values: string | null | (string | null)[]) => {
+    return Array.isArray(values) ? values : [values];
+  },
+
+  PLAIN: (values: string | null | (string | null)[]) => {
+    return Array.isArray(values) ? values[0] : values;
+  },
 };

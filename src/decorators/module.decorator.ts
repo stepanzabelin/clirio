@@ -2,9 +2,15 @@ import { moduleCommandReg } from '../constrains/regexp.constrains';
 import { ClirioDebugError } from '../exceptions';
 
 import { moduleEntityMetadata } from '../metadata';
-import { Constructor, Link, LinkType } from '../types';
+import { Constructor, Link, LinkType, ModuleData } from '../types';
 
-export const Module = function (rawCommand?: string) {
+export const Module = function (
+  rawCommand?: string,
+  {
+    description = null,
+    hidden = false,
+  }: Partial<Omit<ModuleData, 'command' | 'links'>> = {},
+) {
   return function (constructor: Constructor<any>) {
     const links: Link[] = [];
 
@@ -38,6 +44,8 @@ export const Module = function (rawCommand?: string) {
     moduleEntityMetadata.set(constructor.prototype, {
       links,
       command,
+      description,
+      hidden,
     });
   };
 };

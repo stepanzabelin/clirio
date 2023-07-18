@@ -1,4 +1,4 @@
-import { DataTypeEnum, LinkedArg } from '../types';
+import { DataTypeEnum } from '../types';
 
 type Payload = {
   dataType: DataTypeEnum;

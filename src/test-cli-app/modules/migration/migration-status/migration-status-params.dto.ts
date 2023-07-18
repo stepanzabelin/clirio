@@ -1,6 +1,7 @@
-import { Param } from '@clirio';
+import { Clirio, Param, Transform } from '@clirio';
 
 export class MigrationStatusParamsDto {
-  @Param('db-tables', { cast: 'plain' })
+  @Param('db-tables')
+  @Transform(Clirio.form('PLAIN'))
   readonly tables!: string;
 }

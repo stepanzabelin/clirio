@@ -1,9 +1,7 @@
 import { Clirio, Option, Transform } from '@clirio';
 
 export class MigrationToOptionsDto {
-  @Option('--env, -e', {
-    cast: 'array',
-  })
+  @Option('--env, -e')
   @Transform(Clirio.form('KEY_VALUE'))
   readonly envs?: Record<string, string>;
 

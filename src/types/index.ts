@@ -23,8 +23,6 @@ export * from './validate-target-data.type';
 export * from './transform-target-data.type';
 export * from './param-target-data.type';
 export * from './option-target-data.type';
-export * from './description-target-data.type';
-export * from './hidden-target-data.type';
 export * from './action-target-data.type';
 export * from './options-arg-data.type';
 export * from './helper-arg-data.type';

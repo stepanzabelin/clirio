@@ -4,7 +4,7 @@ import { Row } from './row.type';
 
 export type PipeContext = {
   dataType: DataTypeEnum;
-  dto: Constructor;
+  entity: Constructor<any>;
   scope: 'global' | 'command';
   rows: Row[];
 };

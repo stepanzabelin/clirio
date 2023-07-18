@@ -1,13 +1,4 @@
-import {
-  Module,
-  Command,
-  Options,
-  Empty,
-  Failure,
-  Hidden,
-  Pipe,
-  Params,
-} from '@clirio';
+import { Module, Command, Options, Empty, Failure, Params } from '@clirio';
 import { MigrationRunOptionsDto } from './migration-run';
 import {
   MigrationStatusOptionsDto,
@@ -19,15 +10,15 @@ import {
   MigrationFromOptionsDto,
 } from './migration-from';
 
-import {
-  MigrationUpPipe,
-  MigrationUpParamsDto,
-  MigrationUpOptionsDto,
-} from './migration-up';
+// import {
+//   MigrationUpPipe,
+//   MigrationUpParamsDto,
+//   MigrationUpOptionsDto,
+// } from './migration-up';
+
 @Module('migration')
 export class MigrationModule {
-  @Command('run')
-  @Hidden()
+  @Command('run', { hidden: true })
   public run(@Options() options: MigrationRunOptionsDto) {
     console.log('migration run', options);
   }

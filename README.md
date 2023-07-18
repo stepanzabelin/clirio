@@ -2,14 +2,19 @@
 
 A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
-> **NOTE**
-> This lib is _alpha quality_. There is no guarantee it will be reliably.
-> The documentation also needs to be corrected
+Clirio is a library for routing terminal requests using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.)
+You can integrate Clirio with [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.
 
-- [Clirio.js](#clirio)
+Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
+
+[GIF]
+
+##### Table of Contents
+
+- [Clirio](#clirio)
   - [Installation](#installation)
-    - [Peer dependencies](#peer-dependencies)
   - [Quick Start](#quick-start)
+  - [Starter kit](#starter-kit)
   - [Docs](#docs)
     - [The base class](#the-base-class)
     - [Modules](#modules)
@@ -79,7 +84,7 @@ import { Clirio } from 'clirio';
 
 const clirio = new Clirio();
 clirio.addModule(GitModule);
-clirio.build();
+clirio.execute();
 ```
 
 ###### Result
@@ -94,17 +99,19 @@ $ cli git status -b master --ignore-submodules  all --short
 { branch: 'master', ignoreSubmodules: 'all', short: true }
 ```
 
+## Starter kit
+
+Clirio is developed according to SOLID principles, so It is possible to use OOP, dependency injection and other programming patterns.
+
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** has been implemented. It contains recommended assembly of libraries. But you can use any other libraries for validation and DI.
+
 ## Docs
 
 The application structure should consist of the following parts:
 
 1. the base class - `Clirio`
-2. modules (custom classes)
+2. modules (custom classes or their instances)
 3. actions (methods in class-modules with decorators )
-
-Examples [here](https://github.com/stepanzabelin/clirio/tree/master/src/test-env/complex-cli)
-
-A starter kit is in progress
 
 ### The base class
 
@@ -113,7 +120,7 @@ A starter kit is in progress
 ```ts
 const cli = new Clirio();
 cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
-cli.build();
+cli.execute();
 ```
 
 #### Methods
@@ -418,7 +425,7 @@ export class MigrationModule {
   @Empty()
   public empty() {
     console.log(
-      'The migration module requires additional instruction. Type --help'
+      'The migration module requires additional instruction. Type --help',
     );
   }
 }
@@ -765,7 +772,7 @@ class GitStatusDto {
 
   @Option('--ignore-submodules')
   @Validate(
-    (v) => v === undefined || ['none', 'untracked', 'dirty', 'all'].includes(v)
+    (v) => v === undefined || ['none', 'untracked', 'dirty', 'all'].includes(v),
   )
   readonly ignoreSubmodules?: 'none' | 'untracked' | 'dirty' | 'all';
 
@@ -1068,7 +1075,7 @@ cli.addModule(CommonModule);
 cli.onError((err: ClirioError) => {
   console.log(chalk.red('An error occurred: ' + err.message));
 });
-cli.build();
+cli.execute();
 ```
 
 ```bash
@@ -1103,7 +1110,7 @@ cli.onSuccess((data: ClirioSuccess) => {
     console.log(chalk.green('Successfully!'));
   }
 });
-cli.build();
+cli.execute();
 ```
 
 ```bash

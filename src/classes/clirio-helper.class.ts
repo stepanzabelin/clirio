@@ -1,70 +1,78 @@
 import {
   actionTargetMetadata,
-  hiddenTargetMetadata,
-  descriptionTargetMetadata,
   moduleEntityMetadata,
   optionTargetMetadata,
   optionsArgMetadata,
 } from '../metadata';
 import { ActionType, Constructor } from '../types';
+import { getPrototype } from '../utils';
 
 type OptionsData = {
   options: string[];
   description: string;
-  type: string | null;
-  itemType: string | null;
 };
 
 type ModuleData = {
+  entity: Constructor<any>;
   command: string;
-  moduleCommand: string | null;
-  actionCommand: string;
-  description: string;
-  optionDescription: OptionsData[];
 };
 
-type Scoped = {
+type ActionData = {
+  name: string;
+  command: string;
+  description: string | null;
+  hidden: boolean;
+};
+
+type Scope = {
+  moduleEntity: Constructor;
   actionName: string;
-  module: Constructor;
+};
+
+type Field = {
+  keys: string[];
+  propertyName: string;
+  description: string;
+};
+
+type Input = {
+  entity: Constructor<any> | null;
+  type: 'params' | 'options';
+  fields: Field[];
+};
+
+type DumpItem = {
+  module: ModuleData;
+  action: ActionData;
+  inputs: Input[];
 };
 
 export class ClirioHelper {
   private readonly modules: Constructor<any>[];
-  private readonly scoped: Scoped;
+  private readonly scope: Scope;
 
   constructor({
     modules,
-    scoped,
+    scope,
   }: {
     modules: Constructor<any>[];
-    scoped: Scoped;
+    scope: Scope;
   }) {
     this.modules = modules;
-    this.scoped = scoped;
+    this.scope = scope;
   }
 
-  public describeModule(module: Constructor<any>): ModuleData[] {
-    const moduleData = moduleEntityMetadata.get(module.prototype)!;
-    const actionMap = actionTargetMetadata.getMap(module.prototype);
+  public dumpScopedModule(module: Constructor<any>): DumpItem[] {
+    const moduleData = moduleEntityMetadata.get(getPrototype(module))!;
+    const actionMap = actionTargetMetadata.getMap(getPrototype(module));
     const results: ModuleData[] = [];
 
     for (const [propertyKey, actionData] of actionMap) {
       if (actionData.type !== ActionType.Command) {
         continue;
       }
-
-      const description =
-        descriptionTargetMetadata.getDataField(
-          module.prototype,
-          propertyKey,
-          'description',
-        ) ?? '';
-
-      const hidden = hiddenTargetMetadata.getDataField(
-        module.prototype,
-        propertyKey,
-        'hidden',
-      );
+      const description = null;
+      const hidden = false;
 
       if (hidden) {
         continue;
@@ -95,30 +103,21 @@ export class ClirioHelper {
     const optionDescription: OptionsData[] = [];
 
     const optionsArgMap = optionsArgMetadata.getArgMap(
-      module.prototype,
+      getPrototype(module),
       propertyKey,
     );
 
     if (optionsArgMap.size > 0) {
-      const { dto } = [...optionsArgMap.values()][0];
+      const { entity } = [...optionsArgMap.values()][0];
 
       const optionsList = Array.from(
-        optionTargetMetadata.getMap(dto.prototype),
+        optionTargetMetadata.getMap(entity.prototype),
       );
 
       for (const [property, { keys }] of optionsList) {
-        const description =
-          descriptionTargetMetadata.getDataField(
-            module.prototype,
-            propertyKey,
-            'description',
-          ) ?? '';
+        const description = '';
 
-        const hidden = hiddenTargetMetadata.getDataField(
-          module.prototype,
-          propertyKey,
-          'hidden',
-        );
+        const hidden = false;
 
         if (hidden) {
           continue;
@@ -139,14 +138,14 @@ export class ClirioHelper {
     return optionDescription;
   }
 
-  public describeAllModules(): ModuleData[] {
+  public dumpAll(): DumpItem[] {
     return this.modules
-      .map((module) => this.describeModule(module))
+      .map((module) => this.dumpScopedModule(module))
       .flatMap((f) => f);
   }
 
-  public describeScopedModule(): ModuleData[] {
-    return this.describeModule(this.scoped.module);
+  public getScope(): ModuleData[] {
+    return this.describeModule(this.scope.module);
   }
 
   private static formatType(
@@ -186,14 +185,14 @@ export class ClirioHelper {
     return content;
   }
 
-  public static formatModuleDescription(
-    moduleDescription: ModuleData[],
+  public static formatDump(
+    dump: DumpItem[],
     { showOptions = true }: { showOptions?: boolean } = {},
   ): string {
     let content = '';
 
-    for (const moduleData of moduleDescription) {
-      const { command, description, optionDescription } = moduleData;
+    for (const dumpItem of dump) {
+      const { command, description, optionDescription } = dumpItem;
       content +=
         this.formatTwoCols([command, description], {
           firstColLen: 24,

@@ -3,5 +3,5 @@ import { Constructor } from './constructor.type';
 
 export type HelperArgData = {
   type: InputTypeEnum.Helper;
-  dto: Constructor<any>;
+  entity: Constructor<any>;
 };

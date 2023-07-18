@@ -1,9 +1,21 @@
 import { argReg, optionReg } from '../constrains';
-import { ActionType, Constructor, Link, LinkType } from '../types';
+import {
+  ActionTargetData,
+  ActionType,
+  Constructor,
+  Link,
+  LinkType,
+} from '../types';
 import { actionTargetMetadata } from '../metadata';
 import { ClirioDebugError } from '../exceptions';
 
-export const Command = function (rawCommand: string) {
+export const Command = function (
+  rawCommand: ActionTargetData['command'],
+  {
+    description = null,
+    hidden = false,
+  }: Partial<Omit<ActionTargetData, 'command'>> = {},
+) {
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
     const links: Link[] = [];
 
@@ -84,6 +96,8 @@ export const Command = function (rawCommand: string) {
       type: ActionType.Command,
       links,
       command,
+      description,
+      hidden,
     });
   };
 };

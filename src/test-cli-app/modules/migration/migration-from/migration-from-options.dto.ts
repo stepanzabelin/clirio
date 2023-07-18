@@ -1,9 +1,7 @@
 import { Validate, Clirio, Option } from '@clirio';
 
 export class MigrationFromOptionsDto {
-  @Option('--env, -e', {
-    cast: 'array',
-  })
+  @Option('--env, -e')
   @Validate(Clirio.valid('KEY_VALUE'))
   readonly envs?: Record<string, string>;
 

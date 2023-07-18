@@ -6,7 +6,9 @@ export const Failure = function () {
     actionTargetMetadata.setData(target, propertyKey, {
       type: ActionType.Failure,
       links: [],
-      command: null,
+      command: '',
+      description: null,
+      hidden: false,
     });
   };
 };

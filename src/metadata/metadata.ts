@@ -6,8 +6,6 @@ import {
   ValidateTargetData,
   ParamTargetData,
   OptionTargetData,
-  DescriptionTargetData,
-  HiddenTargetData,
   ActionTargetData,
   OptionsArgData,
   ParamsArgData,
@@ -32,11 +30,6 @@ export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
 );
 export const actionTargetMetadata = new TargetMetadata<ActionTargetData>(
   'command',
-);
-export const descriptionTargetMetadata =
-  new TargetMetadata<DescriptionTargetData>('description');
-export const hiddenTargetMetadata = new TargetMetadata<HiddenTargetData>(
-  'hidden',
 );
 
 export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');

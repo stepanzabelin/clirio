@@ -3,5 +3,5 @@ import { Constructor } from './constructor.type';
 
 export type OptionsArgData = {
   type: InputTypeEnum.Options;
-  dto: Constructor<any>;
+  entity: Constructor<any>;
 };

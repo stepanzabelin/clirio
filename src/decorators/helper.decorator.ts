@@ -8,10 +8,10 @@ export const Helper = function () {
     propertyName: string,
     argIndex: number,
   ) {
-    const dto = ArgMetadata.extractDto(target, propertyName, argIndex);
+    const entity = ArgMetadata.extractEntity(target, propertyName, argIndex);
 
     helperArgMetadata.setArgData(target, propertyName, argIndex, {
-      dto,
+      entity,
       type: InputTypeEnum.Helper,
     });
   };

@@ -6,7 +6,9 @@ export const Empty = function () {
     actionTargetMetadata.setData(target, propertyKey, {
       type: ActionType.Empty,
       links: [],
-      command: null,
+      command: '',
+      description: null,
+      hidden: false,
     });
   };
 };

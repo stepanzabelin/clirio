@@ -77,7 +77,7 @@ export class ArgMetadata<Data extends Record<string, unknown>> {
     return Reflect.hasMetadata(this.metadataSymbol, target);
   }
 
-  public static extractDto(
+  public static extractEntity(
     target: Constructor<any>['prototype'],
     propertyName: string,
     argIndex: number,

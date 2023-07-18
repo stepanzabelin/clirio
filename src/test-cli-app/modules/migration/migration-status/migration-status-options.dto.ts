@@ -1,13 +1,15 @@
-import { Option } from '@clirio';
+import { Clirio, Option, Transform } from '@clirio';
 
 export class MigrationStatusOptionsDto {
-  @Option('--id, -i', { cast: 'array' })
+  @Option('--id, -i')
+  @Transform(Clirio.form('ARRAY'))
   readonly id?: string;
 
   @Option('-d, --from-date')
   readonly d?: string;
 
-  @Option('-f, --format', { cast: 'plain' })
+  @Option('-f, --format')
+  @Transform(Clirio.form('PLAIN'))
   readonly format?: string;
 
   @Option('--verbose')

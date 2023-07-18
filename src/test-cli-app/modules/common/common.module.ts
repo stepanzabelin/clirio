@@ -1,7 +1,6 @@
 import {
   Module,
   Command,
-  Description,
   Empty,
   Failure,
   Options,
@@ -19,12 +18,15 @@ export class CommonModule {
 
   @Command('-h, --help')
   public help(@Helper() helper: ClirioHelper) {
-    const moduleDescription = helper.describeAllModules();
-    console.log(ClirioHelper.formatModuleDescription(moduleDescription));
+    console.log(helper);
+
+    const dump = helper.dumpAll();
+
+    console.log({ dump });
+    console.log(ClirioHelper.formatDump(dump));
   }
 
-  @Command('-c, --check')
-  @Description('Checking if the script is running')
+  @Command('-c, --check', { description: 'Checking if the script is running' })
   public check(@Options() options: CheckOptionsDto) {
     console.log('check', options);
   }
