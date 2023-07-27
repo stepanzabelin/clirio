@@ -28,13 +28,11 @@ export const transformations = {
   },
 
   KEY_VALUE: (
-    values: string | null | (string | null)[],
+    value: string | null | (string | null)[],
   ): Record<string, string> => {
     const obj: Record<string, string> = {};
 
-    if (!Array.isArray(values)) {
-      return obj;
-    }
+    const values = Array.isArray(value) ? value : [value];
 
     for (const value of values) {
       const matchVariable = String(value).match(keyValueReg);

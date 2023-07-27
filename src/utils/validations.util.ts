@@ -41,10 +41,8 @@ export const validations: Validations = {
     return [null, 'true', 'false'].includes(value);
   },
 
-  KEY_VALUE: (values: any) => {
-    return (
-      Array.isArray(values) &&
-      values.every((value) => value && value.match(keyValueReg))
-    );
+  KEY_VALUE: (value: string | null | (string | null)[]) => {
+    const values = Array.isArray(value) ? value : [value];
+    return values.every((value) => String(value).match(keyValueReg));
   },
 };
