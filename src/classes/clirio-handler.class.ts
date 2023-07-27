@@ -144,13 +144,14 @@ export class ClirioHandler {
         continue;
       }
 
-      const linkedArg = filteredLinkedArgs[0];
-
-      const value = linkedArg.value;
+      const value =
+        filteredLinkedArgs.length > 1
+          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value).flat()
+          : filteredLinkedArgs[0].value;
 
       rows.push({
         type: 'option',
-        key: linkedArg.key,
+        key: filteredLinkedArgs[0].key,
         definedKeys: keys,
         value,
         propertyName,

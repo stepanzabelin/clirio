@@ -242,7 +242,6 @@ describe('Command with options without handlers', () => {
     );
 
     const [options] = entryStub.getCall(0).args;
-    console.log(options);
 
     expect(options).toStrictEqual({
       firstName: ['Alex', 'Max', 'John'],
