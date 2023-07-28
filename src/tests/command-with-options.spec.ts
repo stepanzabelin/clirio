@@ -255,7 +255,7 @@ describe('Command with options without handlers', () => {
 
     await buildCli().execute(
       Clirio.split(
-        'hello --first-name= -f --first-name Max -l "" --verbose= -v',
+        'hello --first-name= -f --first-name Max -l "John" --verbose= -v',
       ),
     );
 
@@ -263,7 +263,7 @@ describe('Command with options without handlers', () => {
 
     expect(options).toStrictEqual({
       firstName: ['', 'Max', null],
-      lastName: '',
+      lastName: 'John',
       verbose: ['', null],
     });
   });

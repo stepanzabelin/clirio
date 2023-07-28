@@ -358,12 +358,11 @@ export class ClirioCore {
     return query
       .trim()
       .split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g)
-      .map((element) => {
-        let result = element;
-        result = result.replace(/^"([^"]*?)"$/, '$1');
-        result = result.replace(/(=|\s)"([^"]*?)"$/, '$1$2');
-        return result;
-      })
+      .map((element) =>
+        element
+          .replace(/^"([^"]*?)"$/, '$1')
+          .replace(/(=|\s)"([^"]*?)"$/, '$1$2'),
+      )
       .filter((f) => f);
   };
 
