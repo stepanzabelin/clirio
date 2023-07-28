@@ -3,9 +3,11 @@ import {
   moduleEntityMetadata,
   optionTargetMetadata,
   optionsArgMetadata,
+  paramsArgMetadata,
+  paramTargetMetadata,
 } from '../metadata';
 import { ActionType, Constructor } from '../types';
-import { getPrototype } from '../utils';
+import { getPrototype, isEntity } from '../utils';
 
 type OptionsData = {
   options: string[];
@@ -14,7 +16,9 @@ type OptionsData = {
 
 type ModuleData = {
   entity: Constructor<any>;
-  command: string;
+  command: string | null;
+  description: string | null;
+  hidden: boolean;
 };
 
 type ActionData = {
@@ -24,20 +28,23 @@ type ActionData = {
   hidden: boolean;
 };
 
-type Scope = {
-  moduleEntity: Constructor<any>;
-  actionName: string;
-};
+// type Scope = {
+//   moduleEntity: Constructor<any>;
+//   actionName: string;
+// };
 
 type Field = {
   keys: string[];
   propertyName: string;
-  description: string;
+  description: string | null;
+  hidden: boolean;
 };
 
+type DataType = 'params' | 'options';
+
 type Input = {
+  type: DataType;
   entity: Constructor<any> | null;
-  type: 'params' | 'options';
   fields: Field[];
 };
 
@@ -75,26 +82,75 @@ export class ClirioHelper {
       if (actionData.type !== ActionType.Command) {
         continue;
       }
-      const description = null;
-      const hidden = false;
+      // const description = null;
+      // const hidden = false;
 
-      if (hidden) {
-        continue;
-      }
+      // if (hidden) {
+      //   continue;
+      // }
 
-      const optionDescription = this.describeActionOptions(module, propertyKey);
+      // const optionDescription = this.describeActionOptions(module, propertyKey);
 
-      const command = [moduleData.command, actionData.command]
-        .filter((f) => f)
-        .join(' ');
+      // const command = [moduleData.command, actionData.command]
+      //   .filter((f) => f)
+      //   .join(' ');
+
+      const optionsArgMap = optionsArgMetadata.getArgMap(
+        getPrototype(module),
+        propertyKey,
+      );
+
+      const paramsArgMap = paramsArgMetadata.getArgMap(
+        getPrototype(module),
+        propertyKey,
+      );
 
       results.push({
-        command,
-        moduleCommand: moduleData.command,
-        actionCommand: actionData.command,
-        description,
-        optionDescription,
-      } as any);
+        module: {
+          entity: getPrototype(module),
+          command: moduleData.command,
+          description: moduleData.description,
+          hidden: moduleData.hidden,
+        },
+        action: {
+          name: propertyKey,
+          command: actionData.command,
+          description: actionData.description,
+          hidden: actionData.hidden,
+        },
+        inputs: [
+          ...[...paramsArgMap.values()].map((data) => {
+            console.log({ data, paramTargetMetadata });
+
+            return {
+              type: 'params' as DataType,
+              entity: isEntity(data.entity) ? data.entity : null,
+              fields: [
+                ...paramTargetMetadata.getMap(getPrototype(data.entity)),
+              ].map(([propertyName, data]) => ({
+                propertyName,
+                keys: data.key ? [data.key] : [],
+                description: data.description,
+                hidden: data.hidden,
+              })),
+            };
+          }),
+          ...[...optionsArgMap.values()].map((data) => {
+            return {
+              type: 'options' as DataType,
+              entity: isEntity(data.entity) ? data.entity : null,
+              fields: [
+                ...optionTargetMetadata.getMap(getPrototype(data.entity)),
+              ].map(([propertyName, data]) => ({
+                propertyName,
+                keys: data.keys ?? [],
+                description: data.description,
+                hidden: data.hidden,
+              })),
+            };
+          }),
+        ],
+      });
     }
 
     return results;

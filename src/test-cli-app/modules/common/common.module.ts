@@ -7,6 +7,8 @@ import {
   Helper,
   ClirioHelper,
 } from '@clirio';
+
+import util from 'util';
 import { CheckOptionsDto } from './check';
 
 @Module()
@@ -22,7 +24,9 @@ export class CommonModule {
 
     const dump = helper.dumpAll();
 
-    console.log({ dump });
+    // console.log(...dump);
+    console.log(util.inspect(dump, { depth: null }));
+
     console.log(ClirioHelper.formatDump(dump));
   }
 
