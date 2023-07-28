@@ -16,7 +16,7 @@ describe('Transformation cases', () => {
     sandbox.restore();
   });
 
-  it('Test 1.1. Positive', async () => {
+  it('1.1 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(
@@ -31,7 +31,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('Test 1.2. Positive', async () => {
+  it('1.2 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(
@@ -48,7 +48,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  // it('Test 1.3. Positive', async () => {
+  // it('1.3 / Positive', async () => {
   //   const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
   //   await buildCli().execute(Clirio.split('migration run'));
@@ -58,7 +58,7 @@ describe('Transformation cases', () => {
   //   expect(options).toStrictEqual({});
   // });
 
-  it('Test 2.1. Positive', async () => {
+  it('2.1 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(
@@ -81,7 +81,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('Test 2.2. Positive', async () => {
+  it('2.2 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(
@@ -99,6 +99,35 @@ describe('Transformation cases', () => {
 
     expect(options).toStrictEqual({
       envs: { DB_NAME: 'db-name', DB_TABLE: 'db-table' },
+      id: 149542,
+      silent: true,
+    });
+  });
+
+  it('2.3 / Positive', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
+
+    await buildCli().execute(
+      Clirio.split(
+        'migration to 7691 dbo -e DB_USER --env DB_NAME=db-name -e DB_TABLE=db-table --env DB_SSL --env DB_PASS= -i 149542 -s',
+      ),
+    );
+
+    const [params, options] = entryStub.getCall(0).args;
+
+    expect(params).toStrictEqual({
+      typeId: 7691,
+      typeName: 'type-dbo',
+    });
+
+    expect(options).toStrictEqual({
+      envs: {
+        DB_USER: null,
+        DB_TABLE: 'db-table',
+        DB_NAME: 'db-name',
+        DB_SSL: null,
+        DB_PASS: '',
+      },
       id: 149542,
       silent: true,
     });

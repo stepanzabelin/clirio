@@ -72,6 +72,7 @@ import { Module, Command, Options } from 'clirio';
 export class GitModule {
   @Command('git status')
   public status(@Options() options: GitStatusDto) {
+    // here you can use handled data
     console.log(options);
   }
 }

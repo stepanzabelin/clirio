@@ -25,7 +25,7 @@ describe('Failure command', () => {
     sandbox.restore();
   });
 
-  it('Test 1.1. Positive', async () => {
+  it('1.1 / Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('cactus'));
@@ -33,7 +33,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 1.2. Positive', async () => {
+  it('1.2 / Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('git cactus'));
@@ -41,7 +41,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 1.3. Positive', async () => {
+  it('1.3 / Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('git'));
@@ -49,7 +49,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 1.4. Positive', async () => {
+  it('1.4 / Positive', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('git migration'));
@@ -57,7 +57,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.1. Positive', async () => {
+  it('2.1 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('migration cactus'));
@@ -65,7 +65,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.2. Positive', async () => {
+  it('2.2 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('migration migration git'));
@@ -73,7 +73,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.3. Positive', async () => {
+  it('2.3 / Positive', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('migration git'));
@@ -81,7 +81,7 @@ describe('Failure command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Test 3.3. Positive', async () => {
+  it('3.3 / Positive', async () => {
     const entryStub = sandbox.stub(PingModule.prototype, 'failure');
 
     await buildCli().execute(Clirio.split('ping check'));

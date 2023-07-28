@@ -15,7 +15,7 @@ describe('Command with params', () => {
     sandbox.restore();
   });
 
-  it('Test 1.1. Positive', async () => {
+  it('1.1 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloThere');
 
     await buildCli().execute(Clirio.split('hello there'));
@@ -23,7 +23,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.1. Positive', async () => {
+  it('2.1 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello venus'));
@@ -31,7 +31,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.2. Positive', async () => {
+  it('2.2 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello earth'));
@@ -39,7 +39,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.3. Positive', async () => {
+  it('2.3 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello mars'));
@@ -47,7 +47,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('Test 2.4. Negative', async () => {
+  it('2.4 / Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -64,7 +64,7 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
-  it('Test 3.1. Positive', async () => {
+  it('3.1 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloTo');
 
     await buildCli().execute(Clirio.split('hello to Alex Smith'));
@@ -77,7 +77,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('Test 3.2. Negative', async () => {
+  it('3.2 / Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -94,7 +94,7 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
-  it('Test 3.3. Negative', async () => {
+  it('3.3 / Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -111,7 +111,7 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
-  it('Test 3.4. Negative', async () => {
+  it('3.4 / Negative', async () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
@@ -128,7 +128,7 @@ describe('Command with params', () => {
     ).toBeTruthy();
   });
 
-  it('Test 3.5. Positive', async () => {
+  it('3.5 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloToUnknown');
 
     await buildCli().execute(Clirio.split('hello to-unknown Alex Smith'));
@@ -141,7 +141,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('Test 4.1. Positive', async () => {
+  it('4.1 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(Clirio.split('hello guys Alex Jack Max'));
@@ -151,7 +151,7 @@ describe('Command with params', () => {
     expect(params).toStrictEqual({ names: ['Alex', 'Jack', 'Max'] });
   });
 
-  it('Test 4.2. Positive', async () => {
+  it('4.2 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(
@@ -165,7 +165,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('Test 4.3. Positive', async () => {
+  it('4.3 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloUnknownGuys');
 
     await buildCli().execute(
@@ -179,7 +179,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('Test 5.1. Positive', async () => {
+  it('5.1 / Positive', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'universalHello');
 
     await buildCli().execute(
@@ -196,7 +196,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('Test 5.2. Positive', async () => {
+  it('5.2 / Positive', async () => {
     const entrySpy = sandbox.stub(
       HelloModule.prototype,
       'helloPlanetCreatures',

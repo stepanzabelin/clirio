@@ -359,8 +359,10 @@ export class ClirioCore {
       .trim()
       .split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g)
       .map((element) => {
-        const matched = element.match(/^"(?<value>.*?)"$/);
-        return matched ? matched.groups!['value'] : element;
+        let result = element;
+        result = result.replace(/^"([^"]*?)"$/, '$1');
+        result = result.replace(/(=|\s)"([^"]*?)"$/, '$1$2');
+        return result;
       })
       .filter((f) => f);
   };

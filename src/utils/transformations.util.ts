@@ -29,8 +29,8 @@ export const transformations = {
 
   KEY_VALUE: (
     value: string | null | (string | null)[],
-  ): Record<string, string> => {
-    const obj: Record<string, string> = {};
+  ): Record<string, string | null> => {
+    const obj: Record<string, string | null> = {};
 
     const values = Array.isArray(value) ? value : [value];
 
@@ -38,7 +38,7 @@ export const transformations = {
       const matchVariable = String(value).match(keyValueReg);
 
       if (matchVariable) {
-        const { key, value } = matchVariable.groups!;
+        const { key, value = null } = matchVariable.groups!;
         obj[key] = value;
       }
     }

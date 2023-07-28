@@ -136,18 +136,24 @@ describe('Args Clirio.parser', () => {
       { type: 'option', key: 'verbose', value: null },
       { type: 'option', key: 'count', value: '5' },
     ]);
+    console.log(
+      Clirio.parse(
+        '--honk "cow and cow" -p 55 --tacos="good not bad" --hotdog=big --verbose --count 5 -f "11"',
+      ),
+    );
 
-    // expect(
-    //   Clirio.parse(
-    //     '--honk "cow and cow" -p 55 --tacos="good not bad" --hotdog=big --verbose --count 5 -f "11"',
-    //   ),
-    // ).toEqual([
-    //   { type: 'option', key: 'honk', value: 'cow and cow' },
-    //   { type: 'option', key: 'p', value: '55' },
-    //   { type: 'option', key: 'tacos', value: 'good not bad' },
-    //   { type: 'option', key: 'verbose', value: null },
-    //   { type: 'option', key: 'count', value: '5' },
-    //   { type: 'option', key: 'f', value: '55' },
-    // ]);
+    expect(
+      Clirio.parse(
+        '--honk "cow and cow" -p "55" --tacos="good not bad" --hotdog="big" --verbose --count 5 -f "11"',
+      ),
+    ).toEqual([
+      { type: 'option', key: 'honk', value: 'cow and cow' },
+      { type: 'option', key: 'p', value: '55' },
+      { type: 'option', key: 'tacos', value: 'good not bad' },
+      { type: 'option', key: 'hotdog', value: 'big' },
+      { type: 'option', key: 'verbose', value: null },
+      { type: 'option', key: 'count', value: '5' },
+      { type: 'option', key: 'f', value: '11' },
+    ]);
   });
 });
