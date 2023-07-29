@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { Clirio, ClirioError } from '@clirio';
+import { Clirio, ClirioCommonError } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
 
 const buildCli = () => {
@@ -60,7 +60,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -90,7 +90,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -107,7 +107,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -124,7 +124,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 

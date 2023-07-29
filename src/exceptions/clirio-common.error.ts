@@ -6,7 +6,7 @@ type Data = {
   [key: string]: any;
 };
 
-export class ClirioError extends Error {
+export class ClirioCommonError extends Error {
   public readonly errCode!: string;
 
   constructor(
@@ -15,7 +15,7 @@ export class ClirioError extends Error {
     public readonly data: Data = {},
   ) {
     super(message);
-    this.name = 'ClirioError';
+    this.name = 'ClirioCommonError';
     Object.assign(this, options);
   }
 }

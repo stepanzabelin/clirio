@@ -183,7 +183,7 @@ Callback for handling error
 ```ts
 import chalk from 'chalk';
 
-cli.onError((err: ClirioError) => {
+cli.onError((err: ClirioCommonError) => {
   console.log(chalk.red(err.message));
   process.exit(9);
 });
@@ -1055,13 +1055,13 @@ $ cli --version
 
 Special exceptions designed to complete the script with the desired result
 
-| Exception                              | Description |                    Handler |
-| -------------------------------------- | :---------: | -------------------------: |
-| `new ClirioError(message: string)`     |    Error    |    `cli.onError(callback)` |
-| `new ClirioSuccess(message?: string)`  |   Success   |  `cli.onSuccess(callback)` |
-| `new ClirioWarning(message: string)`   |   Warning   |  `cli.onWarning(callback)` |
-| `new ClirioComplete(message?: string)` |  Complete   | `cli.onComplete(callback)` |
-| `new ClirioDebug(message: string)`     |  Debugging  |    `cli.onDebug(callback)` |
+| Exception                                | Description |                    Handler |
+| ---------------------------------------- | :---------: | -------------------------: |
+| `new ClirioCommonError(message: string)` |    Error    |    `cli.onError(callback)` |
+| `new ClirioSuccess(message?: string)`    |   Success   |  `cli.onSuccess(callback)` |
+| `new ClirioWarning(message: string)`     |   Warning   |  `cli.onWarning(callback)` |
+| `new ClirioComplete(message?: string)`   |  Complete   | `cli.onComplete(callback)` |
+| `new ClirioDebug(message: string)`       |  Debugging  |    `cli.onDebug(callback)` |
 
 By default, all handlers in Clirio are configured, but you can override to your own callback for each ones
 Use one of the available exceptions to throw the desired event, after that the related callback will be called and the script will end
@@ -1069,13 +1069,13 @@ Use one of the available exceptions to throw the desired event, after that the r
 ###### Examples
 
 ```ts
-import { Module, Command, ClirioError } from 'clirio';
+import { Module, Command, ClirioCommonError } from 'clirio';
 
 @Module()
 export class CommonModule {
   @Command('check')
   public check() {
-    throw new ClirioError('Not working!');
+    throw new ClirioCommonError('Not working!');
   }
 }
 ```
@@ -1083,7 +1083,7 @@ export class CommonModule {
 ```ts
 const cli = new Clirio();
 cli.addModule(CommonModule);
-cli.onError((err: ClirioError) => {
+cli.onError((err: ClirioCommonError) => {
   console.log(chalk.red('An error occurred: ' + err.message));
 });
 cli.execute();

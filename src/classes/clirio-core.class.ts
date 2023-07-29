@@ -20,7 +20,7 @@ import {
 } from '../metadata';
 import { ClirioHelper } from './clirio-helper.class';
 import { ClirioHandler } from './clirio-handler.class';
-import { ClirioError, ClirioDebugError } from '../exceptions';
+import { ClirioCommonError, ClirioDebugError } from '../exceptions';
 import { Clirio } from './clirio.class';
 import { getPrototype } from '../utils';
 
@@ -101,7 +101,7 @@ export class ClirioCore {
           optionsArgMap.size === 0 &&
           optionLinkedArgs.length > 0
         ) {
-          throw new ClirioError('Invalid options received', {
+          throw new ClirioCommonError('Invalid options received', {
             errCode: 'INVALID_OPTIONS',
           });
         }
@@ -290,7 +290,7 @@ export class ClirioCore {
     );
 
     this.handler.handleExceptions(
-      new ClirioError('Incorrect command specified', {
+      new ClirioCommonError('Incorrect command specified', {
         errCode: 'INCORRECT_COMMAND',
       }),
       exceptionScopeList,

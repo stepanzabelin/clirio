@@ -1,9 +1,9 @@
-import { ClirioError, ClirioValidationError } from '../exceptions';
+import { ClirioCommonError, ClirioValidationError } from '../exceptions';
 import { ExceptionContext } from './exception-context.type';
 
 export interface ClirioException {
   catch(
-    error: Error | ClirioError | ClirioValidationError,
+    error: Error | ClirioCommonError | ClirioValidationError,
     context: ExceptionContext,
   ): void | never;
 }
