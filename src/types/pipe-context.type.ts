@@ -5,6 +5,6 @@ import { Row } from './row.type';
 export type PipeContext = {
   dataType: DataTypeEnum;
   entity: Constructor<any>;
-  scope: 'global' | 'command';
+  scope: 'global' | 'action';
   rows: Row[];
 };

@@ -25,7 +25,7 @@ describe('Composed of several modules', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloThere');
 
     await buildCli().execute(Clirio.split('hello there'));
@@ -33,7 +33,7 @@ describe('Composed of several modules', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('2.1 / Positive', async () => {
+  it('2.1', async () => {
     const entrySpy = sandbox.stub(GitModule.prototype, 'status');
 
     await buildCli().execute(Clirio.split('git status'));
@@ -41,7 +41,7 @@ describe('Composed of several modules', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('3.1 / Positive', async () => {
+  it('3.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'status');
 
     await buildCli().execute(
@@ -62,7 +62,7 @@ describe('Composed of several modules', () => {
     });
   });
 
-  it('4.1 / Positive', async () => {
+  it('4.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --pool=7 -v'));

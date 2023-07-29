@@ -25,7 +25,7 @@ describe('Empty command', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'empty');
 
     await buildCli().execute(Clirio.split(''));
@@ -33,7 +33,7 @@ describe('Empty command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('1.2 / Positive', async () => {
+  it('1.2', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'empty');
 
     await buildCli().execute(Clirio.split('migration'));
@@ -41,7 +41,7 @@ describe('Empty command', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('1.3 / Positive', async () => {
+  it('1.3', async () => {
     const entryStub = sandbox.stub(PingModule.prototype, 'empty');
 
     await buildCli().execute(Clirio.split('ping'));

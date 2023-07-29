@@ -1,4 +1,12 @@
-import { Module, Command, Options, Empty, Failure, Params } from '@clirio';
+import {
+  Module,
+  Command,
+  Options,
+  Empty,
+  Failure,
+  Params,
+  Pipe,
+} from '@clirio';
 import { MigrationRunOptionsDto } from './migration-run';
 import {
   MigrationStatusOptionsDto,
@@ -9,6 +17,11 @@ import {
   MigrationFromParamsDto,
   MigrationFromOptionsDto,
 } from './migration-from';
+import {
+  MigrationUpOptionsDto,
+  MigrationUpParamsDto,
+  MigrationUpPipe,
+} from './migration-up';
 
 // import {
 //   MigrationUpPipe,
@@ -23,14 +36,14 @@ export class MigrationModule {
     console.log('migration run', options);
   }
 
-  // @Command('up <type-id>')
-  // @Pipe(MigrationUpPipe)
-  // public from(
-  //   @Params() params: MigrationUpParamsDto,
-  //   @Options() options: MigrationUpOptionsDto,
-  // ) {
-  //   console.log('migration from', params, options);
-  // }
+  @Command('up <type-name> <type-id> ')
+  @Pipe(MigrationUpPipe)
+  public up(
+    @Params() params: MigrationUpParamsDto,
+    @Options() options: MigrationUpOptionsDto,
+  ) {
+    console.log('migration from', params, options);
+  }
 
   @Command('from <type-id> <type-name>')
   public from(

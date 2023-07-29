@@ -16,7 +16,7 @@ describe('Validation cases', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive / Params and options are corrected', async () => {
+  it('1.1 Params and options are corrected', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'from');
 
     await buildCli().execute(
@@ -41,21 +41,14 @@ describe('Validation cases', () => {
     });
   });
 
-  it('1.2 / Negative / Params are corrected, options are invalid', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('1.2 / Params are corrected, options are invalid', async () => {
+    const err = await buildCli()
       .execute(
         Clirio.split(
           'migration from 1567 type-dbo -e DB_NAME=db-name --id=fdfd -s --start-date=1 --algorithm=a',
         ),
       )
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(err instanceof ClirioValidationError).toBeTruthy();
     expect(err).toMatchObject({
@@ -64,21 +57,14 @@ describe('Validation cases', () => {
     });
   });
 
-  it('1.3 / Negative / Params are invalid, options are corrected', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('1.3 / Params are invalid, options are corrected', async () => {
+    const err = await buildCli()
       .execute(
         Clirio.split(
           'migration from t1567 type-dbo -e DB_NAME=db-name -e DB_TABLE=db-table --id="cat" -s --start-date=1 --algorithm=a',
         ),
       )
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(err instanceof ClirioValidationError).toBeTruthy();
     expect(err).toMatchObject({
@@ -87,21 +73,14 @@ describe('Validation cases', () => {
     });
   });
 
-  it('1.4 / Negative / Params are invalid, options are invalid', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('1.4 / Params are invalid, options are invalid', async () => {
+    const err = await buildCli()
       .execute(
         Clirio.split(
           'migration from t1567 type-dbo -e DB_NAME=db-name -e DB_TABLE=db-table --id="cat" -s --start-date=1 --algorithm=a',
         ),
       )
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(err instanceof ClirioValidationError).toBeTruthy();
     expect(err).toMatchObject({

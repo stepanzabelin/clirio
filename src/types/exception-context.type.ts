@@ -1,3 +1,3 @@
 export type ExceptionContext = {
-  scope: 'global' | 'command' | 'default';
+  scope: 'global' | 'action' | 'default';
 };

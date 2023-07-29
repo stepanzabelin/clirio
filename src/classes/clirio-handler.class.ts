@@ -246,7 +246,7 @@ export class ClirioHandler {
       const pipeInst: ClirioPipe =
         typeof pipe === 'function' ? new pipe() : pipe;
 
-      data = pipeInst.transform(data, {
+      data = pipeInst.transform.bind(pipeInst)(data, {
         dataType,
         scope,
         entity,
@@ -274,7 +274,7 @@ export class ClirioHandler {
     }
 
     if (pipeMetadata) {
-      pipeScopeList.push({ scope: 'command', pipe: pipeMetadata.pipe });
+      pipeScopeList.push({ scope: 'action', pipe: pipeMetadata.pipe });
 
       if (pipeMetadata.overwriteGlobal) {
         pipeScopeList = pipeScopeList.filter((item) => item.scope !== 'global');
@@ -306,7 +306,7 @@ export class ClirioHandler {
 
       if (exceptionMetadata) {
         exceptionScopeList.push({
-          scope: 'command',
+          scope: 'action',
           exception: exceptionMetadata.exception,
         });
 

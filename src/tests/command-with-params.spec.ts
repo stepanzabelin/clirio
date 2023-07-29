@@ -15,7 +15,7 @@ describe('Command with params', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloThere');
 
     await buildCli().execute(Clirio.split('hello there'));
@@ -23,7 +23,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('2.1 / Positive', async () => {
+  it('2.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello venus'));
@@ -31,7 +31,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('2.2 / Positive', async () => {
+  it('2.2', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello earth'));
@@ -39,7 +39,7 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('2.3 / Positive', async () => {
+  it('2.3', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloPlanet');
 
     await buildCli().execute(Clirio.split('hello mars'));
@@ -47,24 +47,17 @@ describe('Command with params', () => {
     expect(entrySpy.calledOnce).toBeTruthy();
   });
 
-  it('2.4 / Negative', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('2.4', async () => {
+    const err = await buildCli()
       .execute(Clirio.split('hello jupiter'))
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(
       err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
-  it('3.1 / Positive', async () => {
+  it('3.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloTo');
 
     await buildCli().execute(Clirio.split('hello to Alex Smith'));
@@ -77,58 +70,37 @@ describe('Command with params', () => {
     });
   });
 
-  it('3.2 / Negative', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('3.2', async () => {
+    const err = await buildCli()
       .execute(Clirio.split('hello to Alex'))
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(
       err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
-  it('3.3 / Negative', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('3.3', async () => {
+    const err = await buildCli()
       .execute(Clirio.split('hello to Alex Smith Junior'))
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(
       err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
-  it('3.4 / Negative', async () => {
-    const catchSpy = sandbox.spy();
-
-    await buildCli()
-      .setGlobalException({
-        catch: catchSpy,
-      })
+  it('3.4', async () => {
+    const err = await buildCli()
       .execute(Clirio.split('hello to'))
-      .catch(() => null);
-
-    const [err] = catchSpy.getCall(0).args;
+      .catch((err) => err);
 
     expect(
       err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
-  it('3.5 / Positive', async () => {
+  it('3.5', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloToUnknown');
 
     await buildCli().execute(Clirio.split('hello to-unknown Alex Smith'));
@@ -141,7 +113,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('4.1 / Positive', async () => {
+  it('4.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(Clirio.split('hello guys Alex Jack Max'));
@@ -151,7 +123,7 @@ describe('Command with params', () => {
     expect(params).toStrictEqual({ names: ['Alex', 'Jack', 'Max'] });
   });
 
-  it('4.2 / Positive', async () => {
+  it('4.2', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloGuys');
 
     await buildCli().execute(
@@ -165,7 +137,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('4.3 / Positive', async () => {
+  it('4.3', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'helloUnknownGuys');
 
     await buildCli().execute(
@@ -179,7 +151,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('5.1 / Positive', async () => {
+  it('5.1', async () => {
     const entrySpy = sandbox.stub(HelloModule.prototype, 'universalHello');
 
     await buildCli().execute(
@@ -196,7 +168,7 @@ describe('Command with params', () => {
     });
   });
 
-  it('5.2 / Positive', async () => {
+  it('5.2', async () => {
     const entrySpy = sandbox.stub(
       HelloModule.prototype,
       'helloPlanetCreatures',

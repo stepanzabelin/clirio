@@ -16,7 +16,7 @@ describe('Transformation cases', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(
@@ -31,7 +31,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('1.2 / Positive', async () => {
+  it('1.2', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
     await buildCli().execute(
@@ -48,7 +48,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  // it('1.3 / Positive', async () => {
+  // it('1.3', async () => {
   //   const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
   //   await buildCli().execute(Clirio.split('migration run'));
@@ -58,7 +58,7 @@ describe('Transformation cases', () => {
   //   expect(options).toStrictEqual({});
   // });
 
-  it('2.1 / Positive', async () => {
+  it('2.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(
@@ -81,7 +81,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('2.2 / Positive', async () => {
+  it('2.2', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(
@@ -104,7 +104,7 @@ describe('Transformation cases', () => {
     });
   });
 
-  it('2.3 / Positive', async () => {
+  it('2.3', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
 
     await buildCli().execute(

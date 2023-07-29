@@ -15,7 +15,7 @@ describe('Cast cases for Params and Options', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'status');
 
     await buildCli().execute(
@@ -36,7 +36,7 @@ describe('Cast cases for Params and Options', () => {
     });
   });
 
-  it('1.2 / Positive', async () => {
+  it('1.2', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'status');
 
     await buildCli().execute(
@@ -57,7 +57,7 @@ describe('Cast cases for Params and Options', () => {
     });
   });
 
-  it('1.3 / Positive', async () => {
+  it('1.3', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'status');
 
     await buildCli().execute(
@@ -78,7 +78,7 @@ describe('Cast cases for Params and Options', () => {
     });
   });
 
-  it('2.1 / Positive', async () => {
+  it('2.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'statusUnknown');
 
     await buildCli().execute(
@@ -100,7 +100,7 @@ describe('Cast cases for Params and Options', () => {
     });
   });
 
-  it('2.2 / Positive', async () => {
+  it('2.2', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'statusUnknown');
 
     await buildCli().execute(
@@ -122,7 +122,7 @@ describe('Cast cases for Params and Options', () => {
     });
   });
 
-  it('3.3 / Positive', async () => {
+  it('3.3', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'statusUnknown');
 
     await buildCli().execute(

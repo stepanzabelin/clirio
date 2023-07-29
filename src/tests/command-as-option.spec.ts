@@ -15,7 +15,7 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('1.1 / Positive', async () => {
+  it('1.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('-v'));
@@ -23,7 +23,7 @@ describe('Command as option', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('1.2 / Positive', async () => {
+  it('1.2', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
     await buildCli().execute(Clirio.split('--version'));
@@ -31,7 +31,7 @@ describe('Command as option', () => {
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('2.1 / Positive', async () => {
+  it('2.1', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(Clirio.split('--check --pool=5 -v'));
@@ -44,7 +44,7 @@ describe('Command as option', () => {
     });
   });
 
-  it('2.2 / Positive', async () => {
+  it('2.2', async () => {
     const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
     await buildCli().execute(
