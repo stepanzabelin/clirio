@@ -9,11 +9,6 @@ import {
 import { ActionType, Constructor } from '../types';
 import { getPrototype, isEntity } from '../utils';
 
-type OptionsData = {
-  options: string[];
-  description: string;
-};
-
 type ModuleData = {
   entity: Constructor<any>;
   command: string | null;
@@ -27,11 +22,6 @@ type ActionData = {
   description: string | null;
   hidden: boolean;
 };
-
-// type Scope = {
-//   moduleEntity: Constructor<any>;
-//   actionName: string;
-// };
 
 type Field = {
   keys: string[];
@@ -52,6 +42,12 @@ type DumpItem = {
   module: ModuleData;
   action: ActionData;
   inputs: Input[];
+};
+
+type FormatOptions = {
+  firstColLen: number;
+  indent: number;
+  height: number;
 };
 
 export class ClirioHelper {
@@ -82,18 +78,6 @@ export class ClirioHelper {
       if (actionData.type !== ActionType.Command) {
         continue;
       }
-      // const description = null;
-      // const hidden = false;
-
-      // if (hidden) {
-      //   continue;
-      // }
-
-      // const optionDescription = this.describeActionOptions(module, propertyKey);
-
-      // const command = [moduleData.command, actionData.command]
-      //   .filter((f) => f)
-      //   .join(' ');
 
       const optionsArgMap = optionsArgMetadata.getArgMap(
         getPrototype(module),
@@ -120,33 +104,17 @@ export class ClirioHelper {
         },
         inputs: [
           ...[...paramsArgMap.values()].map((data) => {
-            console.log({ data, paramTargetMetadata });
-
             return {
               type: 'params' as DataType,
               entity: isEntity(data.entity) ? data.entity : null,
-              fields: [
-                ...paramTargetMetadata.getMap(getPrototype(data.entity)),
-              ].map(([propertyName, data]) => ({
-                propertyName,
-                keys: data.key ? [data.key] : [],
-                description: data.description,
-                hidden: data.hidden,
-              })),
+              fields: ClirioHelper.dumpInputParams(data.entity),
             };
           }),
           ...[...optionsArgMap.values()].map((data) => {
             return {
               type: 'options' as DataType,
               entity: isEntity(data.entity) ? data.entity : null,
-              fields: [
-                ...optionTargetMetadata.getMap(getPrototype(data.entity)),
-              ].map(([propertyName, data]) => ({
-                propertyName,
-                keys: data.keys ?? [],
-                description: data.description,
-                hidden: data.hidden,
-              })),
+              fields: ClirioHelper.dumpInputOptions(data.entity),
             };
           }),
         ],
@@ -156,44 +124,38 @@ export class ClirioHelper {
     return results;
   }
 
-  private describeActionOptions(
-    module: Constructor<any>,
-    propertyKey: string,
-  ): OptionsData[] {
-    const optionDescription: OptionsData[] = [];
-
-    const optionsArgMap = optionsArgMetadata.getArgMap(
-      getPrototype(module),
-      propertyKey,
+  public static dumpInputParams(entity: Constructor<any>): Field[] {
+    return [...paramTargetMetadata.getMap(getPrototype(entity))].map(
+      ([propertyName, data]) => ({
+        propertyName,
+        keys: data.key ? [data.key] : [],
+        description: data.description,
+        hidden: data.hidden,
+      }),
     );
+  }
 
-    if (optionsArgMap.size > 0) {
-      const { entity } = [...optionsArgMap.values()][0];
+  public static dumpInputOptions(entity: Constructor<any>): Field[] {
+    return [...optionTargetMetadata.getMap(getPrototype(entity))].map(
+      ([propertyName, data]) => ({
+        propertyName,
+        keys: data.keys ?? [],
+        description: data.description,
+        hidden: data.hidden,
+      }),
+    );
+  }
 
-      const optionsList = Array.from(
-        optionTargetMetadata.getMap(entity.prototype),
-      );
+  public static formatOptionField(field: Field): string {
+    const keys = field.keys.length > 0 ? field.keys : [field.propertyName];
+    return keys
+      .map((key) => (key.length > 1 ? `--${key}` : `-${key}`))
+      .join(', ');
+  }
 
-      for (const [property, { keys }] of optionsList) {
-        const description = '';
-
-        const hidden = false;
-
-        if (hidden) {
-          continue;
-        }
-
-        const options = (keys ?? [property]).map((key) =>
-          key.length > 1 ? `--${key}` : `-${key}`,
-        );
-
-        optionDescription.push({
-          options,
-          description,
-        });
-      }
-    }
-    return optionDescription;
+  public static formatParamField(field: Field): string {
+    const keys = field.keys.length > 0 ? field.keys : [field.propertyName];
+    return keys.join(', ');
   }
 
   public dumpAll(): DumpItem[] {
@@ -202,83 +164,86 @@ export class ClirioHelper {
       .flatMap((f) => f);
   }
 
-  // public getScope(): ModuleData[] {
-  //   return this.describeModule(this.scope.module);
-  // }
-
-  // private static formatType(
-  //   type: string | null,
-  //   itemType: string | null,
-  // ): string {
-  //   if (!type) {
-  //     return '';
-  //   } else if (['number', 'string'].includes(type)) {
-  //     return `<${type}>`;
-  //   } else if (type === 'array') {
-  //     const subType =
-  //       itemType && ['number', 'string'].includes(itemType) ? itemType : '';
-  //     return `<...${subType}>`;
-  //   }
-  //   return '';
-  // }
-
-  public static formatActionDescription(
-    optionDescription: OptionsData[],
-    { showType = true }: { showType?: boolean } = {},
+  public static formatDump(
+    dump: DumpItem[],
+    { showParams = false }: { showParams?: boolean } = {},
   ): string {
     let content = '';
 
-    for (const { options, description } of optionDescription) {
-      const col1 = options.join(', ') + ' ' + (showType ? '??' : '');
+    for (const dumpItem of dump) {
+      if (dumpItem.module.hidden) {
+        continue;
+      }
+
+      if (dumpItem.action.hidden) {
+        continue;
+      }
+
       content +=
-        this.formatTwoCols([col1.trim(), description], {
-          firstColLen: 22,
-          indent: 4,
+        this.formatCommand(dumpItem, {
+          firstColLen: 24,
+          indent: 2,
         }) + `\n`;
+
+      if (showParams) {
+        for (const input of dumpItem.inputs) {
+          if (input.type === 'params') {
+            for (const field of input.fields) {
+              if (field.hidden) {
+                continue;
+              }
+              content +=
+                this.formatColumns(
+                  [this.formatParamField(field), field.description ?? ''],
+                  {
+                    firstColLen: 24,
+                    indent: 4,
+                  },
+                ) + `\n`;
+            }
+          }
+        }
+      }
+
+      for (const input of dumpItem.inputs) {
+        if (input.type === 'options') {
+          for (const field of input.fields) {
+            content +=
+              this.formatColumns(
+                [this.formatOptionField(field), field.description ?? ''],
+                {
+                  firstColLen: 24,
+                  indent: 4,
+                },
+              ) + `\n`;
+          }
+        }
+      }
+
+      content += `\n`;
     }
 
     return content;
   }
 
-  public static formatDump(
-    dump: DumpItem[],
-    { showOptions = true }: { showOptions?: boolean } = {},
+  public static formatCommand(
+    dumpItem: DumpItem,
+    formatOptions: Partial<FormatOptions> = {},
   ): string {
-    let content = '';
+    const command = [dumpItem.module.command, dumpItem.action.command]
+      .filter((f) => f)
+      .join(' ');
 
-    // for (const dumpItem of dump) {
-    //   const { command, description, optionDescription } = dumpItem;
-    //   content +=
-    //     this.formatTwoCols([command, description], {
-    //       firstColLen: 24,
-    //       indent: 2,
-    //     }) + `\n`;
-
-    //   if (showOptions && optionDescription.length > 0) {
-    //     content += `\n`;
-    //     content += this.formatActionDescription(optionDescription);
-    //     content += `\n`;
-    //   }
-    // }
-
-    return content;
+    return this.formatColumns(
+      [command, dumpItem.module.description ?? ''],
+      formatOptions,
+    );
   }
 
-  public static formatTwoCols(
+  public static formatColumns(
     row: [string, string],
-    options: {
-      firstColLen?: number;
-      indent?: number;
-      height?: number;
-    } = {},
+    { firstColLen = 24, indent = 2, height = 80 }: Partial<FormatOptions> = {},
   ): string {
-    const { firstColLen, indent, height } = {
-      firstColLen: 24,
-      indent: 2,
-      height: 80,
-      ...options,
-    };
-
     const separatorLen = 2;
     const col1 = row[0].padEnd(firstColLen, ' ');
 
