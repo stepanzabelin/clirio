@@ -1,4 +1,4 @@
-import { Validate, Clirio, Option } from '@clirio';
+import { Option } from '@clirio';
 
 export class MigrationUpOptionsDto {
   @Option('--env, -e')

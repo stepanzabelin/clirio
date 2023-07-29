@@ -1,4 +1,4 @@
-import { Clirio, Param, Validate } from '@clirio';
+import { Param } from '@clirio';
 
 export class MigrationUpParamsDto {
   @Param('type-id')
