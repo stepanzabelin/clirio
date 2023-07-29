@@ -104,7 +104,7 @@ $ cli git status -b master --ignore-submodules  all --short
 
 Clirio is developed according to SOLID principles, so It is possible to use OOP, dependency injection and other programming patterns.
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** has been implemented. It contains recommended assembly of libraries. But you can use any other libraries for validation and DI.
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** has been implemented. It contains recommended assembly of libraries for validation and DI. But you can integrate any other libraries and use custom decorators.
 
 ## Docs
 
@@ -122,6 +122,16 @@ The application structure should consist of the following parts:
 const cli = new Clirio();
 cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
 cli.execute();
+```
+
+Modules can be instantiated to support dependency injection
+
+```ts
+cli.setModules([
+  HelloModule,
+  new CommonModule(),
+  diContainer.resolve(CommonModule),
+]);
 ```
 
 #### Methods
