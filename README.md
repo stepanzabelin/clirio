@@ -46,7 +46,6 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [setGlobalException](#none)
     - [addModule](#none)
     - [setModules](#none)
-    - [setModules](#none)
     - [execute](#none)
     - [valid](#none)
     - [form](#none)
@@ -139,7 +138,7 @@ $ cli git status -b master --ignore-submodules  all --short
 
 Clirio is developed according to SOLID principles, so It is possible to use OOP, dependency injection and other programming patterns.
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** has been implemented. It contains recommended assembly of libraries for validation and DI. But you can integrate any other libraries and use custom decorators.
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains recommended assembly of libraries for validation and DI. But you can integrate any other libraries and use custom decorators.
 
 ### App configuration
 
