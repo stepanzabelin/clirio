@@ -1,12 +1,46 @@
-import { Validation } from '../types';
-import { validations } from './validations.util';
+import { keyValueReg } from '../constrains';
+import { Check } from '../types';
+import { isBoolean, isNumber, isString } from './type-checks.util';
 
-type CheckName = keyof typeof validations;
+export const valid = {
+  OPTIONAL: (value: any): ReturnType<Check> => {
+    return value === undefined ? true : null;
+  },
 
-export type ValidArg = CheckName | CheckName[];
-export type Valid = (checkOrChecks: ValidArg) => Validation[];
+  REQUIRED: (value: any): ReturnType<Check> => {
+    return value === undefined ? false : null;
+  },
 
-export const valid = (checkOrChecks: ValidArg): Validation[] => {
-  const checks = Array.isArray(checkOrChecks) ? checkOrChecks : [checkOrChecks];
-  return checks.map((key) => validations[key]);
+  NULLABLE: (value: any): ReturnType<Check> => {
+    return value === null ? true : null;
+  },
+
+  NULL: (value: any): ReturnType<Check> => {
+    return value === null;
+  },
+
+  NUMBER: (value: any): ReturnType<Check> => {
+    return isNumber(value) || (isString(value) && isNumber(Number(value)));
+  },
+
+  INTEGER: (value: any): ReturnType<Check> => {
+    return isNumber(value) && Number.isInteger(Number(value));
+  },
+
+  STRING: (value: any): ReturnType<Check> => {
+    return isString(value);
+  },
+
+  BOOLEAN: (value: any): ReturnType<Check> => {
+    return isBoolean(value) || ['true', 'false'].includes(String(value));
+  },
+
+  FLAG: (value: any): ReturnType<Check> => {
+    return [null, 'true', 'false'].includes(value);
+  },
+
+  KEY_VALUE: (value: string | null | (string | null)[]): ReturnType<Check> => {
+    const values = Array.isArray(value) ? value : [value];
+    return values.every((value) => String(value).match(keyValueReg));
+  },
 };

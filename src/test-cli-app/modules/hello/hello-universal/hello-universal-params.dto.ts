@@ -5,6 +5,6 @@ export class HelloUniversalParamsDto {
   readonly planet!: string;
 
   @Param('creature-names')
-  @Transform(Clirio.form('ARRAY'))
+  @Transform(Clirio.form.ARRAY)
   readonly creatureNames!: string[];
 }

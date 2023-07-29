@@ -2,11 +2,11 @@ import { Clirio, Option, Transform } from '@clirio';
 
 export class MigrationToOptionsDto {
   @Option('--env, -e')
-  @Transform(Clirio.form('KEY_VALUE'))
+  @Transform(Clirio.form.KEY_VALUE)
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Transform(Clirio.form('FLAG'))
+  @Transform(Clirio.form.FLAG)
   readonly silent?: boolean;
 
   @Option('-i, --id')

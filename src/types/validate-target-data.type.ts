@@ -1,5 +1,5 @@
-import { Validation } from '../types';
+import { Check } from '../types';
 
 export type ValidateTargetData = {
-  checks: Validation[];
+  checks: Check[];
 };

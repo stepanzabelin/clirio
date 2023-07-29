@@ -31,6 +31,6 @@ export * from './module.type';
 export * from './module-data.type';
 export * from './linked-arg.type';
 export * from './row.type';
-export * from './validation.type';
+export * from './check.type';
 export * from './exception-context.type';
 export * from './clirio-config.type';

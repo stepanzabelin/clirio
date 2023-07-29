@@ -191,10 +191,10 @@ export class ClirioHandler {
         const result = check(row?.value);
 
         if (result === false) {
+          const key = row?.key ?? propertyName;
+
           throw new ClirioValidationError(
-            `The "${
-              row?.key ?? propertyName
-            }" ${dataType.toLowerCase()} is wrong`,
+            `The "${key}" ${dataType.toLowerCase()} is wrong`,
             {
               dataType,
               propertyName,
