@@ -155,7 +155,7 @@ export class ClirioHelper {
 
   public static formatParamField(field: Field): string {
     const keys = field.keys.length > 0 ? field.keys : [field.propertyName];
-    return keys.join(', ');
+    return '<' + keys.join(', ') + '>';
   }
 
   public dumpAll(): DumpItem[] {
