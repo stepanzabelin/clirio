@@ -12,24 +12,58 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
 ##### Table of Contents
 
 - [Clirio](#clirio)
+
   - [Installation](#installation)
   - [Quick Start](#quick-start)
   - [Starter kit](#starter-kit)
-  - [Docs](#docs)
-    - [Parsing](#parsing)
-    - [The base class](#the-base-class)
-    - [Modules](#modules)
-    - [Actions](#actions)
-      - [Command pattern](#decorator-for-command-pattern)
-      - [Empty input](#decorator-for-empty-input)
-      - [Failure input](#decorator-for-failure-input)
-    - [Injecting data](#injecting-data)
-    - [Using Joi](#using-joi)
-    - [Special cases](#special-cases)
-      - [Help mode](#help-mode)
-      - [Version](#version)
-    - [Config](#Config)
-    - [Receipts](#receipts)
+  - [Parsing args](#parsing-args)
+  - [App configuration](#none)
+  - [Modules](#modules)
+  - [Actions](#actions)
+    - [Command pattern](#decorator-for-command-pattern)
+    - [Empty input](#decorator-for-empty-input)
+    - [Failure input](#decorator-for-failure-input)
+  - [Data control](#none)
+    - [Params](#none)
+    - [Options](#none)
+  - [Input DTO](#none)
+    - [Validation](#none)
+    - [Transformation](#none)
+  - [Pipes](#none)
+  - [Exceptions](#none)
+  - [Help mode](#none)
+    - [Modularization](#none)
+    - [Helper](#none)
+  - [Version mode](#version)
+  - [Custom decorators](#none)
+    - [Using Joi validation](#none)
+  - [Integrations](#none)
+    - [Dependency injection](#none)
+    - [Terminal libs](#none)
+  - [Clirio API](#none)
+    - [setConfig](#none)
+    - [setGlobalPipe](#none)
+    - [setGlobalException](#none)
+    - [addModule](#none)
+    - [setModules](#none)
+    - [setModules](#none)
+    - [execute](#none)
+    - [valid](#none)
+    - [form](#none)
+  - [Decorators](#none)
+    - [Command](#none)
+    - [Empty](#none)
+    - [Exception](#none)
+    - [Failure](#none)
+    - [Helper](#none)
+    - [Module](#none)
+    - [Option](#none)
+    - [Options](#none)
+    - [Param](#none)
+    - [Params](#none)
+    - [Pipe](#none)
+    - [Transform](#none)
+    - [Validate](#none)
 
 ## Installation
 
@@ -107,15 +141,13 @@ Clirio is developed according to SOLID principles, so It is possible to use OOP,
 
 **[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** has been implemented. It contains recommended assembly of libraries for validation and DI. But you can integrate any other libraries and use custom decorators.
 
-## Docs
+### App configuration
 
 The application structure should consist of the following parts:
 
 1. the base class - `Clirio`
 2. modules (custom classes or their instances)
 3. actions (methods in class-modules with decorators )
-
-### The base class
 
 `Clirio` - is the base class which configures the application and links modules
 
@@ -502,7 +534,7 @@ $ cli migration stop
 The migration module got the wrong instruction
 ```
 
-### Injecting data
+### Handling data
 
 Using special decorators to pass input data
 
