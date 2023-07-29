@@ -16,6 +16,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Quick Start](#quick-start)
   - [Starter kit](#starter-kit)
   - [Docs](#docs)
+    - [Parsing](#parsing)
     - [The base class](#the-base-class)
     - [Modules](#modules)
     - [Actions](#actions)
@@ -27,7 +28,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [Special cases](#special-cases)
       - [Help mode](#help-mode)
       - [Version](#version)
-    - [Exceptions](#exceptions)
+    - [Config](#Config)
     - [Receipts](#receipts)
 
 ## Installation
@@ -142,15 +143,13 @@ Setting global configuration
 
 ```ts
 cli.setConfig({
-  nullableOptionValue: true,
-  validateOptionsWithoutDto: true,
+  allowUncontrolledOptions: false,
 });
 ```
 
-| Param                     |                                                              Description                                                              | Default |
-| ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | ------: |
-| nullableOptionValue       | value conversion of command line options that have no value e.g. `--verbose` - initially it is `null` after conversion will be `true` |    true |
-| validateOptionsWithoutDto |           if dto options are not specified but options will be passed in the command, then there may be a validation error            |    true |
+| Param                    |                                           Description                                           | Default |
+| ------------------------ | :---------------------------------------------------------------------------------------------: | ------: |
+| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but they will be got in the command |    true |
 
 ##### addModule
 
@@ -176,6 +175,9 @@ Arguments will be determined automatically but it is possible to set them manual
 cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
 
+This option is useful for testing and debugging the application
+
+<!--
 ##### onError
 
 Callback for handling error
@@ -236,11 +238,11 @@ cli.onDebug((err: ClirioDebug) => {
   console.log(chalk.red(output));
   process.exit(5);
 });
-```
+``` -->
 
 ### Modules
 
-Modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
+The modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
 An application can have either one or many modules. Each module contains actions (patterns for commands)
 
 ###### Example of common module
@@ -354,7 +356,7 @@ The pattern of one or more space-separated arguments. Exact match will work
 
 ##### Match variants
 
-Using the `|` operator to select match variants
+Using the `|` operator to set match variants
 
 ```ts
 @Command('hello|hey|hi')

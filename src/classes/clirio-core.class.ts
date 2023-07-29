@@ -27,7 +27,7 @@ import { getPrototype } from '../utils';
 export class ClirioCore {
   protected modules: Module[] = [];
   protected config: ClirioConfig = {
-    allowUncontrolledOptions: false,
+    allowUncontrolledOptions: true,
   };
   protected handler = new ClirioHandler();
   protected globalPipe: Pipe | null = null;

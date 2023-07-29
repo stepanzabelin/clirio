@@ -1,25 +1,24 @@
 import { Validate, Clirio, Option } from '@clirio';
-const { OPTIONAL, NULLABLE, STRING, NUMBER, KEY_VALUE, FLAG } = Clirio.valid;
 
 export class MigrationFromOptionsDto {
   @Option('--env, -e')
-  @Validate(KEY_VALUE)
+  @Validate(Clirio.valid.KEY_VALUE)
   readonly envs?: Record<string, string>;
 
   @Option('--silent, -s')
-  @Validate(FLAG)
+  @Validate(Clirio.valid.FLAG)
   readonly silent?: boolean;
 
   @Option('--id, -i')
-  @Validate(NUMBER)
+  @Validate(Clirio.valid.NUMBER)
   readonly id!: number;
 
   @Option('--start-date, -b')
-  @Validate([NULLABLE, STRING])
+  @Validate([Clirio.valid.NULLABLE, Clirio.valid.STRING])
   readonly startDate!: string;
 
   @Option('--end-date, -e')
-  @Validate([OPTIONAL, STRING])
+  @Validate([Clirio.valid.OPTIONAL, Clirio.valid.STRING])
   readonly endDate?: string;
 
   @Option('--algorithm, -a')
