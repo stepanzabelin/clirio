@@ -1,15 +1,13 @@
-import { exceptionTargetMetadata } from '../metadata';
-import { Constructor, ExceptionTargetData } from '../types';
+import { filterTargetMetadata } from '../metadata';
+import { Constructor, FilterTargetData } from '../types';
 
-export const Exception = function (
-  exception: ExceptionTargetData['exception'],
-  {
-    overwriteGlobal = false,
-  }: Partial<Omit<ExceptionTargetData, 'exception'>> = {},
+export const Filter = function (
+  filter: FilterTargetData['filter'],
+  { overwriteGlobal = false }: Partial<Omit<FilterTargetData, 'filter'>> = {},
 ) {
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
-    exceptionTargetMetadata.setData(target, propertyKey, {
-      exception,
+    filterTargetMetadata.setData(target, propertyKey, {
+      filter,
       overwriteGlobal,
     });
   };

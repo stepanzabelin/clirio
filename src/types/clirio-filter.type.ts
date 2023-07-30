@@ -1,9 +1,9 @@
 import { ClirioCommonError, ClirioValidationError } from '../exceptions';
-import { ExceptionContext } from './exception-context.type';
+import { FilterContext } from './filter-context.type';
 
-export interface ClirioException {
+export interface ClirioFilter {
   catch(
     error: Error | ClirioCommonError | ClirioValidationError,
-    context: ExceptionContext,
+    context: FilterContext,
   ): void | never;
 }

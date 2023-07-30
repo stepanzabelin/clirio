@@ -5,13 +5,13 @@ import {
   PipeScope,
   LinkedArg,
   Row,
-  ExceptionScope,
-  ClirioException,
+  FilterScope,
+  ClirioFilter,
   Link,
   ParsedArg,
   LinkType,
   ArgType,
-  Exception,
+  Filter,
   Pipe,
   ClirioPipe,
   DataTypeEnum,
@@ -21,22 +21,22 @@ import {
   transformTargetMetadata,
   optionTargetMetadata,
   paramTargetMetadata,
-  exceptionTargetMetadata,
+  filterTargetMetadata,
   pipeTargetMetadata,
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
 import { getInstance, getPrototype, isEntity } from '../utils';
 
 export class ClirioHandler {
-  public handleExceptions(rawErr: any, exceptionList: ExceptionScope[] = []) {
+  public handleFilters(rawErr: any, filterList: FilterScope[] = []) {
     let currentErr = rawErr;
 
-    for (const { exception, scope } of exceptionList) {
-      const exceptionInst: ClirioException =
-        typeof exception === 'function' ? new exception() : exception;
+    for (const { filter, scope } of filterList) {
+      const filterInst: ClirioFilter =
+        typeof filter === 'function' ? new filter() : filter;
 
       try {
-        exceptionInst.catch(currentErr, {
+        filterInst.catch(currentErr, {
           scope,
         });
       } catch (err) {
@@ -284,41 +284,41 @@ export class ClirioHandler {
     return pipeScopeList;
   }
 
-  collectExceptions(
-    globalException: Exception | null,
+  collectFilters(
+    globalFilter: Filter | null,
     module?: Constructor<any>,
     actionName?: string,
-  ): ExceptionScope[] {
-    let exceptionScopeList: ExceptionScope[] = [];
+  ): FilterScope[] {
+    let filterScopeList: FilterScope[] = [];
 
-    if (globalException) {
-      exceptionScopeList.push({
+    if (globalFilter) {
+      filterScopeList.push({
         scope: 'global',
-        exception: globalException,
+        filter: globalFilter,
       });
     }
 
     if (module && actionName) {
-      const exceptionMetadata = exceptionTargetMetadata.getData(
+      const filterMetadata = filterTargetMetadata.getData(
         getPrototype(module),
         actionName,
       );
 
-      if (exceptionMetadata) {
-        exceptionScopeList.push({
+      if (filterMetadata) {
+        filterScopeList.push({
           scope: 'action',
-          exception: exceptionMetadata.exception,
+          filter: filterMetadata.filter,
         });
 
-        if (exceptionMetadata.overwriteGlobal) {
-          exceptionScopeList = exceptionScopeList.filter(
+        if (filterMetadata.overwriteGlobal) {
+          filterScopeList = filterScopeList.filter(
             (item) => item.scope !== 'global',
           );
         }
       }
     }
 
-    return exceptionScopeList;
+    return filterScopeList;
   }
 
   public linkArgs(parsedArgs: ParsedArg[], links: Link[]): null | LinkedArg[] {

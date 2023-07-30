@@ -6,7 +6,7 @@ import {
   LinkType,
   ParsedArg,
   Pipe,
-  Exception,
+  Filter,
   Module,
   DataTypeEnum,
   ClirioConfig,
@@ -31,7 +31,7 @@ export class ClirioCore {
   };
   protected handler = new ClirioHandler();
   protected globalPipe: Pipe | null = null;
-  protected globalException: Exception | null = null;
+  protected globalFilter: Filter | null = null;
 
   private *iterateData() {
     for (const module of this.modules) {
@@ -182,12 +182,12 @@ export class ClirioCore {
         );
         return;
       } catch (err: any) {
-        const exceptionScopeList = this.handler.collectExceptions(
-          this.globalException,
+        const filterScopeList = this.handler.collectFilters(
+          this.globalFilter,
           module,
           actionName,
         );
-        this.handler.handleExceptions(err, exceptionScopeList);
+        this.handler.handleFilters(err, filterScopeList);
         return;
       }
     }
@@ -226,12 +226,12 @@ export class ClirioCore {
         await this.handler.applyAction(module, actionName, []);
         return;
       } catch (err: any) {
-        const exceptionScopeList = this.handler.collectExceptions(
-          this.globalException,
+        const filterScopeList = this.handler.collectFilters(
+          this.globalFilter,
           module,
           actionName,
         );
-        this.handler.handleExceptions(err, exceptionScopeList);
+        this.handler.handleFilters(err, filterScopeList);
         return;
       }
     }
@@ -275,25 +275,23 @@ export class ClirioCore {
         await this.handler.applyAction(module, actionName, []);
         return;
       } catch (err: any) {
-        const exceptionScopeList = this.handler.collectExceptions(
-          this.globalException,
+        const filterScopeList = this.handler.collectFilters(
+          this.globalFilter,
           module,
           actionName,
         );
-        this.handler.handleExceptions(err, exceptionScopeList);
+        this.handler.handleFilters(err, filterScopeList);
         return;
       }
     }
 
-    const exceptionScopeList = this.handler.collectExceptions(
-      this.globalException,
-    );
+    const filterScopeList = this.handler.collectFilters(this.globalFilter);
 
-    this.handler.handleExceptions(
+    this.handler.handleFilters(
       new ClirioCommonError('Incorrect command specified', {
         errCode: 'INCORRECT_COMMAND',
       }),
-      exceptionScopeList,
+      filterScopeList,
     );
 
     return;

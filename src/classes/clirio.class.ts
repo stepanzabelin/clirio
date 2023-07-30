@@ -2,7 +2,7 @@ import { ClirioCore } from './clirio-core.class';
 import {
   OptionalKeys,
   Pipe,
-  Exception,
+  Filter,
   Module,
   Args,
   ClirioConfig,
@@ -20,8 +20,8 @@ export class Clirio extends ClirioCore {
     return this;
   }
 
-  public setGlobalException(globalException: Exception): this {
-    this.globalException = globalException;
+  public setGlobalFilter(globalFilter: Filter): this {
+    this.globalFilter = globalFilter;
     return this;
   }
 

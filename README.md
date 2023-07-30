@@ -46,7 +46,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Clirio API](#clirio-api)
     - [setConfig](#setconfig)
     - [setGlobalPipe](#setglobalpipe)
-    - [setGlobalException](#setglobalexception)
+    - [setGlobalFilter](#setglobalfilter)
     - [addModule](#addmodule)
     - [setModules](#setmodules)
     - [execute](#execute)
@@ -55,7 +55,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#none)
-    - [Exception](#none)
+    - [Filter](#none)
     - [Failure](#none)
     - [Helper](#none)
     - [Module](#none)
@@ -1003,7 +1003,7 @@ $ cli --version
 
 Special exceptions designed to complete the script with the desired result
 
-| Exception                                | Description |                    Handler |
+| Filter                                | Description |                    Handler |
 | ---------------------------------------- | :---------: | -------------------------: |
 | `new ClirioCommonError(message: string)` |    Error    |    `cli.onError(callback)` |
 | `new ClirioSuccess(message?: string)`    |   Success   |  `cli.onSuccess(callback)` |
@@ -1104,7 +1104,7 @@ cli.setConfig({
 #### setGlobalPipe
 
 
-#### setGlobalException
+#### setGlobalFilter
 
 
 

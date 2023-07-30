@@ -42,7 +42,7 @@ export class MigrationModule {
     @Params() params: MigrationUpParamsDto,
     @Options() options: MigrationUpOptionsDto,
   ) {
-    console.log('migration from', params, options);
+    // console.log('migration from', params, options);
   }
 
   @Command('from <type-id> <type-name>')

@@ -23,7 +23,7 @@ describe('Command with params', () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
-      .setGlobalException({
+      .setGlobalFilter({
         catch: catchSpy,
       })
       .execute(Clirio.split('hello jupiter'))
@@ -40,7 +40,7 @@ describe('Command with params', () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
-      .setGlobalException({
+      .setGlobalFilter({
         catch: catchSpy,
       })
       .execute(Clirio.split('hello to Alex'))
@@ -57,7 +57,7 @@ describe('Command with params', () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
-      .setGlobalException({
+      .setGlobalFilter({
         catch: catchSpy,
       })
       .execute(Clirio.split('hello to Alex Smith Junior'))
@@ -74,7 +74,7 @@ describe('Command with params', () => {
     const catchSpy = sandbox.spy();
 
     await buildCli()
-      .setGlobalException({
+      .setGlobalFilter({
         catch: catchSpy,
       })
       .execute(Clirio.split('hello to'))
@@ -105,7 +105,7 @@ describe('Command with params', () => {
 
     const cli = new Clirio();
     cli.setModules([MigrationModule]);
-    cli.setGlobalException({
+    cli.setGlobalFilter({
       catch: catchSpy,
     });
 
