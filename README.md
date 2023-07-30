@@ -9,7 +9,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
 
 [GIF]
 
-##### Table of Contents
+#### Table of Contents
 
 - [Clirio](#clirio)
 
@@ -17,40 +17,42 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Quick Start](#quick-start)
   - [Starter kit](#starter-kit)
   - [Parsing args](#parsing-args)
-  - [App configuration](#none)
+  - [App configuration](#app-configuration)
   - [Modules](#modules)
   - [Actions](#actions)
-    - [Command pattern](#decorator-for-command-pattern)
-    - [Empty input](#decorator-for-empty-input)
-    - [Failure input](#decorator-for-failure-input)
-  - [Data control](#none)
-    - [Params](#none)
-    - [Options](#none)
+    - [Command](#command-pattern)
+    - [Empty](#empty-command)
+    - [Failure](#failure-command)
+  - [Data control](#data-control)
+    - [Params](#params-data-control)
+    - [Options](#options-data-contro)
   - [Input DTO](#none)
     - [Validation](#none)
     - [Transformation](#none)
   - [Pipes](#none)
-  - [Exceptions](#none)
-  - [Help mode](#none)
-    - [Modularization](#none)
-    - [Helper](#none)
+  - [Exceptions](#exceptions)
+    - [ClirioValidationError](#cliriovalidationerror)
+    - [ClirioCommonError](#cliriocommonerror)
+  - [Help mode](#help-mode)
+    - [Modularization](#modularization-for-help-mode)
+    - [Helper](#clirio-helper)
   - [Version mode](#version)
   - [Custom decorators](#none)
     - [Using Joi validation](#none)
-  - [Integrations](#none)
+  - [Integrations](#integrations)
     - [Dependency injection](#none)
     - [Terminal libs](#none)
-  - [Clirio API](#none)
-    - [setConfig](#none)
-    - [setGlobalPipe](#none)
-    - [setGlobalException](#none)
-    - [addModule](#none)
-    - [setModules](#none)
-    - [execute](#none)
-    - [valid](#none)
-    - [form](#none)
-  - [Decorators](#none)
-    - [Command](#none)
+  - [Clirio API](#clirio-api)
+    - [setConfig](#setconfig)
+    - [setGlobalPipe](#setglobalpipe)
+    - [setGlobalException](#setglobalexception)
+    - [addModule](#addmodule)
+    - [setModules](#setmodules)
+    - [execute](#execute)
+    - [valid](#valid)
+    - [form](#form)
+  - [Decorators](#decorators)
+    - [Command](#command-decorator)
     - [Empty](#none)
     - [Exception](#none)
     - [Failure](#none)
@@ -78,9 +80,10 @@ yarn add clirio
 
 ## Quick Start
 
-For example to emulate `git status` cli command with options - 3 easy steps to build an app
+There are 3 easy steps to build Clirio App.
+The example for emulating `git status` cli command with options
 
-1. Create Dto
+1. Create Dto to define input options
 
 ```ts
 import { Option } from 'clirio';
@@ -97,7 +100,7 @@ class GitStatusDto {
 }
 ```
 
-2. Create module
+2. Create module to compose a set of commands
 
 ```ts
 import { Module, Command, Options } from 'clirio';
@@ -112,7 +115,7 @@ export class GitModule {
 }
 ```
 
-3. Configure a base class
+3. Configure the main class
 
 ```ts
 import { Clirio } from 'clirio';
@@ -122,33 +125,41 @@ clirio.addModule(GitModule);
 clirio.execute();
 ```
 
-###### Result
+##### Result
+
 
 ```bash
 
-$ cli git status -b master --ignore-submodules  all --short
+$ my-custom-cli git status -b master --ignore-submodules  all --short
 
 ```
+The application will route the command `git status` with options to the `GitModule.status` method.
+
 
 ```console
 { branch: 'master', ignoreSubmodules: 'all', short: true }
 ```
 
+Then you can use the received data for its intended purpose
+
+The implementation of own cli prefix (like `my-custom-cli`) is described in [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
+
 ## Starter kit
 
-Clirio is developed according to SOLID principles, so It is possible to use OOP, dependency injection and other programming patterns.
+Clirio is developed according to SOLID principles, so you can apply OOP, dependency injection and other programming patterns.
+ 
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains recommended assembly of libraries for validation and DI. But you can integrate any other libraries and use custom decorators.
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains a recommended assembly. But you can integrate any other libraries and custom decorators.
 
 ### App configuration
 
 The application structure should consist of the following parts:
 
-1. the base class - `Clirio`
+1. the main class - `Clirio`
 2. modules (custom classes or their instances)
 3. actions (methods in class-modules with decorators )
 
-`Clirio` - is the base class which configures the application and links modules
+`Clirio` - is the main class which configures the application and links modules
 
 ```ts
 const cli = new Clirio();
@@ -166,117 +177,12 @@ cli.setModules([
 ]);
 ```
 
-#### Methods
-
-##### setConfig
-
-Setting global configuration
-
-```ts
-cli.setConfig({
-  allowUncontrolledOptions: false,
-});
-```
-
-| Param                    |                                           Description                                           | Default |
-| ------------------------ | :---------------------------------------------------------------------------------------------: | ------: |
-| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but they will be got in the command |    true |
-
-##### addModule
-
-Adding one module
-
-```ts
-cli.addModule(PingModule);
-```
-
-##### setModules
-
-Setting several modules
-
-```ts
-cli.setModules([HelloModule, CommonModule]);
-```
-
-##### setArgs
-
-Arguments will be determined automatically but it is possible to set them manually
-
-```ts
-cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
-```
-
-This option is useful for testing and debugging the application
-
-<!--
-##### onError
-
-Callback for handling error
-
-```ts
-import chalk from 'chalk';
-
-cli.onError((err: ClirioCommonError) => {
-  console.log(chalk.red(err.message));
-  process.exit(9);
-});
-```
-
-##### onSuccess
-
-Callback for handling an success result
-
-```ts
-cli.onSuccess((data: ClirioSuccess) => {
-  const successMessage = 'The command has been executed successfully!';
-  console.log(chalk.green(data.message ?? successMessage));
-  process.exit(0);
-});
-```
-
-##### onWarning
-
-Callback for handling an warning result
-
-```ts
-cli.onWarning((data: ClirioWarning) => {
-  console.log(chalk.yellow(data.message));
-  process.exit(0);
-});
-```
-
-##### onComplete
-
-Callback for handling an complete result
-
-```ts
-cli.onComplete((data: ClirioComplete) => {
-  const message = data.message ?? 'Thanks!';
-
-  console.log(chalk.blue(message));
-  process.exit(0);
-});
-```
-
-##### onDebug
-
-Callback for handling an debugging error
-
-```ts
-cli.onDebug((err: ClirioDebug) => {
-  const output = err.format();
-
-  console.log(chalk.red(output));
-  process.exit(5);
-});
-``` -->
-
 ### Modules
 
-The modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
+Clirio modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
 An application can have either one or many modules. Each module contains actions (patterns for commands)
 
-###### Example of common module
+##### Example of common module
 
 ```ts
 @Module()
@@ -322,7 +228,7 @@ export class MigrationModule {
 
 ### Actions
 
-The actions are methods in class-modules with decorators
+Clirio actions are methods in class-modules with decorators
 
 ```ts
 @Module()
@@ -349,14 +255,14 @@ export class HelloModule {
 }
 ```
 
-#### Decorator for command pattern
+#### Command pattern
 
-The `@Command()` decorator takes command pattern
+The `@Command()` decorator is designed to specify the command pattern
 
 ```ts
 @Module()
 export class MigrationModule {
-  @Command('migration init')
+  @Command('init')
   public initMigration() {}
 
   @Command('migration run|up')
@@ -373,64 +279,68 @@ export class MigrationModule {
 }
 ```
 
-##### Exact match
+The resulting pattern in total with the module will serve for routing the CLI requests
 
-The pattern of one or more space-separated arguments. Exact match will work
+#### Exact match
 
-```ts
-@Command('hello')
+The pattern of one or more space-separated arguments. The exact command will be routed request
 
-@Command('hello there')
+| Command pattern                | Matching requests |
+| ------------------------------ | ----------------- |
+| `@Command('hello')`            | hello             |
+| `@Command('hello there')`      | hello there       |
+| `@Command('hello my friends')` | hello my friends  |
 
-@Command('hello my friends')
-```
+#### Match variants
 
-##### Match variants
+Using the `|` operator to set match variants. Multiple commands will be routed
+The number of links separated by a space should be the same
 
-Using the `|` operator to set match variants
+| Command pattern          | Matching requests |
+| ------------------------ | ----------------- | ------------------------------ | ----------- |
+| `@Command('migration run|up')`  | migration run<br> migration up |
+| `@Command('hello|hey|hi')`    | hello<br> hey<br> hi |
 
-```ts
-@Command('hello|hey|hi')
-
-@Command('migration run|up')
-
-```
-
-##### Pattern with value masks
+#### Pattern with value masks
 
 Using the `< >` operator to specify a place for any value
+The number of links separated by a space should be the same
 
-```ts
-@Command('hello <first-name> <last-name>')
 
-@Command('set-time <time>')
 
-```
+| Command pattern          | Matching requests |
+| ------------------------ | ----------------- | ------------------------------ | ----------- |
+| `@Command('hello <first-name> <last-name>')`  | hello Alex Smith<br>hello John Anderson<br> ... etc. |
+| `@Command('set-time <time>')`    | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
 
-##### Pattern with rest values mask
+Use [Params data control](#params-data-control) to get the entered values
+
+
+#### Pattern with rest values mask
 
 Using the `<... >` operator to specify a place for array of values
 This kind of mask can be only one per command pattern
 
-```ts
-@Command('hello <...all-names>')
 
-@Command('message <...words>')
-```
+| Command pattern          | Matching requests |
+| ------------------------ | ----------------- | ------------------------------ | ----------- |
+| `@Command('hello <...all-names>')`  | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc. |
+| `@Command('get cities <...cities>')`    | get cities Prague New-York Moscow<br> ... etc. |
 
-To get the entered values you should use the `@Params()` decorator and DTO, that is described in more detail below
+Use [Params data control](#params-data-control) to get the entered values
 
-##### Option match
+
+#### Option match
 
 This pattern is designed for special cases like "help" and "version". This is an exact match of the option key and value. Match variants can be separated by comma
 
-```ts
-@Command('--help, -h')
+| Command pattern          | Matching requests |
+| ------------------------ | ----------------- | ------------------------------ | ----------- |
+| `@Command('--help, -h')`  | --help<br/> -h |
+| `@Command('--version, -v')`    | --version<br/> -v |
+| `@Command('--mode=check')`    | --mode=check |
 
-@Command('--version, -v')
-
-@Command('--mode=check')
-```
+Use [Options data control](#optiond-data-control) to add other options 
 
 #### Decorator for empty input
 
@@ -483,7 +393,7 @@ $ cli migration
 The migration module requires additional instruction. Type --help
 ```
 
-#### Decorator for failure input
+#### Failure
 
 The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match.
 Each module can have its own `@Failure()` decorator in an action
@@ -564,7 +474,7 @@ Instead of unknown types, you should use a DTOs in which the properties also hav
 The "Params" term mean the values of the masks in the command pattern
 The `@Params()` decorator provided
 
-###### For example
+##### For example
 
 ```ts
 @Module()
@@ -579,7 +489,7 @@ export class HelloModule {
 Here the second and third parts are masks for any values that the user enters
 The `hello` method will be called if the user enters a three-part command. The last 2 parts are passed to the params argument as keys and values
 
-##### Params Dto
+#### Params Dto
 
 The `@Param()` decorator for dto properties provided. It can take a key in an param mask to map DTO properties
 
@@ -621,7 +531,7 @@ $ cli hello Alex Smith
 { "first-name": "Alex", "last-name": "Smith" }
 ```
 
-###### Example with rest values mask
+##### Example with rest values mask
 
 ```ts
 @Module()
@@ -666,7 +576,7 @@ export class GitModule {
 }
 ```
 
-##### Options Dto
+#### Options Dto
 
 The `@Option()` decorator for dto properties provided. It can accept key aliases (comma separated) to map DTO properties
 
@@ -721,7 +631,7 @@ $ cli git status --branch=master --ignore-submodules=all --short
 { branch: 'master', "ignore-submodule": 'all', short: true }
 ```
 
-##### Array of values in options
+#### Array of values in options
 
 By default, the command parser cannot determine whether an option is an array. You can specify this, in which case the same option names will be collected in an array, even if there is only one option
 
@@ -760,7 +670,7 @@ $ cli model --name Ford -n Tesla
 { names: ['Ford', 'Tesla'] }
 ```
 
-##### Variable values in options
+#### Variable values in options
 
 There is a special case for using variables. All variables will be collected in an object
 
@@ -849,7 +759,7 @@ $ cli git status -b master --ignore-submodules  all --short
 { branch: 'master', ignoreSubmodules: 'all', short: true }
 ```
 
-##### Joi params validation
+#### Joi params validation
 
 ```ts
 @Module()
@@ -877,11 +787,11 @@ $ cli git checkout develop
 {  branch: 'develop' }
 ```
 
-##### Joi validating and converting
+#### Joi validating and converting
 
 Joi validates and converts input values that are originally string. That is a very useful feature.
 
-###### Summation and concatenation examples
+##### Summation and concatenation examples
 
 ```ts
 @Module()
@@ -893,7 +803,7 @@ export class SumModule {
 }
 ```
 
-###### Without Joi
+##### Without Joi
 
 ```ts
 class SumParamsDto {
@@ -921,7 +831,7 @@ $ cli sum 5 rabbits
 '5rabbits'
 ```
 
-###### With Joi
+##### With Joi
 
 ```ts
 class SumParamsDto {
@@ -1014,7 +924,7 @@ The `ClirioHelper` class provides methods for getting descriptions of commands a
 
 The `helper.describeAllModules()` method provides description for all commands
 
-##### helper.describeAllModules
+#### helper.describeAllModules
 
 The method returns array of objects
 
@@ -1026,7 +936,7 @@ The method returns array of objects
 | description       |      string      | text from the `@Description()` decorator |
 | optionDescription | array of objects | description of command options in action |
 
-###### optionDescription
+##### optionDescription
 
 | Key         |      Type       |                                     Description |
 | ----------- | :-------------: | ----------------------------------------------: |
@@ -1037,7 +947,7 @@ The method returns array of objects
 
 You can format the received data custom or use the `ClirioHelper.formatModuleDescription` static method
 
-##### Hidden command in Helper
+#### Hidden command in Helper
 
 The `@Hidden()` decorator for module action provided to hide description of the command
 
@@ -1099,7 +1009,7 @@ Special exceptions designed to complete the script with the desired result
 By default, all handlers in Clirio are configured, but you can override to your own callback for each ones
 Use one of the available exceptions to throw the desired event, after that the related callback will be called and the script will end
 
-###### Examples
+##### Examples
 
 ```ts
 import { Module, Command, ClirioCommonError } from 'clirio';
@@ -1166,6 +1076,60 @@ $ cli start
 ```console
 Successfully!
 ```
+
+### Clirio API
+
+
+
+#### setConfig
+
+Setting global configuration
+
+```ts
+cli.setConfig({
+  allowUncontrolledOptions: false,
+});
+```
+
+| Param                    |                                           Description                                           | Default |
+| ------------------------ | :---------------------------------------------------------------------------------------------: | ------: |
+| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but they will be got in the command |    true |
+
+
+#### setGlobalPipe
+
+
+#### setGlobalException
+
+
+
+
+#### addModule
+
+Adding one module
+
+```ts
+cli.addModule(PingModule);
+```
+
+#### setModules
+
+Setting several modules
+
+```ts
+cli.setModules([HelloModule, CommonModule]);
+```
+
+#### setArgs
+
+Arguments will be determined automatically but it is possible to set them manually
+
+```ts
+cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
+```
+
+This option is useful for testing and debugging the application
+
 
 ### Receipts
 
@@ -1248,6 +1212,4 @@ class AddParamsDto {
 }
 ```
 
-### Contributing
 
-Contributing flow is in progress
