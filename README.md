@@ -2,10 +2,10 @@
 
 A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
-Clirio is a library for routing terminal requests using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.)
-You can integrate Clirio with [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.
+Clirio is a library for routing terminal requests using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.). The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
+You can integrate Clirio with [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc. 
 
-Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
+Clirio starter kit is **[here](https://github.com/stepanzabelin/clirio-starter-kit)**
 
 [GIF]
 
@@ -33,7 +33,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Exceptions](#exceptions)
     - [ClirioValidationError](#cliriovalidationerror)
     - [ClirioCommonError](#cliriocommonerror)
-  - [Handler]  
+  - [Filters](#filter)    
   - [Help mode](#help-mode)
     - [Modularization](#modularization-for-help-mode)
     - [Helper](#clirio-helper)
