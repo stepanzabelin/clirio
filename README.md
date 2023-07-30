@@ -20,9 +20,9 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [App configuration](#app-configuration)
   - [Modules](#modules)
   - [Actions](#actions)
-    - [Command](#command-pattern)
-    - [Empty](#empty-command)
-    - [Failure](#failure-command)
+    - [Command pattens](#command-patterns)
+    - [Empty command](#empty-command)
+    - [Failure command](#failure-command)
   - [Data control](#data-control)
     - [Params](#params-data-control)
     - [Options](#options-data-contro)
@@ -33,6 +33,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Exceptions](#exceptions)
     - [ClirioValidationError](#cliriovalidationerror)
     - [ClirioCommonError](#cliriocommonerror)
+  - [Handler]  
   - [Help mode](#help-mode)
     - [Modularization](#modularization-for-help-mode)
     - [Helper](#clirio-helper)
@@ -182,7 +183,7 @@ cli.setModules([
 Clirio modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
 An application can have either one or many modules. Each module contains actions (patterns for commands)
 
-##### Example of common module
+Using common module
 
 ```ts
 @Module()
@@ -206,7 +207,7 @@ $ cli hello there
 $ cli migration run
 ```
 
-Using different modules to separate unrelated commands and structure the code
+Using multiple modules to separate unrelated commands and structure the code
 
 ```ts
 @Module('hello')
@@ -255,7 +256,7 @@ export class HelloModule {
 }
 ```
 
-#### Command pattern
+#### Command pattens
 
 The `@Command()` decorator is designed to specify the command pattern
 
@@ -279,11 +280,13 @@ export class MigrationModule {
 }
 ```
 
-The resulting pattern in total with the module will serve for routing the CLI requests
+The total pattern based on `@Module(...)` and  `@Commands(...)` will be matched with CLI requests
+Pattern can consist of one or more space-separated arguments
 
-#### Exact match
+##### Case 1. Exact match
 
-The pattern of one or more space-separated arguments. The exact command will be routed request
+The exact command will be matched
+
 
 | Command pattern                | Matching requests |
 | ------------------------------ | ----------------- |
@@ -291,21 +294,21 @@ The pattern of one or more space-separated arguments. The exact command will be 
 | `@Command('hello there')`      | hello there       |
 | `@Command('hello my friends')` | hello my friends  |
 
-#### Match variants
+##### Case 2. Match variants
 
-Using the `|` operator to set match variants. Multiple commands will be routed
-The number of links separated by a space should be the same
+Using the `|` operator to set match variants for arguments. 
+Multiple requests will be matched to one route
+The number of links separated by a space should be the same.
 
 | Command pattern          | Matching requests |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('migration run|up')`  | migration run<br> migration up |
 | `@Command('hello|hey|hi')`    | hello<br> hey<br> hi |
 
-#### Pattern with value masks
+##### Case 3. Pattern with value masks
 
 Using the `< >` operator to specify a place for any value
 The number of links separated by a space should be the same
-
 
 
 | Command pattern          | Matching requests |
@@ -316,21 +319,21 @@ The number of links separated by a space should be the same
 Use [Params data control](#params-data-control) to get the entered values
 
 
-#### Pattern with rest values mask
+##### Case 4. Pattern with rest values mask
 
 Using the `<... >` operator to specify a place for array of values
-This kind of mask can be only one per command pattern
+This kind of mask can be only one per command pattern and should be at the end
 
 
 | Command pattern          | Matching requests |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('hello <...all-names>')`  | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc. |
-| `@Command('get cities <...cities>')`    | get cities Prague New-York Moscow<br> ... etc. |
+| `@Command('get cities <...cities>')`    | get cities Prague New-York Moscow<br>get cities  Berlin<br> ... etc. |
 
 Use [Params data control](#params-data-control) to get the entered values
 
 
-#### Option match
+##### Case 5. Option match
 
 This pattern is designed for special cases like "help" and "version". This is an exact match of the option key and value. Match variants can be separated by comma
 
@@ -341,8 +344,10 @@ This pattern is designed for special cases like "help" and "version". This is an
 | `@Command('--mode=check')`    | --mode=check |
 
 Use [Options data control](#optiond-data-control) to add other options 
+To avoid problems, do not mix this pattern with the rest ones
 
-#### Decorator for empty input
+
+### Empty command
 
 The `@Empty()` action decorator is a way to catch the case when nothing is entered
 Each module can have its own `@Empty()` decorator in an action
