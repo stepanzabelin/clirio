@@ -16,6 +16,7 @@ Clirio starter kit is **[here](https://github.com/stepanzabelin/clirio-starter-k
   - [Installation](#installation)
   - [Quick Start](#quick-start)
   - [Starter kit](#starter-kit)
+  - [Definitions](#definitions)  
   - [Parsing args](#parsing-args)
   - [App configuration](#app-configuration)
   - [Modules](#modules)
@@ -66,6 +67,10 @@ Clirio starter kit is **[here](https://github.com/stepanzabelin/clirio-starter-k
     - [Pipe](#none)
     - [Transform](#none)
     - [Validate](#none)
+  - [Interfaces](#interfaces)  
+    - [ClirioFilter](#cliriorilter)
+    - [ClirioPipe](#cliriopipe)
+
 
 ## Installation
 
@@ -150,7 +155,71 @@ The implementation of own cli prefix (like `my-custom-cli`) is described in [sta
 Clirio is developed according to SOLID principles, so you can apply OOP, dependency injection and other programming patterns.
  
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains a recommended assembly. But you can integrate any other libraries and custom decorators.
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains the recommended assembly. But you can integrate any other libraries and custom decorators.
+
+
+### Definitions
+
+Anatomy of a shell CLI is described in [wiki](https://en.wikipedia.org/wiki/Command-line_interface#Anatomy_of_a_shell_CLI)
+
+
+The author suggests using the following definitions to describe the Clirio specification.
+
+##### Bash example
+
+```bash
+$  node migration-cli.js run 123556 -u user -p pass --db="db-name" 
+```
+
+##### The incoming command line
+
+| node migration-cli.js                    |         run 123556 -u user -p pass --db="db-name"      |
+| :------------------------: | :----------: |
+| program launch path | arguments |    
+
+
+##### The parsed command line
+
+
+| node migration-cli.js                    |         run 123556     | -u user -p pass --db="db-name"  |
+| :------------------------: | :----------: | :----------: |
+| program launch path | command | options   | 
+
+
+
+##### The matched command line
+
+
+| node migration-cli.js                    |         run |123556     | -u user -p pass --db="db-name"   |
+| :------------------------: | :----------: |:----------: | :----------: |
+| program launch path | command | params | options   | 
+
+##### Arguments Definition
+
+"Arguments" are all space-separated command line parts after `program launch path`
+
+##### Command Definition
+
+"Command" are space-separated command line parts without leading dashes
+
+##### Params Definition
+
+"Params" are obtained values by matching the command in accordance with the given pattern
+
+##### Options Definition
+
+"Options" are command line parts using a leading dashes 
+Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long: 
+`--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
+
+
+##### Option as command
+there is a special case
+`--help`
+`help` or `man`
+
+### Parsing args
+
 
 ### App configuration
 
@@ -296,7 +365,7 @@ The exact command will be matched
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for arguments. 
+Using the `|` operator to set match variants for params. 
 Multiple requests will be matched to one route
 The number of links separated by a space should be the same.
 
@@ -448,18 +517,21 @@ $ cli migration stop
 The migration module got the wrong instruction
 ```
 
-### Handling data
+### Data control
 
-Using special decorators to pass input data
+Using [Parameter Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data 
+
 
 ```ts
 @Module()
 export class LocatorModule {
+  
   @Command('get-location <city>')
   public getLocation(@Params() params: unknown, @Options() options: unknown) {
     console.log(params);
     console.log(options);
   }
+
 }
 ```
 
@@ -474,9 +546,8 @@ $ cli get-location Prague --format=DMS --verbose
 
 Instead of unknown types, you should use a DTOs in which the properties also have special decorators to have type checking and input validation. More detailed below
 
-#### Passing command params
+#### params
 
-The "Params" term mean the values of the masks in the command pattern
 The `@Params()` decorator provided
 
 ##### For example
@@ -566,8 +637,7 @@ $ cli git add test.txt logo.png
 
 #### Passing command options
 
-The "Options" term mean arguments starting with a dash.
-Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long: `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
+
 
 The `@Options()` decorator provided
 
