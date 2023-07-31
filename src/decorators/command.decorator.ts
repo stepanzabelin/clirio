@@ -1,22 +1,18 @@
 import { argReg, optionReg } from '../constrains';
-import {
-  ActionTargetData,
-  ActionType,
-  Constructor,
-  Link,
-  LinkType,
-} from '../types';
-import { actionTargetMetadata } from '../metadata';
+import { CommandTargetData, Constructor, Link, LinkType } from '../types';
+import { commandTargetMetadata } from '../metadata';
 import { ClirioDebugError } from '../exceptions';
 
 export const Command = function (
-  rawCommand: ActionTargetData['command'],
+  rawCommand: string,
   {
     description = null,
     hidden = false,
-  }: Partial<Omit<ActionTargetData, 'command'>> = {},
+  }: Partial<Omit<CommandTargetData, 'command'>> = {},
 ) {
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
+    const command = rawCommand.trim();
+
     const links: Link[] = [];
 
     const devErrorData = {
@@ -26,7 +22,6 @@ export const Command = function (
       decorator: 'Command',
     };
 
-    const command = rawCommand.trim();
     let sub = command;
 
     while (sub) {
@@ -92,10 +87,9 @@ export const Command = function (
       sub = sub.slice(argMatch[0].length);
     }
 
-    actionTargetMetadata.setData(target, propertyKey, {
-      type: ActionType.Command,
-      links,
+    commandTargetMetadata.setData(target, propertyKey, {
       command,
+      links,
       description,
       hidden,
     });

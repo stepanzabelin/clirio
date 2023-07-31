@@ -6,7 +6,7 @@ import {
   ValidateTargetData,
   ParamTargetData,
   OptionTargetData,
-  ActionTargetData,
+  CommandTargetData,
   OptionsArgData,
   ParamsArgData,
   HelperArgData,
@@ -28,8 +28,14 @@ export const paramTargetMetadata = new TargetMetadata<ParamTargetData>('param');
 export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
   'option',
 );
-export const actionTargetMetadata = new TargetMetadata<ActionTargetData>(
+export const commandTargetMetadata = new TargetMetadata<CommandTargetData>(
   'command',
+);
+export const emptyTargetMetadata = new TargetMetadata<Record<string, never>>(
+  'empty',
+);
+export const failureTargetMetadata = new TargetMetadata<Record<string, never>>(
+  'failure',
 );
 
 export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');

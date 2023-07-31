@@ -29,7 +29,9 @@ export class CommonModule {
     console.log(ClirioHelper.formatDump(dump));
   }
 
-  @Command('-c, --check', { description: 'Checking if the script is running' })
+  @Command('-c, --check', {
+    description: 'Checking if the script is running',
+  })
   public check(@Options() options: CheckOptionsDto) {
     console.log('check', options);
   }

@@ -1,12 +1,12 @@
 import {
-  actionTargetMetadata,
+  commandTargetMetadata,
   moduleEntityMetadata,
   optionTargetMetadata,
   optionsArgMetadata,
   paramsArgMetadata,
   paramTargetMetadata,
 } from '../metadata';
-import { ActionType, Constructor } from '../types';
+import { Constructor } from '../types';
 import { getPrototype, isEntity } from '../utils';
 
 type ModuleData = {
@@ -71,14 +71,10 @@ export class ClirioHelper {
 
   public dumpModule(module: Constructor<any>): DumpItem[] {
     const moduleData = moduleEntityMetadata.get(getPrototype(module))!;
-    const actionMap = actionTargetMetadata.getMap(getPrototype(module));
+    const commandMap = commandTargetMetadata.getMap(getPrototype(module));
     const results: DumpItem[] = [];
 
-    for (const [propertyKey, actionData] of actionMap) {
-      if (actionData.type !== ActionType.Command) {
-        continue;
-      }
-
+    for (const [propertyKey, commandData] of commandMap) {
       const optionsArgMap = optionsArgMetadata.getArgMap(
         getPrototype(module),
         propertyKey,
@@ -98,9 +94,9 @@ export class ClirioHelper {
         },
         action: {
           name: propertyKey,
-          command: actionData.command,
-          description: actionData.description,
-          hidden: actionData.hidden,
+          command: commandData.command,
+          description: commandData.description,
+          hidden: commandData.hidden,
         },
         inputs: [
           ...[...paramsArgMap.values()].map((data) => {

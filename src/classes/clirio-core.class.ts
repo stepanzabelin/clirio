@@ -1,5 +1,4 @@
 import {
-  ActionType,
   Args,
   ArgType,
   InputTypeEnum,
@@ -12,7 +11,9 @@ import {
   ClirioConfig,
 } from '../types';
 import {
-  actionTargetMetadata,
+  commandTargetMetadata,
+  emptyTargetMetadata,
+  failureTargetMetadata,
   helperArgMetadata,
   moduleEntityMetadata,
   optionsArgMetadata,
@@ -33,13 +34,39 @@ export class ClirioCore {
   protected globalPipe: Pipe | null = null;
   protected globalFilter: Filter | null = null;
 
-  private *iterateData() {
+  private *iterateModuleData() {
     for (const module of this.modules) {
       const moduleData = moduleEntityMetadata.get(getPrototype(module))!;
-      const actionMap = actionTargetMetadata.getMap(getPrototype(module));
+      yield { module, moduleData };
+    }
+  }
 
-      for (const [actionName, actionData] of actionMap) {
-        yield { module, moduleData, actionName, actionData };
+  private *iterateCommandData() {
+    for (const { module, moduleData } of this.iterateModuleData()) {
+      const commandMap = commandTargetMetadata.getMap(getPrototype(module));
+
+      for (const [actionName, commandData] of commandMap) {
+        yield { module, moduleData, actionName, commandData };
+      }
+    }
+  }
+
+  private *iterateEmptyData() {
+    for (const { module, moduleData } of this.iterateModuleData()) {
+      const emptyMap = emptyTargetMetadata.getMap(getPrototype(module));
+
+      for (const [actionName, emptyData] of emptyMap) {
+        yield { module, moduleData, actionName, emptyData };
+      }
+    }
+  }
+
+  private *iterateFailureData() {
+    for (const { module, moduleData } of this.iterateModuleData()) {
+      const failureMap = failureTargetMetadata.getMap(getPrototype(module));
+
+      for (const [actionName, failureData] of failureMap) {
+        yield { module, moduleData, actionName, failureData };
       }
     }
   }
@@ -53,13 +80,9 @@ export class ClirioCore {
       module,
       moduleData,
       actionName,
-      actionData,
-    } of this.iterateData()) {
-      if (actionData.type !== ActionType.Command) {
-        continue;
-      }
-
-      const links = [...moduleData.links, ...actionData.links];
+      commandData,
+    } of this.iterateCommandData()) {
+      const links = [...moduleData.links, ...commandData.links];
       const linkedArgs = this.handler.linkArgs(parsedArgs, links);
 
       if (!linkedArgs) {
@@ -196,16 +219,7 @@ export class ClirioCore {
 
     const empties = [];
 
-    for (const {
-      module,
-      moduleData,
-      actionName,
-      actionData,
-    } of this.iterateData()) {
-      if (actionData.type !== ActionType.Empty) {
-        continue;
-      }
-
+    for (const { module, moduleData, actionName } of this.iterateEmptyData()) {
       const data = this.handler.matchRoute(parsedArgs, moduleData.links);
 
       if (data) {
@@ -244,12 +258,7 @@ export class ClirioCore {
       module,
       moduleData,
       actionName,
-      actionData,
-    } of this.iterateData()) {
-      if (actionData.type !== ActionType.Failure) {
-        continue;
-      }
-
+    } of this.iterateFailureData()) {
       const length = moduleData.links.length;
 
       const data = this.handler.matchRoute(
@@ -317,9 +326,9 @@ export class ClirioCore {
       module,
       moduleData,
       actionName,
-      actionData,
-    } of this.iterateData()) {
-      const links = [...moduleData.links, ...actionData.links];
+      commandData,
+    } of this.iterateCommandData()) {
+      const links = [...moduleData.links, ...commandData.links];
 
       const isActionMask =
         links.findIndex((link) =>

@@ -1,14 +1,8 @@
-import { actionTargetMetadata } from '../metadata';
-import { ActionType, Constructor } from '../types';
+import { Constructor } from '../types';
+import { failureTargetMetadata } from '../metadata';
 
 export const Failure = function () {
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
-    actionTargetMetadata.setData(target, propertyKey, {
-      type: ActionType.Failure,
-      links: [],
-      command: '',
-      description: null,
-      hidden: false,
-    });
+    failureTargetMetadata.setData(target, propertyKey, {});
   };
 };

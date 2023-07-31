@@ -966,7 +966,7 @@ Special case for the command as an option designed
 ```ts
 @Module()
 export class CommonModule {
-  @Command('-h, --help')
+  @Command('--help')
   public help() {
     console.log('Description of commands is here');
   }
