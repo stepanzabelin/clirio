@@ -5,7 +5,7 @@ A mini framework for node.js command-line interfaces based on TypeScript, decora
 Clirio is a library for routing terminal requests using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.). The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
 You can integrate Clirio with [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc. 
 
-Clirio starter kit is **[here](https://github.com/stepanzabelin/clirio-starter-kit)**
+Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
 [GIF]
 
@@ -175,7 +175,7 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 | node migration-cli.js                    |         run 123556 -u user -p pass --db="db-name"      |
 | :------------------------: | :----------: |
-| program launch path | arguments |    
+| launch path | arguments |    
 
 
 ##### The parsed command line
@@ -183,20 +183,20 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 | node migration-cli.js                    |         run 123556     | -u user -p pass --db="db-name"  |
 | :------------------------: | :----------: | :----------: |
-| program launch path | command | options   | 
+| launch path | command | options   | 
 
 
 
 ##### The matched command line
 
 
-| node migration-cli.js                    |         run |123556     | -u user -p pass --db="db-name"   |
-| :------------------------: | :----------: |:----------: | :----------: |
-| program launch path | command | params | options   | 
+| node migration-cli.js                    |         run |123556     | -u user | -p pass  | --db="db-name"   |
+| :------------------------: | :----------: |:----------: | :----------: | :----------: |:----------: |
+| launch path | action | param | option | option | option |
 
 ##### Arguments Definition
 
-"Arguments" are all space-separated command line parts after `program launch path`
+"Arguments" are all space-separated command line parts after `launch path`
 
 ##### Command Definition
 
@@ -213,12 +213,49 @@ Each option is either a key-value or a key. If in the beginning 2 dashes is a lo
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
 
 
-##### Option as command
-there is a special case
-`--help`
-`help` or `man`
-
 ### Parsing args
+
+Parsing command line by Clirio
+
+```ts
+Clirio.parse('test --foo 15 -b -a -r 22')
+```
+
+```ts
+Clirio.describe(["test", "--foo=15", "-b", "-a", "-r", "22"])
+```
+
+Result
+
+```json
+[
+  { type: 'action', key: '0', value: 'test' },
+  { type: 'option', key: 'foo', value: '15' },
+  { type: 'option', key: 'b', value: null },
+  { type: 'option', key: 'a', value: null },
+  { type: 'option', key: 'r', value: '22' }
+]
+```
+
+Another example
+
+```bash
+$ set-time 10:56 --format=AM -ei 15
+```
+
+| type   | key    | value    |
+| ------ | ------ | -------- |
+| action | 0      | set-time |
+| action | 1      | 10:56    |
+| option | format | AM       |
+| option | e      | null     |
+| option | i      | 15       |
+
+##### Summary
+
+- all parts without a leading dash will be described as actions
+- an option with a missing value will be null
+- options starting with a single dash will be separated by letters
 
 
 ### App configuration
@@ -246,6 +283,8 @@ cli.setModules([
   diContainer.resolve(CommonModule),
 ]);
 ```
+
+The example is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
 ### Modules
 
