@@ -2,8 +2,9 @@
 
 A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
-Clirio is a library for routing terminal requests using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.). The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
-You can integrate Clirio with [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc. 
+Clirio is a library for routing terminal command lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
+The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
+You can integrate Clirio with other  interactive command line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.) 
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
@@ -35,15 +36,16 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [ClirioValidationError](#cliriovalidationerror)
     - [ClirioCommonError](#cliriocommonerror)
   - [Filters](#filter)    
-  - [Help mode](#help-mode)
-    - [Modularization](#modularization-for-help-mode)
+  - [Displaying help information](#displaying-help-information)
     - [Helper](#clirio-helper)
-  - [Version mode](#version)
-  - [Custom decorators](#none)
-    - [Using Joi validation](#none)
+    - [Displaying Help](#displaying-help)
+    - [Displaying Version](#displaying-version)
+    - [Modularization](#modularization)
   - [Integrations](#integrations)
     - [Dependency injection](#none)
+    - [Custom decorators](#none)
     - [Terminal libs](#none)
+    - [Using Joi validation](#none)
   - [Clirio API](#clirio-api)
     - [setConfig](#setconfig)
     - [setGlobalPipe](#setglobalpipe)
@@ -51,8 +53,11 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [addModule](#addmodule)
     - [setModules](#setmodules)
     - [execute](#execute)
+  - [Clirio utils](#clirio-utils)    
     - [valid](#valid)
     - [form](#form)
+    - [parse](#form)
+    - [describe](#form)    
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#none)
@@ -388,7 +393,7 @@ export class MigrationModule {
 }
 ```
 
-The total pattern based on `@Module(...)` and  `@Commands(...)` will be matched with CLI requests
+The total pattern based on `@Module(...)` and  `@Commands(...)` will be matched with the command line
 Pattern can consist of one or more space-separated arguments
 
 ##### Case 1. Exact match
@@ -396,7 +401,7 @@ Pattern can consist of one or more space-separated arguments
 The exact command will be matched
 
 
-| Command pattern                | Matching requests |
+| Command pattern                | Matching command line |
 | ------------------------------ | ----------------- |
 | `@Command('hello')`            | hello             |
 | `@Command('hello there')`      | hello there       |
@@ -405,10 +410,10 @@ The exact command will be matched
 ##### Case 2. Match variants
 
 Using the `|` operator to set match variants for params. 
-Multiple requests will be matched to one route
+Multiple command lines will be matched to one route
 The number of links separated by a space should be the same.
 
-| Command pattern          | Matching requests |
+| Command pattern          | Matching command line |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('migration run|up')`  | migration run<br> migration up |
 | `@Command('hello|hey|hi')`    | hello<br> hey<br> hi |
@@ -419,7 +424,7 @@ Using the `< >` operator to specify a place for any value
 The number of links separated by a space should be the same
 
 
-| Command pattern          | Matching requests |
+| Command pattern          | Matching command line |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('hello <first-name> <last-name>')`  | hello Alex Smith<br>hello John Anderson<br> ... etc. |
 | `@Command('set-time <time>')`    | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
@@ -433,7 +438,7 @@ Using the `<... >` operator to specify a place for array of values
 This kind of mask can be only one per command pattern and should be at the end
 
 
-| Command pattern          | Matching requests |
+| Command pattern          | Matching command line |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('hello <...all-names>')`  | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc. |
 | `@Command('get cities <...cities>')`    | get cities Prague New-York Moscow<br>get cities  Berlin<br> ... etc. |
@@ -445,7 +450,7 @@ Use [Params data control](#params-data-control) to get the entered values
 
 This pattern is designed for special cases like "help" and "version". This is an exact match of the option key and value. Match variants can be separated by comma
 
-| Command pattern          | Matching requests |
+| Command pattern          | Matching command line |
 | ------------------------ | ----------------- | ------------------------------ | ----------- |
 | `@Command('--help, -h')`  | --help<br/> -h |
 | `@Command('--version, -v')`    | --version<br/> -v |
