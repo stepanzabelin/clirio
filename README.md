@@ -4,7 +4,7 @@ A mini framework for node.js command-line interfaces based on TypeScript, decora
 
 Clirio is a library for routing terminal command lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
 The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
-You can integrate Clirio with other  interactive command line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.) 
+You can integrate Clirio with other interactive command line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.)
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
@@ -17,7 +17,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Installation](#installation)
   - [Quick Start](#quick-start)
   - [Starter kit](#starter-kit)
-  - [Definitions](#definitions)  
+  - [Definitions](#definitions)
   - [Parsing args](#parsing-args)
   - [App configuration](#app-configuration)
   - [Modules](#modules)
@@ -35,7 +35,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Exceptions](#exceptions)
     - [ClirioValidationError](#cliriovalidationerror)
     - [ClirioCommonError](#cliriocommonerror)
-  - [Filters](#filter)    
+  - [Filters](#filter)
   - [Displaying help information](#displaying-help-information)
     - [Helper](#clirio-helper)
     - [Displaying Help](#displaying-help)
@@ -53,11 +53,11 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [addModule](#addmodule)
     - [setModules](#setmodules)
     - [execute](#execute)
-  - [Clirio utils](#clirio-utils)    
+  - [Clirio utils](#clirio-utils)
     - [valid](#valid)
     - [form](#form)
     - [parse](#form)
-    - [describe](#form)    
+    - [describe](#form)
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#none)
@@ -72,10 +72,9 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [Pipe](#none)
     - [Transform](#none)
     - [Validate](#none)
-  - [Interfaces](#interfaces)  
+  - [Interfaces](#interfaces)
     - [ClirioFilter](#cliriorilter)
     - [ClirioPipe](#cliriopipe)
-
 
 ## Installation
 
@@ -138,14 +137,13 @@ clirio.execute();
 
 ##### Result
 
-
 ```bash
 
 $ my-custom-cli git status -b master --ignore-submodules  all --short
 
 ```
-The application will route the command `git status` with options to the `GitModule.status` method.
 
+The application will route the command `git status` with options to the `GitModule.status` method.
 
 ```console
 { branch: 'master', ignoreSubmodules: 'all', short: true }
@@ -158,46 +156,38 @@ The implementation of own cli prefix (like `my-custom-cli`) is described in [sta
 ## Starter kit
 
 Clirio is developed according to SOLID principles, so you can apply OOP, dependency injection and other programming patterns.
- 
 
 **[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains the recommended assembly. But you can integrate any other libraries and custom decorators.
-
 
 ### Definitions
 
 Anatomy of a shell CLI is described in [wiki](https://en.wikipedia.org/wiki/Command-line_interface#Anatomy_of_a_shell_CLI)
-
 
 The author suggests using the following definitions to describe the Clirio specification.
 
 ##### Bash example
 
 ```bash
-$  node migration-cli.js run 123556 -u user -p pass --db="db-name" 
+$  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 ```
 
 ##### The incoming command line
 
-| node migration-cli.js                    |         run 123556 -u user -p pass --db="db-name"      |
-| :------------------------: | :----------: |
-| launch path | arguments |    
-
+| node migration-cli.js | run 123556 -u user -p pass --db="db-name" |
+| :-------------------: | :---------------------------------------: |
+|      launch path      |                 arguments                 |
 
 ##### The parsed command line
 
-
-| node migration-cli.js                    |         run 123556     | -u user -p pass --db="db-name"  |
-| :------------------------: | :----------: | :----------: |
-| launch path | command | options   | 
-
-
+| node migration-cli.js | run 123556 | -u user -p pass --db="db-name" |
+| :-------------------: | :--------: | :----------------------------: |
+|      launch path      |  command   |            options             |
 
 ##### The matched command line
 
-
-| node migration-cli.js                    |         run |123556     | -u user | -p pass  | --db="db-name"   |
-| :------------------------: | :----------: |:----------: | :----------: | :----------: |:----------: |
-| launch path | action | param | option | option | option |
+| node migration-cli.js |  run   | 123556 | -u user | -p pass | --db="db-name" |
+| :-------------------: | :----: | :----: | :-----: | :-----: | :------------: |
+|      launch path      | action | param  | option  | option  |     option     |
 
 ##### Arguments Definition
 
@@ -213,32 +203,31 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 ##### Options Definition
 
-"Options" are command line parts using a leading dashes 
-Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long: 
+"Options" are command line parts using a leading dashes
+Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long:
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
-
 
 ### Parsing args
 
 Parsing command line by Clirio
 
 ```ts
-Clirio.parse('test --foo 15 -b -a -r 22')
+Clirio.parse('test --foo 15 -b -a -r 22');
 ```
 
 ```ts
-Clirio.describe(["test", "--foo=15", "-b", "-a", "-r", "22"])
+Clirio.describe(['test', '--foo=15', '-b', '-a', '-r', '22']);
 ```
 
 Result
 
 ```json
 [
-  { type: 'action', key: '0', value: 'test' },
-  { type: 'option', key: 'foo', value: '15' },
-  { type: 'option', key: 'b', value: null },
-  { type: 'option', key: 'a', value: null },
-  { type: 'option', key: 'r', value: '22' }
+  { "type": "action", "key": "0", "value": "test" },
+  { "type": "option", "key": "foo", "value": "15" },
+  { "type": "option", "key": "b", "value": null },
+  { "type": "option", "key": "a", "value": null },
+  { "type": "option", "key": "r", "value": "22" }
 ]
 ```
 
@@ -262,7 +251,6 @@ $ set-time 10:56 --format=AM -ei 15
 - an option with a missing value will be null
 - options starting with a single dash will be separated by letters
 
-
 ### App configuration
 
 The application structure should consist of the following parts:
@@ -279,7 +267,7 @@ cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
 cli.execute();
 ```
 
-Modules can be instantiated to support dependency injection
+Modules can be instantiated to apply dependency injection
 
 ```ts
 cli.setModules([
@@ -393,72 +381,66 @@ export class MigrationModule {
 }
 ```
 
-The total pattern based on `@Module(...)` and  `@Commands(...)` will be matched with the command line
+The total pattern based on `@Module(...)` and `@Commands(...)` will be matched with the command line
 Pattern can consist of one or more space-separated arguments
 
 ##### Case 1. Exact match
 
 The exact command will be matched
 
-
 | Command pattern                | Matching command line |
-| ------------------------------ | ----------------- |
-| `@Command('hello')`            | hello             |
-| `@Command('hello there')`      | hello there       |
-| `@Command('hello my friends')` | hello my friends  |
+| ------------------------------ | --------------------- |
+| `@Command('hello')`            | hello                 |
+| `@Command('hello there')`      | hello there           |
+| `@Command('hello my friends')` | hello my friends      |
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for params. 
+Using the `|` operator to set match variants for params.
 Multiple command lines will be matched to one route
 The number of links separated by a space should be the same.
 
 | Command pattern          | Matching command line |
-| ------------------------ | ----------------- | ------------------------------ | ----------- |
-| `@Command('migration run|up')`  | migration run<br> migration up |
-| `@Command('hello|hey|hi')`    | hello<br> hey<br> hi |
+| ------------------------ | --------------------- | ------------------------------ | -------------------- |
+| `@Command('migration run | up')`                 | migration run<br> migration up |
+| `@Command('hello         | hey                   | hi')`                          | hello<br> hey<br> hi |
 
 ##### Case 3. Pattern with value masks
 
 Using the `< >` operator to specify a place for any value
 The number of links separated by a space should be the same
 
-
-| Command pattern          | Matching command line |
-| ------------------------ | ----------------- | ------------------------------ | ----------- |
-| `@Command('hello <first-name> <last-name>')`  | hello Alex Smith<br>hello John Anderson<br> ... etc. |
-| `@Command('set-time <time>')`    | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
+| Command pattern                              | Matching command line                                                |
+| -------------------------------------------- | -------------------------------------------------------------------- |
+| `@Command('hello <first-name> <last-name>')` | hello Alex Smith<br>hello John Anderson<br> ... etc.                 |
+| `@Command('set-time <time>')`                | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
 
 Use [Params data control](#params-data-control) to get the entered values
-
 
 ##### Case 4. Pattern with rest values mask
 
 Using the `<... >` operator to specify a place for array of values
 This kind of mask can be only one per command pattern and should be at the end
 
-
-| Command pattern          | Matching command line |
-| ------------------------ | ----------------- | ------------------------------ | ----------- |
-| `@Command('hello <...all-names>')`  | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc. |
-| `@Command('get cities <...cities>')`    | get cities Prague New-York Moscow<br>get cities  Berlin<br> ... etc. |
+| Command pattern                      | Matching command line                                               |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| `@Command('hello <...all-names>')`   | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc.            |
+| `@Command('get cities <...cities>')` | get cities Prague New-York Moscow<br>get cities Berlin<br> ... etc. |
 
 Use [Params data control](#params-data-control) to get the entered values
-
 
 ##### Case 5. Option match
 
 This pattern is designed for special cases like "help" and "version". This is an exact match of the option key and value. Match variants can be separated by comma
 
-| Command pattern          | Matching command line |
-| ------------------------ | ----------------- | ------------------------------ | ----------- |
-| `@Command('--help, -h')`  | --help<br/> -h |
-| `@Command('--version, -v')`    | --version<br/> -v |
-| `@Command('--mode=check')`    | --mode=check |
+| Command pattern             | Matching command line |
+| --------------------------- | --------------------- |
+| `@Command('--help, -h')`    | --help<br/> -h        |
+| `@Command('--version, -v')` | --version<br/> -v     |
+| `@Command('--mode=check')`  | --mode=check          |
 
-Use [Options data control](#optiond-data-control) to add other options 
+Use [Options data control](#optiond-data-control) to add other options
 To avoid problems, do not mix this pattern with the rest ones
-
 
 ### Empty command
 
@@ -563,19 +545,16 @@ The migration module got the wrong instruction
 
 ### Data control
 
-Using [Parameter Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data 
-
+Using [Parameter Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data
 
 ```ts
 @Module()
 export class LocatorModule {
-  
   @Command('get-location <city>')
   public getLocation(@Params() params: unknown, @Options() options: unknown) {
     console.log(params);
     console.log(options);
   }
-
 }
 ```
 
@@ -680,8 +659,6 @@ $ cli git add test.txt logo.png
 ```
 
 #### Passing command options
-
-
 
 The `@Options()` decorator provided
 
@@ -1117,7 +1094,7 @@ $ cli --version
 
 Special exceptions designed to complete the script with the desired result
 
-| Filter                                | Description |                    Handler |
+| Filter                                   | Description |                    Handler |
 | ---------------------------------------- | :---------: | -------------------------: |
 | `new ClirioCommonError(message: string)` |    Error    |    `cli.onError(callback)` |
 | `new ClirioSuccess(message?: string)`    |   Success   |  `cli.onSuccess(callback)` |
@@ -1198,8 +1175,6 @@ Successfully!
 
 ### Clirio API
 
-
-
 #### setConfig
 
 Setting global configuration
@@ -1214,14 +1189,9 @@ cli.setConfig({
 | ------------------------ | :---------------------------------------------------------------------------------------------: | ------: |
 | allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but they will be got in the command |    true |
 
-
 #### setGlobalPipe
 
-
 #### setGlobalFilter
-
-
-
 
 #### addModule
 
@@ -1248,7 +1218,6 @@ cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
 
 This option is useful for testing and debugging the application
-
 
 ### Receipts
 
@@ -1330,5 +1299,3 @@ class AddParamsDto {
   readonly allFiles: string[];
 }
 ```
-
-
