@@ -4,15 +4,15 @@ import { isBoolean, isNumber, isString } from './type-checks.util';
 
 export const valid = {
   OPTIONAL: (value: any): ReturnType<Check> => {
-    return value === undefined ? true : null;
+    return value === undefined || null;
   },
 
   REQUIRED: (value: any): ReturnType<Check> => {
-    return value === undefined ? false : null;
+    return value === undefined && null;
   },
 
   NULLABLE: (value: any): ReturnType<Check> => {
-    return value === null ? true : null;
+    return value === null || null;
   },
 
   NULL: (value: any): ReturnType<Check> => {

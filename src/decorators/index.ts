@@ -10,6 +10,6 @@ export * from './params.decorator';
 export * from './transform.decorator';
 export * from './validate.decorator';
 export * from './pipe.decorator';
-export * from './exception.decorator';
+export * from './filter.decorator';
 export * from './transform.decorator';
 export * from './validate.decorator';
