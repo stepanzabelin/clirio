@@ -8,8 +8,6 @@ You can integrate Clirio with other interactive command line libs (like [inquire
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
-[GIF]
-
 #### Table of Contents
 
 - [Clirio](#clirio)
@@ -1506,23 +1504,98 @@ export class MigrationRunOptionsDto {
 
 #### Clirio.parse
 
+parses and describes the command line
+
+Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
+
+**Parameters:**
+
+- commandLine: string
+
+**Returns:**
+
 ```ts
-Clirio.parse('-a --bbb');
+Array<{
+  type: ArgType;
+  key: string;
+  value: string | null;
+}>;
+```
+
+```ts
+Clirio.parse('foo -a --bbb');
 ```
 
 #### Clirio.describe
 
-- [Decorators](#decorators)
-  - [Command](#command-decorator)
-  - [Empty](#empty-decorator)
-  - [Filter](#filter-decorator)
-  - [Failure](#failure-decorator)
-  - [Helper](#helper-decorator)
-  - [Module](#module-decorator)
-  - [Option](#option-decorator)
-  - [Options](#options-decorator)
-  - [Param](#param-decorator)
-  - [Params](#params-decorator)
-  - [Pipe](#pipe-decorator)
-  - [Transform](#transform-decorator)
-  - [Validate](#validate-decorator)
+describes arguments of the command line
+
+**Parameters:**
+
+- args: string[]
+
+**Returns:**
+
+```ts
+Array<{
+  type: ArgType;
+  key: string;
+  value: string | null;
+}>;
+```
+
+```ts
+Clirio.describe(['foo', '-a', '--bbb']);
+```
+
+### Decorators
+
+Clirio works with decorators. More about [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+
+#### "Command" decorator
+
+specifies [the command pattern](#command-pattens)
+
+**Parameters:**
+
+- command: string [optional]
+- options: object [optional]
+  - options.description: string [optional]
+  - options.hidden: boolean [optional]
+
+```ts
+import { Module, Command } from 'clirio';
+
+@Module()
+export class GitModule {
+  @Command('git status', {
+    description: 'Get git status',
+    hidden: false,
+  })
+  public status() {}
+}
+```
+
+#### "Empty" decorator
+
+#### "Filter" decorator
+
+#### "Failure" decorator
+
+#### "Helper" decorator
+
+#### "Module" decorator
+
+#### "Option" decorator
+
+#### "Options" decorator
+
+#### "Param" decorator
+
+#### "Params" decorator
+
+#### "Pipe" decorator
+
+#### "Transform" decorator
+
+#### Validate decorator
