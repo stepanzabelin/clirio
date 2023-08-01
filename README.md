@@ -45,10 +45,10 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [setModules](#setmodules)
     - [execute](#execute)
   - [Clirio utils](#clirio-utils)
-    - [valid](#valid)
-    - [form](#form)
-    - [parse](#form)
-    - [describe](#form)
+    - [valid](#clirio.valid)
+    - [form](#clirio.form)
+    - [parse](#clirio.parse)
+    - [describe](#clirio.describe)
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#empty-decorator)
@@ -1410,3 +1410,119 @@ Arguments will be determined automatically but it is possible to set them manual
 ```ts
 cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
+
+#### execute
+
+launches Clirio App
+
+**Parameters:**
+
+no parameters
+
+**Returns:**
+
+- Promise<void>
+
+```ts
+await cli.execute();
+```
+
+### Clirio utils
+
+Clirio class has static methods and values
+
+#### Clirio.valid
+
+an object of check functions for [validation](#validation)
+
+```ts
+Clirio.valid.BOOLEAN;
+Clirio.valid.NUMBER;
+```
+
+| Key       | Checks if the value is                                                       |
+| --------- | ---------------------------------------------------------------------------- |
+| OPTIONAL  | `undefined` then it returns `true` otherwise it returns `null`               |
+| REQUIRED  | `undefined` then it returns `false` otherwise it returns `null`              |
+| NULLABLE  | `null` then it returns true otherwise it returns `null`                      |
+| NULL      | `null`                                                                       |
+| NUMBER    | `null`                                                                       |
+| INTEGER   | `number` (integer) or a string that resembles an integer                     |
+| STRING    | `string`                                                                     |
+| BOOLEAN   | `boolean` or `string` that resembles boolean (`"true"`or`"false"`)           |
+| FLAG      | `null` or `string` that resembles boolean (`"true"` or `"false"`)            |
+| KEY_VALUE | `string` or `array` of `string` in the `key=value` format (`"DB_USER=user"`) |
+
+##### example
+
+```ts
+export class MigrationRunOptionsDto {
+  @Option('--id')
+  @Validate(Clirio.valid.NUMBER)
+  readonly id: number;
+
+  @Option('--start-date, -b')
+  @Validate([Clirio.valid.NULLABLE, Clirio.valid.STRING])
+  readonly startDate: string;
+}
+```
+
+#### Clirio.form
+
+```ts
+Clirio.form.BOOLEAN;
+Clirio.form.NUMBER;
+```
+
+an object of check functions for [transformation](#transformation)
+
+| Key       | transforms into                                                                              |
+| --------- | -------------------------------------------------------------------------------------------- |
+| NUMBER    | `number`                                                                                     |
+| STRING    | `string`                                                                                     |
+| BOOLEAN   | `boolean`                                                                                    |
+| FLAG      | `boolean` (from `null` or `"true"` or `"false"`)                                             |
+| KEY_VALUE | `object` from the `key=value` format or array of ones (`"DB_USER=user"`)                     |
+| ARRAY     | `array` (if the value is originally an array, that array will be returned)                   |
+| PLAIN     | `string` or `null` (if the value is originally an array, the first element will be returned) |
+
+##### example
+
+```ts
+export class MigrationRunOptionsDto {
+  @Option('--env, -e')
+  @Transform(Clirio.form.KEY_VALUE)
+  readonly envs: Record<string, string>;
+
+  @Option('--id, -i')
+  @Transform(Clirio.form.ARRAY)
+  readonly id: string[];
+
+  @Option('-f, --format')
+  @Transform(Clirio.form.PLAIN)
+  readonly format: string;
+}
+```
+
+#### Clirio.parse
+
+```ts
+Clirio.parse('-a --bbb');
+```
+
+#### Clirio.describe
+
+- [Decorators](#decorators)
+  - [Command](#command-decorator)
+  - [Empty](#empty-decorator)
+  - [Filter](#filter-decorator)
+  - [Failure](#failure-decorator)
+  - [Helper](#helper-decorator)
+  - [Module](#module-decorator)
+  - [Option](#option-decorator)
+  - [Options](#options-decorator)
+  - [Param](#param-decorator)
+  - [Params](#params-decorator)
+  - [Pipe](#pipe-decorator)
+  - [Transform](#transform-decorator)
+  - [Validate](#validate-decorator)
