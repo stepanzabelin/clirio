@@ -187,7 +187,7 @@ export class ClirioCore {
             case InputTypeEnum.Helper:
               {
                 transformedArguments[argumentIndex] = new ClirioHelper({
-                  scopedModuleEntity: getPrototype(module).constructor,
+                  scopedModule: getPrototype(module).constructor,
                   scopedActionName: actionName,
                   modules: this.modules,
                 });

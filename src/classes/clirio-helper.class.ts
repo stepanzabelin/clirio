@@ -52,21 +52,21 @@ type FormatOptions = {
 
 export class ClirioHelper {
   private readonly modules: Constructor<any>[];
-  private readonly scopedModuleEntity: Constructor<any>;
+  private readonly scopedModule: Constructor<any>;
   private readonly scopedActionName: string;
 
   constructor({
     modules,
-    scopedModuleEntity,
+    scopedModule,
     scopedActionName,
   }: {
-    scopedModuleEntity: Constructor<any>;
+    scopedModule: Constructor<any>;
     modules: Constructor<any>[];
     scopedActionName: string;
   }) {
     this.modules = modules;
     this.scopedActionName = scopedActionName;
-    this.scopedModuleEntity = scopedModuleEntity;
+    this.scopedModule = scopedModule;
   }
 
   public dumpModule(module: Constructor<any>): DumpItem[] {
@@ -158,6 +158,10 @@ export class ClirioHelper {
     return this.modules
       .map((module) => this.dumpModule(module))
       .flatMap((f) => f);
+  }
+
+  public dumpThisModule(): DumpItem[] {
+    return this.dumpModule(this.scopedModule);
   }
 
   public static formatDump(

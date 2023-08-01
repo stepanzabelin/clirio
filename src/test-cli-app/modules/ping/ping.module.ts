@@ -1,4 +1,12 @@
-import { Module, Command, Empty, Failure, Filter } from '@clirio';
+import {
+  Module,
+  Command,
+  Empty,
+  Failure,
+  Filter,
+  ClirioHelper,
+  Helper,
+} from '@clirio';
 import { PingPingsFilter } from './pong/ping-pong.filter';
 
 @Module('ping')
@@ -12,6 +20,13 @@ export class PingModule {
   @Filter(PingPingsFilter)
   public pong() {
     console.log('ping test');
+  }
+
+  @Command('-h, --help')
+  public help(@Helper() helper: ClirioHelper) {
+    const dump = helper.dumpThisModule();
+
+    console.log(ClirioHelper.formatDump(dump));
   }
 
   @Empty()

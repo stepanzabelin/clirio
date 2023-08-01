@@ -1226,12 +1226,40 @@ export class CommonModule {
 }
 ```
 
+```bash
+$ --help
+```
+
 The `ClirioHelper` class provides api for getting descriptions of actions and methods for formatting it
-The `helper.dumpAll()` method returns description for all commands. It is possible to do custom formatting
+The `dumpAll` method returns description for all commands. It is possible to do custom formatting
 
-#### Hidden actions
+#### Displaying help in a particular module
 
-The `hidden` option in the `Command()` decorator lets hide description of the command
+The `dumpThisModule` method returns description for the current module.
+
+```ts
+@Module('ping')
+export class PingModule {
+  @Command('test')
+  public test() {
+    console.log('ping test');
+  }
+
+  @Command('-h, --help')
+  public help(@Helper() helper: ClirioHelper) {
+    const dump = helper.dumpThisModule();
+    console.log(ClirioHelper.formatDump(dump));
+  }
+}
+```
+
+```bash
+$ ping --help
+```
+
+#### Hidden commands
+
+The `hidden` option in the `Command()` decorator lets hide description of the command in displaying help
 
 ```ts
 import { Module, Command, Hidden } from 'clirio';
