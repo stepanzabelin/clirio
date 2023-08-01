@@ -202,8 +202,6 @@ describe('Pipe cases', () => {
   });
 
   it('3.1', async () => {
-    // const catchSpy = sandbox.spy();
-
     sandbox
       .stub(MigrationUpPipe.prototype, 'transform')
       .callsFake((data, input) => {

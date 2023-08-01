@@ -23,12 +23,6 @@ import {
   MigrationUpPipe,
 } from './migration-up';
 
-// import {
-//   MigrationUpPipe,
-//   MigrationUpParamsDto,
-//   MigrationUpOptionsDto,
-// } from './migration-up';
-
 @Module('migration')
 export class MigrationModule {
   @Command('run', { hidden: true })
@@ -41,9 +35,7 @@ export class MigrationModule {
   public up(
     @Params() params: MigrationUpParamsDto,
     @Options() options: MigrationUpOptionsDto,
-  ) {
-    // console.log('migration from', params, options);
-  }
+  ) {}
 
   @Command('from <type-id> <type-name>')
   public from(

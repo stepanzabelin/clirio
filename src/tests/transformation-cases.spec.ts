@@ -48,15 +48,15 @@ describe('Transformation cases', () => {
     });
   });
 
-  // it('1.3', async () => {
-  //   const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
+  it('1.3', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'run');
 
-  //   await buildCli().execute(Clirio.split('migration run'));
+    await buildCli().execute(Clirio.split('migration run -s'));
 
-  //   const [options] = entryStub.getCall(0).args;
+    const [options] = entryStub.getCall(0).args;
 
-  //   expect(options).toStrictEqual({});
-  // });
+    expect(options).toStrictEqual({ silent: null });
+  });
 
   it('2.1', async () => {
     const entryStub = sandbox.stub(MigrationModule.prototype, 'to');
