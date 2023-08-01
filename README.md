@@ -1310,322 +1310,103 @@ $ cli --version
 
 Setting global configuration
 
+**Parameters:**
+
+- config: Object
+
+**Returns:**
+
+- Clirio
+
 ```ts
 cli.setConfig({
   allowUncontrolledOptions: false,
 });
 ```
 
-##### unknown options
-
-```console
-"log" is an unknown key
-```
-
-```bash
-$ cli git status -b master --ignore-submodules  all --short
-```
-
-```console
-{ branch: 'master', ignoreSubmodules: 'all', short: true }
-```
-
-| Param                    |                                           Description                                           | Default |
-| ------------------------ | :---------------------------------------------------------------------------------------------: | ------: |
-| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but they will be got in the command |    true |
+| Param                    |                                            Description                                             | Default |
+| ------------------------ | :------------------------------------------------------------------------------------------------: | ------: |
+| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but it will be got in the command line |    true |
 
 #### setGlobalPipe
 
+sets global pipe
+
+**Parameters:**
+
+- pipe: ClirioPipe
+
+**Returns:**
+
+- Clirio
+
+```ts
+cli.setGlobalPipe(CommonPipe);
+```
+
 #### setGlobalFilter
+
+sets global filter
+
+**Parameters:**
+
+- pipe: ClirioFilter
+
+**Returns:**
+
+- Clirio
+
+```ts
+cli.setGlobalFilter(CommonFilter);
+```
 
 #### addModule
 
-Adding one module
+adds one module
+
+**Parameters:**
+
+- module: Constructor | Constructor['prototype']
+
+**Returns:**
+
+- Clirio
 
 ```ts
 cli.addModule(PingModule);
+cli.addModule(new MigrationModule());
 ```
 
 #### setModules
 
-Setting several modules
+sets several modules
+
+**Parameters:**
+
+- modules (Constructor | Constructor['prototype'])[]
+
+**Returns:**
+
+- Clirio
 
 ```ts
-cli.setModules([HelloModule, CommonModule]);
+cli.setModules([HelloModule, new MigrationModule()]);
 ```
 
 #### setArgs
 
-Arguments will be determined automatically but it is possible to set them manually
+sets arguments of the command line
+
+Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
+
+**Parameters:**
+
+- args: string[]
+
+**Returns:**
+
+- Clirio
 
 ```ts
 cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
-
-This option is useful for testing and debugging the application
-
-### Receipts
-
-#### Array of values in options
-
-```ts
-import { Module, Command, Options } from 'clirio';
-
-@Module()
-export class Module {
-  @Command('model')
-  public model(@Options() options: ModelOptionsDto) {
-    console.log(options);
-  }
-}
-```
-
-```ts
-import Joi from 'joi';
-import { Option, JoiSchema } from 'clirio';
-
-class ModelOptionsDto {
-  @Option('--name, -n', {
-    isArray: true,
-  })
-  @JoiSchema(Joi.array().items(Joi.string()).required())
-  readonly names: string[];
-}
-```
-
-#### Variable values in options
-
-```ts
-import { Module, Command, Options } from 'clirio';
-
-@Module()
-export class Module {
-  @Command('connect')
-  public connect(@Options() options: DbConnectOptionsDto) {
-    console.log(options);
-  }
-}
-```
-
-```ts
-import Joi from 'joi';
-import { Option, JoiSchema } from 'clirio';
-
-class DbConnectOptionsDto {
-  @Option('--env, -e', {
-    variable: true,
-  })
-  @JoiSchema(Joi.object().pattern(Joi.string(), Joi.string()))
-  readonly envs: Record<string, string>;
-}
-```
-
-#### Example with rest values mask
-
-```ts
-import { Module, Command, Params } from 'clirio';
-
-@Module()
-export class GitModule {
-  @Command('git add <...all-files>')
-  public add(@Params() params: AddParamsDto) {
-    console.log(params.allFiles);
-  }
-}
-```
-
-```ts
-import Joi from 'joi';
-import { Param, JoiSchema } from 'clirio';
-
-class AddParamsDto {
-  @Param('all-files')
-  @JoiSchema(Joi.array().items(Joi.string()).required())
-  readonly allFiles: string[];
-}
-```
-
-##### Array of values in options
-
-By default, the command parser cannot determine whether an option is an array. You can specify this, in which case the same option names will be collected in an array, even if there is only one option
-
-```ts
-@Module()
-export class Module {
-  @Command('model')
-  public model(@Options() options: ModelOptionsDto) {
-    console.log(options);
-  }
-}
-```
-
-```ts
-class ModelOptionsDto {
-  @Option('--name, -n', {
-    isArray: true,
-  })
-  readonly names: string[];
-}
-```
-
-```bash
-$ cli model --name Ford
-```
-
-```console
-{ names: ['Ford'] }
-```
-
-```bash
-$ cli model --name Ford -n Tesla
-```
-
-```console
-{ names: ['Ford', 'Tesla'] }
-```
-
-##### Validation boolean flag
-
-```ts
-class Dto {
-  @Option('--agree')
-  @Validate([Clirio.valid.OPTIONAL, Clirio.valid.FLAG])
-  readonly agree?: null;
-}
-```
-
-##### Variable values in options
-
-There is a special case for using variables. All variables will be collected in an object
-
-```ts
-@Module()
-export class Module {
-  @Command('connect')
-  public connect(@Options() options: DbConnectOptionsDto) {
-    console.log(options);
-  }
-}
-```
-
-```ts
-class DbConnectOptionsDto {
-  @Option('--env, -e', {
-    variable: true,
-  })
-  readonly envs: Record<string, string>;
-}
-```
-
-```bash
-$ cli connect -e DB_NAME=dbname -e DB_USER=dbuser
-```
-
-```console
-{ envs: { DB_NAME: 'dbname', DB_USER: 'dbuser' } }
-
-```
-
-#### Joi params validation
-
-```ts
-@Module()
-export class GitModule {
-  @Command('git checkout <branch>')
-  public checkout(@Params() params: CheckoutParamsDto) {
-    console.log(params);
-  }
-}
-```
-
-```ts
-class CheckoutParamsDto {
-  @Param('branch')
-  @JoiSchema(Joi.string().required())
-  readonly branch: string;
-}
-```
-
-```bash
-$ cli git checkout develop
-```
-
-```console
-{  branch: 'develop' }
-```
-
-#### Joi validating and converting
-
-Joi validates and converts input values that are originally string. That is a very useful feature.
-
-##### Summation and concatenation examples
-
-```ts
-@Module()
-export class SumModule {
-  @Command('sum <first> <second>')
-  public sum(@Params() params: SumParamsDto) {
-    console.log(params.first + params.second);
-  }
-}
-```
-
-##### Without Joi
-
-```ts
-class SumParamsDto {
-  @Param()
-  readonly first: unknown;
-
-  @Param()
-  readonly second: unknown;
-}
-```
-
-```bash
-$ cli sum 5 15
-```
-
-```console
-'515'
-```
-
-```bash
-$ cli sum 5 rabbits
-```
-
-```console
-'5rabbits'
-```
-
-##### With Joi
-
-```ts
-class SumParamsDto {
-  @Param()
-  @JoiSchema(Joi.number().required())
-  readonly first: number;
-
-  @Param()
-  @JoiSchema(Joi.number().required())
-  readonly second: number;
-}
-```
-
-```bash
-$ cli sum 5 15
-```
-
-```console
-20
-```
-
-```bash
-$ cli sum 5 rabbits
-```
-
-```console
-"second" is not a number
-```
-
-### Special cases
