@@ -3,7 +3,9 @@
 A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
 Clirio is a library for routing terminal command lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
+
 The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
+
 You can integrate Clirio with other interactive command line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.)
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
@@ -19,7 +21,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [App configuration](#app-configuration)
   - [Modules](#modules)
   - [Actions](#actions)
-    - [Command pattens](#command-patterns)
+    - [Command patterns](#command-patterns)
     - [Empty command](#empty-command)
     - [Failure command](#failure-command)
   - [Data control](#data-control)
@@ -33,7 +35,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Filters](#filter)
   - [Displaying help](#displaying-help)
     - [Helper](#clirio-helper)
-    - [Hidden actions](#hidden-actions)
+    - [Hidden commands](#hidden-commands)
   - [Displaying Version](#displaying-version)
   - [Clirio API](#clirio-api)
     - [setConfig](#setconfig)
@@ -43,10 +45,10 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [setModules](#setmodules)
     - [execute](#execute)
   - [Clirio utils](#clirio-utils)
-    - [valid](#clirio.valid)
-    - [form](#clirio.form)
-    - [parse](#clirio.parse)
-    - [describe](#clirio.describe)
+    - [valid](#clirio-valid)
+    - [form](#clirio-form)
+    - [parse](#clirio-parse)
+    - [describe](#clirio-describe)
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#empty-decorator)
@@ -190,7 +192,9 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 ##### Options Definition
 
 "Options" are command line parts using a leading dashes
+
 Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long:
+
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
 
 ### Parsing args
@@ -343,7 +347,7 @@ export class HelloModule {
 }
 ```
 
-#### Command pattens
+#### Command patterns
 
 The `@Command()` decorator is designed to specify the command pattern
 
@@ -368,6 +372,7 @@ export class MigrationModule {
 ```
 
 The total pattern based on `@Module(...)` and `@Commands(...)` will be matched with the command line
+
 Pattern can consist of one or more space-separated arguments
 
 ##### Case 1. Exact match
@@ -387,9 +392,7 @@ The exact command will be matched
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for params.
-Multiple command lines will be matched to one route
-The number of links separated by a space should be the same.
+Using the `|` operator to set match variants for params. Multiple command lines will be matched to one route. The number of space-separated parts should be the same.
 
 ```ts
   @Command('migration run|up')
@@ -403,8 +406,7 @@ The number of links separated by a space should be the same.
 
 ##### Case 3. Pattern with value masks
 
-Using the `< >` operator to specify a place for any value
-The number of links separated by a space should be the same
+Using the `< >` operator to specify a place for any value. The number of space-separated parts should be the same
 
 ```ts
   @Command('hello <first-name> <last-name>')
@@ -1200,7 +1202,7 @@ It is possible to use other commands
 @Command('man <command>')
 ```
 
-#### Helper
+#### Clirio helper
 
 The `@Helper()` decorator provided to handle the help mode
 
@@ -1229,6 +1231,7 @@ $ --help
 ```
 
 The `ClirioHelper` class provides api for getting descriptions of actions and methods for formatting it
+
 The `dumpAll` method returns description for all commands. It is possible to do custom formatting
 
 #### Displaying help in a particular module
@@ -1554,7 +1557,7 @@ Clirio works with decorators. More about [decorators](https://www.typescriptlang
 
 #### "Command" decorator
 
-The `@Command()` decorator specifies [the command pattern](#command-pattens)
+The `@Command()` decorator specifies [the command pattern](#command-patterns)
 
 **Parameters:**
 
