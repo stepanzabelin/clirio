@@ -7,7 +7,7 @@ import {
   ClirioHelper,
   Helper,
 } from '@clirio';
-import { PingPingsFilter } from './pong/ping-pong.filter';
+import { PingPongFilter } from './pong/ping-pong.filter';
 
 @Module('ping')
 export class PingModule {
@@ -17,7 +17,7 @@ export class PingModule {
   }
 
   @Command('pong')
-  @Filter(PingPingsFilter)
+  @Filter(PingPongFilter)
   public pong() {
     console.log('ping test');
   }
