@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "target": "es2017",
+    "target": "es2021",
     "outDir": "build/main",
     "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@clirio": ["./src/index.ts"]
+    },
+
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "CommonJS",
+
     "declaration": true,
     "inlineSourceMap": true,
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
@@ -14,7 +19,7 @@
 
     /* Strict Type-Checking Options */
     // "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
-    // "strictNullChecks": true /* Enable strict null checks. */,
+    // "strictNullChecks": false /* Enable strict null checks. */,
     // "strictFunctionTypes": true /* Enable strict checking of function types. */,
     // "strictPropertyInitialization": true /* Enable strict checking of property initialization in classes. */,
     // "noImplicitThis": true /* Raise error on 'this' expressions with an implied 'any' type. */,
@@ -36,10 +41,11 @@
     "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
 
-    "lib": ["es2017"],
+    "lib": ["ES2021"],
     "types": ["node", "jest"],
     "typeRoots": ["node_modules/@types", "src"]
   },
+  "types": ["reflect-metadata"],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules/**"],
   "compileOnSave": false

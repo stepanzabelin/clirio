@@ -5,25 +5,60 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Active Spec",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "port": 9229,
-      "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"],
-      "preLaunchTask": "npm: build"
-      // "smartStep": true
+      "name": "Debug with ts-node 1 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "-r",
+        "tsconfig-paths/register",
+        "${workspaceFolder}/src/test-cli-app/run.ts",
+        "migration",
+        "from",
+        "1567",
+        "type-dbo",
+        "-e",
+        "DB_NAME=db-name",
+        "--id=149542",
+        "-s",
+        "--start-date=1"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     },
     {
-      // Use this one if you're already running `yarn watch`
       "type": "node",
       "request": "launch",
-      "name": "Debug Active Spec (no build)",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "port": 9229,
-      "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"]
-      // "smartStep": true
-    }]
+      "name": "Debug with ts-node 2 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "-r",
+        "tsconfig-paths/register",
+        "${workspaceFolder}/src/test-cli-app/run.ts",
+        "--help"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug with ts-node 3 ",
+      "runtimeArgs": [
+        "${workspaceFolder}/node_modules/ts-node/dist/bin.js",
+        "-r",
+        "tsconfig-paths/register",
+        "${workspaceFolder}/src/test-cli-app/run.ts",
+        "hello",
+        "--verbose",
+        "-v",
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
 }
