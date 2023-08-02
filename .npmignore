@@ -3,3 +3,8 @@
 /.vscode
 /.circleci
 /src
+/.husky
+/.github
+/jest-spec.json
+/DEVELOPMENT.md
+/TODO.md

@@ -1,8 +1,45 @@
-import { moduleMetadata as module } from './slices/moduleMetadata';
-import { inputMetadata as input } from './slices/inputMetadata';
-import { optionMetadata as option } from './slices/optionMetadata';
-import { paramMetadata as param } from './slices/paramMetadata';
-import { actionMetadata as action } from './slices/actionMetadata';
-import { helpMetadata as help } from './slices/helpMetadata';
+import { ArgMetadata, EntityMetadata, TargetMetadata } from '../classes';
+import {
+  FilterTargetData,
+  PipeTargetData,
+  TransformTargetData,
+  ValidateTargetData,
+  ParamTargetData,
+  OptionTargetData,
+  CommandTargetData,
+  OptionsArgData,
+  ParamsArgData,
+  HelperArgData,
+  ModuleData,
+} from '../types';
 
-export const md = { module, input, option, param, action, help };
+export const filterTargetMetadata = new TargetMetadata<FilterTargetData>(
+  'filter',
+);
+export const pipeTargetMetadata = new TargetMetadata<PipeTargetData>('pipe');
+export const validateTargetMetadata = new TargetMetadata<ValidateTargetData>(
+  'validate',
+);
+export const transformTargetMetadata = new TargetMetadata<TransformTargetData>(
+  'transform',
+);
+
+export const paramTargetMetadata = new TargetMetadata<ParamTargetData>('param');
+export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
+  'option',
+);
+export const commandTargetMetadata = new TargetMetadata<CommandTargetData>(
+  'command',
+);
+export const emptyTargetMetadata = new TargetMetadata<Record<string, never>>(
+  'empty',
+);
+export const failureTargetMetadata = new TargetMetadata<Record<string, never>>(
+  'failure',
+);
+
+export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');
+export const paramsArgMetadata = new ArgMetadata<ParamsArgData>('params');
+export const helperArgMetadata = new ArgMetadata<HelperArgData>('helper');
+
+export const moduleEntityMetadata = new EntityMetadata<ModuleData>('module');

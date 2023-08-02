@@ -1,8 +1,12 @@
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { CheckService } from '../test-env/complex-cli/modules/common/check';
-import { VersionService } from '../test-env/complex-cli/modules/common/version';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+import { Clirio } from '@clirio';
+import { CommonModule } from '../test-cli-app/modules/common/common.module';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([CommonModule]);
+  return cli;
+};
 
 describe('Command as option', () => {
   const sandbox = sinon.createSandbox();
@@ -11,52 +15,49 @@ describe('Command as option', () => {
     sandbox.restore();
   });
 
-  it('correct input version, short options', async () => {
-    const entryStub = sandbox.stub(VersionService.prototype, 'entry');
+  it('1.1', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
-    emulateArgv(sandbox, '-v');
-    await complexCli();
-
-    expect(entryStub.calledOnce).toBeTruthy();
-
-    entryStub.restore();
-  });
-
-  it('correct input version, short options', async () => {
-    const entryStub = sandbox.stub(VersionService.prototype, 'entry');
-
-    emulateArgv(sandbox, '--version');
-    await complexCli();
+    await buildCli().execute(Clirio.split('-v'));
 
     expect(entryStub.calledOnce).toBeTruthy();
-
-    entryStub.restore();
   });
 
-  it('correct input command as option and extra options', async () => {
-    const entryStub = sandbox.stub(CheckService.prototype, 'entry');
+  it('1.2', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'version');
 
-    emulateArgv(sandbox, '--check --pool=5 -v');
-    await complexCli();
+    await buildCli().execute(Clirio.split('--version'));
+
+    expect(entryStub.calledOnce).toBeTruthy();
+  });
+
+  it('2.1', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'check');
+
+    await buildCli().execute(Clirio.split('--check --pool=5 -v'));
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toMatchObject({
-      verbose: true,
-      pool: 5,
+    expect(options).toStrictEqual({
+      verbose: null,
+      pool: '5',
     });
-
-    entryStub.restore();
   });
 
-  it('invalid input command as option and extra options', async () => {
-    const errorCallbackStub = sinon.stub();
+  it('2.2', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'check');
 
-    emulateArgv(sandbox, '--check --unknown --pool=5 -v');
-    await complexCli(errorCallbackStub);
+    await buildCli().execute(
+      Clirio.split('--check --unknown --pool=5 -v --test-arg=1'),
+    );
 
-    const err = errorCallbackStub.getCall(0).args[0];
+    const [options] = entryStub.getCall(0).args;
 
-    expect(err.message).toEqual('"unknown" is not allowed');
+    expect(options).toStrictEqual({
+      verbose: null,
+      unknown: null,
+      pool: '5',
+      'test-arg': '1',
+    });
   });
 });

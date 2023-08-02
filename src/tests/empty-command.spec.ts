@@ -1,10 +1,22 @@
+import { Clirio } from '@clirio';
 import sinon from 'sinon';
-import { complexCli } from '../test-env/complex-cli/complexCli';
-import { CommonEmptyService } from '../test-env/complex-cli/modules/common/empty';
-import { CommonFailureService } from '../test-env/complex-cli/modules/common/failure';
-import { MigrationEmptyService } from '../test-env/complex-cli/modules/migration/empty';
-import { simpleCli } from '../test-env/simple-cli/simpleCli';
-import { emulateArgv } from '../test-env/utils/emulateArgv';
+import { MigrationModule } from '../test-cli-app/modules/migration';
+import { CommonModule } from '../test-cli-app/modules/common/common.module';
+import { HelloModule } from '../test-cli-app/modules/hello';
+import { GitModule } from '../test-cli-app/modules/git';
+import { PingModule } from '../test-cli-app/modules/ping';
+
+const buildCli = () => {
+  const cli = new Clirio();
+  cli.setModules([
+    MigrationModule,
+    HelloModule,
+    CommonModule,
+    GitModule,
+    PingModule,
+  ]);
+  return cli;
+};
 
 describe('Empty command', () => {
   const sandbox = sinon.createSandbox();
@@ -13,41 +25,26 @@ describe('Empty command', () => {
     sandbox.restore();
   });
 
-  it('Empty without handler', async () => {
-    const errorCallbackStub = sinon.stub();
+  it('1.1', async () => {
+    const entryStub = sandbox.stub(CommonModule.prototype, 'empty');
 
-    emulateArgv(sandbox, '');
-
-    await simpleCli(errorCallbackStub);
-
-    const err = errorCallbackStub.getCall(0).args[0];
-
-    expect(err.message).toEqual('Incorrect command specified');
-  });
-
-  it('Empty with handler in the root', async () => {
-    const entryStub = sandbox.stub(CommonEmptyService.prototype, 'entry');
-
-    emulateArgv(sandbox, '');
-    await complexCli();
+    await buildCli().execute(Clirio.split(''));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Empty with handler in nested module', async () => {
-    const entryStub = sandbox.stub(MigrationEmptyService.prototype, 'entry');
+  it('1.2', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'empty');
 
-    emulateArgv(sandbox, 'migration');
-    await complexCli();
+    await buildCli().execute(Clirio.split('migration'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
 
-  it('Empty without handler in nested module', async () => {
-    const entryStub = sandbox.stub(CommonFailureService.prototype, 'entry');
+  it('1.3', async () => {
+    const entryStub = sandbox.stub(PingModule.prototype, 'empty');
 
-    emulateArgv(sandbox, 'git');
-    await complexCli();
+    await buildCli().execute(Clirio.split('ping'));
 
     expect(entryStub.calledOnce).toBeTruthy();
   });
