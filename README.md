@@ -10,6 +10,8 @@ You can integrate Clirio with other interactive command line libs (like [inquire
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
+![Demo](./docs/demo.gif)
+
 #### Table of Contents
 
 - [Clirio](#clirio)
@@ -79,6 +81,7 @@ yarn add clirio
 ## Quick Start
 
 There are 3 easy steps to build Clirio App.
+
 The example for emulating `git status` cli command with options
 
 1. Create DTO to define input options
@@ -145,9 +148,9 @@ The implementation of own cli prefix (like `my-custom-cli`) is described in [sta
 
 Clirio is developed according to SOLID principles, so it is possible apply OOP, dependency injection and other programming patterns.
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains the recommended assembly. But it is integrate any other libraries and custom decorators.
+**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains the recommended assembly. But it is possible to integrate any other libraries and custom decorators.
 
-### Definitions
+## Definitions
 
 Anatomy of a shell CLI is described in [wiki](https://en.wikipedia.org/wiki/Command-line_interface#Anatomy_of_a_shell_CLI)
 
@@ -197,9 +200,9 @@ Each option is either a key-value or a key. If in the beginning 2 dashes is a lo
 
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
 
-### Parsing args
+## Parsing args
 
-Parsing command line by Clirio
+Parsing the command line (Clirio implementation)
 
 ```ts
 Clirio.parse('test --foo 15 -b -a -r 22');
@@ -221,7 +224,7 @@ Result
 ]
 ```
 
-Another example
+The another example
 
 ```bash
 $ set-time 10:56 --format=AM -ei 15
@@ -237,11 +240,11 @@ $ set-time 10:56 --format=AM -ei 15
 
 ##### Summary
 
-- all parts without a leading dash will be described as actions
+- all parts of the command line without a leading dash will be described as actions
 - an option with a missing value will be null
 - options starting with a single dash will be separated by letters
 
-### App configuration
+## App configuration
 
 The application structure should consist of the following parts:
 
@@ -269,12 +272,12 @@ cli.setModules([
 
 The example is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
-### Modules
+## Modules
 
 Clirio modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
 An application can have either one or many modules. Each module contains actions (patterns for commands)
 
-Using common module
+Using a common module
 
 ```ts
 @Module()
@@ -318,7 +321,7 @@ export class MigrationModule {
 }
 ```
 
-### Actions
+## Actions
 
 Clirio actions are methods in class-modules with decorators
 
@@ -347,7 +350,7 @@ export class HelloModule {
 }
 ```
 
-#### Command patterns
+### Command patterns
 
 The `@Command()` decorator is designed to specify the command pattern
 
@@ -392,7 +395,7 @@ The exact command will be matched
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for params. Multiple command lines will be matched to one route. The number of space-separated parts should be the same.
+Using the `|` operator to set match variants for params. Multiple command lines will be matched to one route. The number of space-separated parts of the command line should be the same.
 
 ```ts
   @Command('migration run|up')
@@ -406,7 +409,7 @@ Using the `|` operator to set match variants for params. Multiple command lines 
 
 ##### Case 3. Pattern with value masks
 
-Using the `< >` operator to specify a place for any value. The number of space-separated parts should be the same
+Using the `< >` operator to specify a place for any value. The number of space-separated parts of the command line should be the same
 
 ```ts
   @Command('hello <first-name> <last-name>')
@@ -455,7 +458,7 @@ This pattern is designed for special cases like "help" and "version". This is an
 Use [Options data control](#options-data-control) to add other options
 To avoid problems, do not mix this pattern with the rest ones
 
-### Empty command
+## Empty command
 
 The `@Empty()` action decorator is a way to catch the case when nothing is entered
 Each module can have its own `@Empty()` decorator in an action
@@ -506,10 +509,12 @@ $ cli migration
 The migration module requires additional instruction. Type --help
 ```
 
-#### Failure command
+### Failure command
 
-The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match.
+The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match
+
 Each module can have its own `@Failure()` decorator in an action
+
 if this decorator is not specified, then a default error will be displayed
 
 ```ts
@@ -556,7 +561,7 @@ $ cli migration stop
 The migration module got the wrong instruction
 ```
 
-### Data control
+## Data control
 
 Using [Parameter Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data
 The `@Params()` and `@Options()` decorators provided
@@ -581,11 +586,11 @@ $ cli get-location Prague --format=DMS --verbose
 { format: "DMS", verbose: true }
 ```
 
-#### Params data control
+### Params data control
 
 To handle incoming data, use DTO (instead of unknown type)
 
-#### Params DTO
+### Params DTO
 
 The `@Param()` decorator for dto properties provided. It can take a key in an param mask to map DTO properties
 
@@ -609,7 +614,7 @@ export class HelloModule {
 }
 ```
 
-Here the second and third parts are the masks for any values that the user enters
+Here the second and third parts of the command line are the masks for any values that the user enters
 The `hello` method will be called if the user enters a three-part command. The last 2 parts are passed to the params argument as keys and values
 
 ```bash
@@ -669,7 +674,7 @@ $ cli git add test.txt logo.png
 ['test.txt', 'logo.png']
 ```
 
-#### Options data control
+### Options data control
 
 The `@Options()` decorator provided
 
@@ -683,9 +688,9 @@ export class GitModule {
 }
 ```
 
-#### Options DTO
+### Options DTO
 
-The `@Option()` decorator for dto properties provided. It can accept comma separated key aliases to map DTO properties
+The `@Option()` decorator for dto properties provided. It can accept comma-separated key aliases to map DTO properties
 
 ```ts
 class GitStatusOptionsDto {
@@ -725,7 +730,7 @@ $ cli git status --branch=master --ignore-submodules=all --short
 { branch: 'master', "ignore-submodule": 'all', short: true }
 ```
 
-### Input DTO
+## Input DTO
 
 DTOs used to control inputs can have additional decorators, including custom ones
 All incoming key values can be `null` or `string` either an `array` of `null` or a `string`
@@ -766,7 +771,7 @@ class SetLimitParamsDto {
 }
 ```
 
-#### Validation
+### Validation
 
 The `@Validate()` decorator provided to check input params and options.
 It must be used for DTO properties in conjunction with `@Option()` or `@Param()` (this depends on the type of controlled data)
@@ -812,11 +817,13 @@ $ cli git status --ignore-submodules
 ```
 
 ```console
-The "branch" is wrong
+The "branch" option is wrong
 ```
 
-For any case of failed validation, the same error will be thrown `The "KEY_NAME" is wrong`
+For any case of failed validation, the same error will be thrown `The "%KEY_NAME%" %DATA_TYPE% is wrong`
+
 To have more flexible validations, use [Pipes](#pipes)
+
 It is possible to [configure](#config) throwing errors on unknown keys or in options
 
 ##### Validation of optional key
@@ -851,10 +858,12 @@ class OptionsDto {
 
 See [Clirio-made checks](#valid)
 
-### Transformation
+## Transformation
 
 The `@Transform()` decorator provided to transform input params and options.
+
 It must be used for DTO properties in conjunction with `@Option()` or `@Param()` (this depends on the type of controlled data)
+
 The `@Transform()` takes a transform function as an argument
 
 ```ts
@@ -940,11 +949,11 @@ With transformation
 ```ts
 class SumParamsDto {
   @Param()
-  @JoiSchema(Joi.number().required())
+  @Transform((v) => Number(v))
   readonly first: number;
 
   @Param()
-  @JoiSchema(Joi.number().required())
+  @Transform((v) => Number(v))
   readonly second: number;
 }
 ```
@@ -969,7 +978,7 @@ class SetAutoOptionsDto {
 
 See [Clirio-made forms](#form)
 
-### Pipes
+## Pipes
 
 Pipes are designed to [validate](#validation) and [transform](#transformation) controlled data (params and options).
 Using pipes is more functional than the `@Validate()` and `@Transform()` decorators and gives more flexibility
@@ -1066,7 +1075,7 @@ export class MigrationUpPipe implements ClirioPipe {
 
 It is possible to add pipes for each action or globally for all at once
 
-#### Example of a global pipe
+### Example of a global pipe
 
 ```ts
 const cli = new Clirio();
@@ -1075,7 +1084,7 @@ cli.setGlobalPipe(CommonPipe);
 cli.execute();
 ```
 
-### Exceptions
+## Exceptions
 
 Exceptions can be thrown in pipes or actions. Special exceptions designed to complete the script with the desired result
 
@@ -1115,7 +1124,7 @@ cli.execute().catch((err) => {
 });
 ```
 
-### Filters
+## Filters
 
 Filters are designed to catch exceptions
 
@@ -1161,7 +1170,7 @@ export class PingPongFilter implements ClirioFilter {
 
 It is possible to add filters for each action or apply them globally to all actions at once
 
-#### Example of a global filter
+### Example of a global filter
 
 ```ts
 const cli = new Clirio();
@@ -1170,7 +1179,7 @@ cli.setGlobalFilter(CommonFilter);
 cli.execute();
 ```
 
-### Displaying help
+## Displaying help
 
 Special case for the command as an option designed
 
@@ -1202,7 +1211,7 @@ It is possible to use other commands
 @Command('man <command>')
 ```
 
-#### Clirio helper
+### Clirio helper
 
 The `@Helper()` decorator provided to handle the help mode
 
@@ -1234,7 +1243,7 @@ The `ClirioHelper` class provides api for getting descriptions of actions and me
 
 The `dumpAll` method returns description for all commands. It is possible to do custom formatting
 
-#### Displaying help in a particular module
+### Displaying help in a particular module
 
 The `dumpThisModule` method returns description for the current module.
 
@@ -1258,7 +1267,7 @@ export class PingModule {
 $ ping --help
 ```
 
-#### Hidden commands
+### Hidden commands
 
 The `hidden` option in the `Command()` decorator lets hide description of the command in displaying help
 
@@ -1283,7 +1292,7 @@ export class Module {
 
 The `ClirioHelper.formatDump` will ignore description of the `debug` command in this case
 
-### Version
+## Version
 
 ```ts
 import { Module, Command } from 'clirio';
@@ -1305,11 +1314,11 @@ $ cli --version
 1.3.1
 ```
 
-### Clirio API
+## Clirio API
 
-#### setConfig
+### setConfig
 
-Setting global configuration
+Setting the global configuration
 
 **Parameters:**
 
@@ -1329,7 +1338,7 @@ cli.setConfig({
 | ------------------------ | :------------------------------------------------------------------------------------------------: | ------: |
 | allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but it will be got in the command line |    true |
 
-#### setGlobalPipe
+### setGlobalPipe
 
 sets global pipe
 
@@ -1345,7 +1354,7 @@ sets global pipe
 cli.setGlobalPipe(CommonPipe);
 ```
 
-#### setGlobalFilter
+### setGlobalFilter
 
 sets global filter
 
@@ -1361,7 +1370,7 @@ sets global filter
 cli.setGlobalFilter(CommonFilter);
 ```
 
-#### addModule
+### addModule
 
 adds one module
 
@@ -1378,7 +1387,7 @@ cli.addModule(PingModule);
 cli.addModule(new MigrationModule());
 ```
 
-#### setModules
+### setModules
 
 sets several modules
 
@@ -1394,7 +1403,7 @@ sets several modules
 cli.setModules([HelloModule, new MigrationModule()]);
 ```
 
-#### setArgs
+### setArgs
 
 sets arguments of the command line
 
@@ -1412,7 +1421,7 @@ Arguments will be determined automatically but it is possible to set them manual
 cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
 ```
 
-#### execute
+### execute
 
 launches Clirio App
 
@@ -1428,11 +1437,11 @@ no parameters
 await cli.execute();
 ```
 
-### Clirio utils
+## Clirio utils
 
 Clirio class has static methods and values
 
-#### Clirio.valid
+### Clirio.valid
 
 an object of check functions for [validation](#validation)
 
@@ -1468,14 +1477,14 @@ export class MigrationRunOptionsDto {
 }
 ```
 
-#### Clirio.form
+### Clirio.form
 
 ```ts
 Clirio.form.BOOLEAN;
 Clirio.form.NUMBER;
 ```
 
-an object of check functions for [transformation](#transformation)
+an object of functions for [transformation](#transformation)
 
 | Key       | transforms into                                                                              |
 | --------- | -------------------------------------------------------------------------------------------- |
@@ -1505,7 +1514,7 @@ export class MigrationRunOptionsDto {
 }
 ```
 
-#### Clirio.parse
+### Clirio.parse
 
 parses and describes the command line
 
@@ -1529,7 +1538,7 @@ Array<{
 Clirio.parse('foo -a --bbb');
 ```
 
-#### Clirio.describe
+### Clirio.describe
 
 describes arguments of the command line
 
@@ -1551,11 +1560,11 @@ Array<{
 Clirio.describe(['foo', '-a', '--bbb']);
 ```
 
-### Decorators
+## Decorators
 
 Clirio works with decorators. More about [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
 
-#### "Command" decorator
+### "Command" decorator
 
 The `@Command()` decorator specifies [the command pattern](#command-patterns)
 
@@ -1566,35 +1575,35 @@ The `@Command()` decorator specifies [the command pattern](#command-patterns)
   - options.description: string [optional] - description for the help mode
   - options.hidden: boolean [optional]- hiding the action in the help mode
 
-#### "Empty" decorator
+### "Empty" decorator
 
 The `@Empty()` decorator catches the case when [nothing is entered](#empty-command)
 
 **Parameters:**
 no parameters
 
-#### "Filter" decorator
+### "Filter" decorator
 
 The `@Filter()` decorator catches [exceptions](#exceptions) in [actions or pipe](#filtres)
 
 **Parameters:**
 no parameters
 
-#### "Failure" decorator
+### "Failure" decorator
 
 The `@Failure()` decorator catches the case when the specified command patterns [don't match](#failure-command)
 
 **Parameters:**
 no parameters
 
-#### "Helper" decorator
+### "Helper" decorator
 
 The `@Helper()` decorator andles [the help mode](#displaying-help)
 
 **Parameters:**
 no parameters
 
-#### "Module" decorator
+### "Module" decorator
 
 The `@Module()` decorator makes [classes as controllers](#modules) in to [configure Clirio app](#app-configuration)
 
@@ -1605,7 +1614,7 @@ The `@Module()` decorator makes [classes as controllers](#modules) in to [config
   - options.description: string [optional] - description for the help mode
   - options.hidden: boolean [optional] - hiding the module in the help mode
 
-#### "Option" decorator
+### "Option" decorator
 
 The `@Option()` decorator maps DTO properties in [options DTO](#options-dto)
 
@@ -1616,14 +1625,14 @@ The `@Option()` decorator maps DTO properties in [options DTO](#options-dto)
   - options.description: string [optional] - description for the help mode
   - options.hidden: boolean [optional] - hiding the option in the help mode
 
-#### "Options" decorator
+### "Options" decorator
 
 The `@Options()` decorator controls [input options](#options-data-control)
 
 **Parameters:**
 no parameters
 
-#### "Param" decorator
+### "Param" decorator
 
 The `@Param()` decorator maps DTO properties in [params DTO](#params-dto)
 
@@ -1634,14 +1643,14 @@ The `@Param()` decorator maps DTO properties in [params DTO](#params-dto)
   - options.description: string [optional] - description for the help mode
   - options.hidden: boolean [optional] - hiding the param in the help mode
 
-#### "Params" decorator
+### "Params" decorator
 
 The `@Params()` decorator controls [input params](#params-data-control)
 
 **Parameters:**
 no parameters
 
-#### "Pipe" decorator
+### "Pipe" decorator
 
 The `@Pipe()` decorator [validates and transforms](#pipes) controlled data (params and options).
 
@@ -1649,7 +1658,7 @@ The `@Pipe()` decorator [validates and transforms](#pipes) controlled data (para
 
 - pipe: ClirioPipe
 
-#### "Transform" decorator
+### "Transform" decorator
 
 The `@Transform()` decorator [transforms](#transformation) input params and options
 
@@ -1659,7 +1668,7 @@ The `@Transform()` decorator [transforms](#transformation) input params and opti
   - `(value: any) => boolean|null)`
   - `(value: any) => boolean|null)[]`
 
-#### Validate decorator
+### Validate decorator
 
 The `@Validate()` decorator [validates](#validation) input params and options
 
