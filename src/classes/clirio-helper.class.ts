@@ -7,7 +7,7 @@ import {
   paramTargetMetadata,
 } from '../metadata';
 import { Constructor } from '../types';
-import { getPrototype, isEntity } from '../utils';
+import { getPrototype, isConstructor } from '../utils';
 
 type ModuleData = {
   entity: Constructor<any>;
@@ -102,14 +102,14 @@ export class ClirioHelper {
           ...[...paramsArgMap.values()].map((data) => {
             return {
               type: 'params' as DataType,
-              entity: isEntity(data.entity) ? data.entity : null,
+              entity: isConstructor(data.entity) ? data.entity : null,
               fields: ClirioHelper.dumpInputParams(data.entity),
             };
           }),
           ...[...optionsArgMap.values()].map((data) => {
             return {
               type: 'options' as DataType,
-              entity: isEntity(data.entity) ? data.entity : null,
+              entity: isConstructor(data.entity) ? data.entity : null,
               fields: ClirioHelper.dumpInputOptions(data.entity),
             };
           }),

@@ -130,7 +130,7 @@ clirio.execute();
 
 ```bash
 
-$ my-custom-cli git status -b master --ignore-submodules  all --short
+$ my-cli git status -b master --ignore-submodules  all --short
 
 ```
 
@@ -142,7 +142,7 @@ The application will route the command `git status` with options to the `GitModu
 
 Then use the received data for its intended purpose
 
-The implementation of own cli prefix (like `my-custom-cli`) is described in [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
+The implementation of own cli prefix (like `my-cli`) is described in [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
 
 ## Starter kit
 
@@ -227,7 +227,7 @@ Result
 The another example
 
 ```bash
-$ set-time 10:56 --format=AM -ei 15
+$ my-cli set-time 10:56 --format=AM -ei 15
 ```
 
 | type   | key    | value    |
@@ -297,8 +297,8 @@ export class CommonModule {
 As a result 2 commands will be available:
 
 ```bash
-$ cli hello there
-$ cli migration run
+$ my-cli hello there
+$ my-cli migration run
 ```
 
 Using multiple modules to separate unrelated commands and structure the code
@@ -477,7 +477,7 @@ export class CommonModule {
 ```
 
 ```bash
-$ cli
+$ my-cli
 ```
 
 ```console
@@ -502,7 +502,7 @@ export class MigrationModule {
 ```
 
 ```bash
-$ cli migration
+$ my-cli migration
 ```
 
 ```console
@@ -531,7 +531,7 @@ export class CommonModule {
 ```
 
 ```bash
-$ cli goodbye
+$ my-cli goodbye
 ```
 
 ```console
@@ -554,7 +554,7 @@ export class MigrationModule {
 ```
 
 ```bash
-$ cli migration stop
+$ my-cli migration stop
 ```
 
 ```console
@@ -578,7 +578,7 @@ export class LocatorModule {
 ```
 
 ```bash
-$ cli get-location Prague --format=DMS --verbose
+$ my-cli get-location Prague --format=DMS --verbose
 ```
 
 ```console
@@ -618,7 +618,7 @@ Here the second and third parts of the command line are the masks for any values
 The `hello` method will be called if the user enters a three-part command. The last 2 parts are passed to the params argument as keys and values
 
 ```bash
-$ cli hello Alex Smith
+$ my-cli hello Alex Smith
 ```
 
 ```console
@@ -639,7 +639,7 @@ export class HelloParamsDto {
 ```
 
 ```bash
-$ cli hello Alex Smith
+$ my-cli hello Alex Smith
 ```
 
 ```console
@@ -667,7 +667,7 @@ class AddParamsDto {
 ```
 
 ```bash
-$ cli git add test.txt logo.png
+$ my-cli git add test.txt logo.png
 ```
 
 ```console
@@ -706,11 +706,11 @@ class GitStatusOptionsDto {
 ```
 
 ```bash
-$ cli git status --branch=master --ignore-submodules=all --short
+$ my-cli git status --branch=master --ignore-submodules=all --short
 
-$ cli git status --branch master --ignore-submodules all --short
+$ my-cli git status --branch master --ignore-submodules all --short
 
-$ cli git status -b master -i all -s
+$ my-cli git status -b master -i all -s
 
 ```
 
@@ -723,7 +723,7 @@ Each input data will lead to one result:
 If the `@Option()` decorator is absent then there will be no mapping
 
 ```bash
-$ cli git status --branch=master --ignore-submodules=all --short
+$ my-cli git status --branch=master --ignore-submodules=all --short
 ```
 
 ```console
@@ -813,7 +813,7 @@ class GitStatusDto {
 ```
 
 ```bash
-$ cli git status --ignore-submodules
+$ my-cli git status --ignore-submodules
 ```
 
 ```console
@@ -904,7 +904,7 @@ export class AutoModule {
 ```
 
 ```bash
-$ auto set bmw 300 --turbo=yes
+$ my-cli auto set bmw 300 --turbo=yes
 ```
 
 ```console
@@ -937,7 +937,7 @@ class SumParamsDto {
 ```
 
 ```bash
-$ cli sum 5 15
+$ my-cli sum 5 15
 ```
 
 ```console
@@ -959,7 +959,7 @@ class SumParamsDto {
 ```
 
 ```bash
-$ cli sum 5 15
+$ my-cli sum 5 15
 ```
 
 ```console
@@ -1194,7 +1194,7 @@ export class CommonModule {
 ```
 
 ```bash
-$ cli --help
+$ my-cli --help
 ```
 
 ```console
@@ -1236,7 +1236,7 @@ export class CommonModule {
 ```
 
 ```bash
-$ --help
+$ my-cli --help
 ```
 
 The `ClirioHelper` class provides api for getting descriptions of actions and methods for formatting it
@@ -1264,7 +1264,7 @@ export class PingModule {
 ```
 
 ```bash
-$ ping --help
+$ my-cli ping --help
 ```
 
 ### Hidden commands
@@ -1307,7 +1307,7 @@ export class CommonModule {
 ```
 
 ```bash
-$ cli --version
+$ my-cli --version
 ```
 
 ```console

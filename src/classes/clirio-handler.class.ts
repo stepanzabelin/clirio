@@ -25,15 +25,14 @@ import {
   pipeTargetMetadata,
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
-import { getInstance, getPrototype, isEntity } from '../utils';
+import { getInstance, getPrototype, isConstructor } from '../utils';
 
 export class ClirioHandler {
   public handleFilters(rawErr: any, filterList: FilterScope[] = []) {
     let currentErr = rawErr;
 
     for (const { filter, scope } of filterList) {
-      const filterInst: ClirioFilter =
-        typeof filter === 'function' ? new filter() : filter;
+      const filterInst: ClirioFilter = getInstance(filter);
 
       try {
         filterInst.catch(currentErr, {
@@ -68,7 +67,7 @@ export class ClirioHandler {
 
     const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    const paramTargetDataList = isEntity(entity)
+    const paramTargetDataList = isConstructor(entity)
       ? [...paramTargetMetadata.getMap(entity.prototype)]
       : [];
 
@@ -125,7 +124,7 @@ export class ClirioHandler {
 
     let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
 
-    const optionTargetDataList = isEntity(entity)
+    const optionTargetDataList = isConstructor(entity)
       ? [...optionTargetMetadata.getMap(entity.prototype)]
       : [];
 
@@ -243,8 +242,7 @@ export class ClirioHandler {
     );
 
     for (const { pipe, scope } of pipeList) {
-      const pipeInst: ClirioPipe =
-        typeof pipe === 'function' ? new pipe() : pipe;
+      const pipeInst: ClirioPipe = getInstance(pipe);
 
       data = pipeInst.transform.bind(pipeInst)(data, {
         dataType,
