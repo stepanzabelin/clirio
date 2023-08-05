@@ -271,7 +271,7 @@ export class ClirioHelper {
       .join(' ');
 
     return this.formatColumns(
-      [command, dumpItem.module.description ?? ''],
+      [command, dumpItem.action.description ?? ''],
       formatOptions,
     );
   }

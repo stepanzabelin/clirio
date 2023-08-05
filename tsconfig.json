@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    /*compilerOptions for dev*/
     "target": "es2021",
     "outDir": "build/dev",
     "rootDir": ".",
