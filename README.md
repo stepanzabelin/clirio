@@ -2,11 +2,11 @@
 
 A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
 
-Clirio is a library for routing terminal command lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
+Clirio is a library for routing terminal command-lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
 
 The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
 
-You can integrate Clirio with other interactive command line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.)
+You can integrate Clirio with other interactive command-line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.)
 
 Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
@@ -162,19 +162,19 @@ The author suggests using the following definitions to describe the Clirio speci
 $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 ```
 
-##### The incoming command line
+##### The incoming command-line
 
 | node migration-cli.js | run 123556 -u user -p pass --db="db-name" |
 | :-------------------: | :---------------------------------------: |
 |      launch path      |                 arguments                 |
 
-##### The parsed command line
+##### The parsed command-line
 
 | node migration-cli.js | run 123556 | -u user -p pass --db="db-name" |
 | :-------------------: | :--------: | :----------------------------: |
 |      launch path      |  command   |            options             |
 
-##### The matched command line
+##### The matched command-line
 
 | node migration-cli.js |  run   | 123556 | -u user | -p pass | --db="db-name" |
 | :-------------------: | :----: | :----: | :-----: | :-----: | :------------: |
@@ -182,11 +182,11 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 ##### Arguments Definition
 
-"Arguments" are all space-separated command line parts after `launch path`
+"Arguments" are all space-separated command-line parts after `launch path`
 
 ##### Command Definition
 
-"Command" are space-separated command line parts without leading dashes
+"Command" are space-separated command-line parts without leading dashes
 
 ##### Params Definition
 
@@ -194,7 +194,7 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 ##### Options Definition
 
-"Options" are command line parts using a leading dashes
+"Options" are command-line parts using a leading dashes
 
 Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long:
 
@@ -202,7 +202,7 @@ Each option is either a key-value or a key. If in the beginning 2 dashes is a lo
 
 ## Parsing args
 
-Parsing the command line (Clirio implementation)
+Parsing the command-line (Clirio implementation)
 
 ```ts
 Clirio.parse('test --foo 15 -b -a -r 22');
@@ -240,7 +240,7 @@ $ my-cli set-time 10:56 --format=AM -ei 15
 
 ##### Summary
 
-- all parts of the command line without a leading dash will be described as actions
+- all parts of the command-line without a leading dash will be described as actions
 - an option with a missing value will be null
 - options starting with a single dash will be separated by letters
 
@@ -374,7 +374,7 @@ export class MigrationModule {
 }
 ```
 
-The total pattern based on `@Module(...)` and `@Commands(...)` will be matched with the command line
+The total pattern based on `@Module(...)` and `@Commands(...)` will be matched with the command-line
 
 Pattern can consist of one or more space-separated arguments
 
@@ -387,7 +387,7 @@ The exact command will be matched
   @Command('hello my friends')
 ```
 
-| Command pattern  | Matching command line |
+| Command pattern  | Matching command-line |
 | ---------------- | --------------------- |
 | hello            | hello                 |
 | hello there      | hello there           |
@@ -395,28 +395,28 @@ The exact command will be matched
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for params. Multiple command lines will be matched to one route. The number of space-separated parts of the command line should be the same.
+Using the `|` operator to set match variants for params. Multiple command-lines will be matched to one route. The number of space-separated parts of the command-line should be the same.
 
 ```ts
   @Command('migration run|up')
   @Command('hello|hey|hi')
 ```
 
-| Command pattern   | Matching command line          |
+| Command pattern   | Matching command-line          |
 | ----------------- | ------------------------------ |
 | migration run\|up | migration run<br> migration up |
 | hello\|hey\|hi    | hello<br> hey<br> hi           |
 
 ##### Case 3. Pattern with value masks
 
-Using the `< >` operator to specify a place for any value. The number of space-separated parts of the command line should be the same
+Using the `< >` operator to specify a place for any value. The number of space-separated parts of the command-line should be the same
 
 ```ts
   @Command('hello <first-name> <last-name>')
   @Command('set-time <time>')
 ```
 
-| Command pattern                    | Matching command line                                                |
+| Command pattern                    | Matching command-line                                                |
 | ---------------------------------- | -------------------------------------------------------------------- |
 | hello \<first-name\> \<last-name\> | hello Alex Smith<br>hello John Anderson<br> ... etc.                 |
 | set-time \<time\>                  | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
@@ -433,7 +433,7 @@ This kind of mask can be only one per command pattern and should be at the end
   @Command('get cities <...cities>')
 ```
 
-| Command pattern          | Matching command line                                               |
+| Command pattern          | Matching command-line                                               |
 | ------------------------ | ------------------------------------------------------------------- |
 | hello \<...all-names\>   | hello Alex John Sarah Arthur<br/> hello Max<br> ... etc.            |
 | get cities \<...cities\> | get cities Prague New-York Moscow<br>get cities Berlin<br> ... etc. |
@@ -449,7 +449,7 @@ This pattern is designed for special cases like "help" and "version". This is an
   @Command('--mode=check')
 ```
 
-| Command pattern | Matching command line |
+| Command pattern | Matching command-line |
 | --------------- | --------------------- |
 | --help, -h      | --help<br/> -h        |
 | --version, -v   | --version<br/> -v     |
@@ -614,7 +614,7 @@ export class HelloModule {
 }
 ```
 
-Here the second and third parts of the command line are the masks for any values that the user enters
+Here the second and third parts of the command-line are the masks for any values that the user enters
 The `hello` method will be called if the user enters a three-part command. The last 2 parts are passed to the params argument as keys and values
 
 ```bash
@@ -1336,7 +1336,7 @@ cli.setConfig({
 
 | Param                    |                                            Description                                             | Default |
 | ------------------------ | :------------------------------------------------------------------------------------------------: | ------: |
-| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but it will be got in the command line |    true |
+| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but it will be got in the command-line |    true |
 
 ### setGlobalPipe
 
@@ -1405,7 +1405,7 @@ cli.setModules([HelloModule, new MigrationModule()]);
 
 ### setArgs
 
-sets arguments of the command line
+sets arguments of the command-line
 
 Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
 
@@ -1516,7 +1516,7 @@ export class MigrationRunOptionsDto {
 
 ### Clirio.parse
 
-parses and describes the command line
+parses and describes the command-line
 
 Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
 
@@ -1540,7 +1540,7 @@ Clirio.parse('foo -a --bbb');
 
 ### Clirio.describe
 
-describes arguments of the command line
+describes arguments of the command-line
 
 **Parameters:**
 

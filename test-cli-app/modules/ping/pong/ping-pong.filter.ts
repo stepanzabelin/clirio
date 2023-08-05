@@ -2,8 +2,8 @@ import {
   ClirioCommonError,
   ClirioFilter,
   ClirioValidationError,
+  FilterContext,
 } from '@clirio';
-import { FilterContext } from '../../../../types';
 
 export class PingPongFilter implements ClirioFilter {
   catch(

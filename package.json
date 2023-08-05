@@ -1,6 +1,6 @@
 {
   "name": "clirio",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0",
   "description": "Clirio is a mini framework for node.js command-line interfaces",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -23,25 +23,25 @@
   "author": "Stepan Zabelin",
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
+    "build:main": "tsc -p tsconfig.main.json",
     "build:module": "tsc -p tsconfig.module.json",
     "watch:build": "tsc -p tsconfig.json -w",
-    "fix:prettier": "prettier --write \"./src/**/*.ts\"",
-    "fix:eslint": "eslint ./src --ext .ts  -c .eslintrc-final.json --fix",
+    "fix:prettier": "prettier --write \"./{src,tests,test-cli-app}/**/*.ts\"",
+    "fix:eslint": "eslint \"./src/**/*.ts\" \"./tests/**/*.ts\"  \"./test-cli-app/**/*.ts\" -c .eslintrc-final.json --fix",
     "fix": "run-s fix:*",
-    "test:eslint": "eslint ./src --quiet -c .eslintrc-final.json",
+    "test:eslint": "eslint \"./src/**/*.ts\" \"./tests/**/*.ts\"  \"./test-cli-app/**/*.ts\" --quiet -c .eslintrc-final.json",
     "test:typescript": "tsc -p tsconfig.json --noEmit",
-    "test:cspell": "cspell \"{./**/*.js,./**/*.ts}\" --no-progress",
+    "test:cspell": "cspell \"./{src,test-cli-app}/**/*.ts\" --no-progress",
     "test:unit": "jest --silent=false --bail",
     "test": "run-s build test:*",
     "postinstall": "husky install",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
     "prepare": "husky install",
-    "dev": "ts-node -r tsconfig-paths/register src/test-cli-app/run"
+    "dev": "ts-node -r tsconfig-paths/register test-cli-app/run"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
@@ -78,21 +78,5 @@
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".spec.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^@clirio$": "<rootDir>/index.ts"
-    }
-  }
+  ]
 }

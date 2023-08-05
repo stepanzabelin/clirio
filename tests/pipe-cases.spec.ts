@@ -1,4 +1,4 @@
-import { Clirio, ClirioValidationError } from '@clirio';
+import { Clirio, ClirioHelper, ClirioValidationError } from '@clirio';
 import sinon from 'sinon';
 import {
   MigrationModule,
@@ -228,5 +228,42 @@ describe('Pipe cases', () => {
       propertyName: 'typeId',
       dataType: 'params',
     });
+  });
+
+  it('4.1', async () => {
+    const pipeStub = sandbox.stub(MigrationUpPipe.prototype, 'transform');
+
+    await buildCli().execute(
+      Clirio.split(
+        'migration up type-dbo 15135 -e DB_NAME=db-name -e DB_TABLE=db-table --id=149542 -s --start-date=1 --end-date --algorithm=a',
+      ),
+    );
+
+    const [, inputParams] = pipeStub.getCall(0).args;
+    const [, inputOptions] = pipeStub.getCall(1).args;
+
+    expect(
+      ClirioHelper.formatKeysFromPipeContext(inputParams, 'typeId'),
+    ).toEqual('<type-id>');
+
+    expect(
+      ClirioHelper.formatKeysFromPipeContext(inputParams, 'type-name'),
+    ).toEqual('<type-name>');
+
+    expect(
+      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'envs'),
+    ).toEqual('--env, -e');
+
+    expect(
+      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'silent'),
+    ).toEqual('--silent, -s');
+
+    expect(ClirioHelper.formatKeysFromPipeContext(inputOptions, 'id')).toEqual(
+      '--id, -i',
+    );
+
+    expect(
+      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'algorithm'),
+    ).toEqual('--algorithm, -a');
   });
 });

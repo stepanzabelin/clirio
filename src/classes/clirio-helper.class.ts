@@ -7,6 +7,7 @@ import {
   paramTargetMetadata,
 } from '../metadata';
 import { Constructor } from '../types';
+import { PipeContext } from '../types/pipe-context.type';
 import { getPrototype, isConstructor } from '../utils';
 
 type ModuleData = {
@@ -142,16 +143,51 @@ export class ClirioHelper {
     );
   }
 
-  public static formatOptionField(field: Field): string {
-    const keys = field.keys.length > 0 ? field.keys : [field.propertyName];
+  public static formatKeysFromPipeContext = (
+    input: PipeContext,
+    propertyName: string,
+  ): string | null => {
+    const row = input.rows.find((row) =>
+      row.propertyName === null
+        ? row.key === propertyName
+        : row.propertyName === propertyName,
+    );
+
+    if (row?.type === 'param') {
+      return this.formatParamKeys(
+        row.definedKeys.length > 0 ? row.definedKeys : [row.key],
+      );
+    }
+
+    if (row?.type === 'option') {
+      return this.formatOptionKeys(
+        row.definedKeys.length > 0 ? row.definedKeys : [row.key],
+      );
+    }
+
+    return null;
+  };
+
+  public static formatOptionKeys(keys: string[]): string {
     return keys
       .map((key) => (key.length > 1 ? `--${key}` : `-${key}`))
       .join(', ');
   }
 
-  public static formatParamField(field: Field): string {
-    const keys = field.keys.length > 0 ? field.keys : [field.propertyName];
+  public static formatOptionField(field: Field): string {
+    return this.formatOptionKeys(
+      field.keys.length > 0 ? field.keys : [field.propertyName],
+    );
+  }
+
+  public static formatParamKeys(keys: string[]): string {
     return '<' + keys.join(', ') + '>';
+  }
+
+  public static formatParamField(field: Field): string {
+    return this.formatParamKeys(
+      field.keys.length > 0 ? field.keys : [field.propertyName],
+    );
   }
 
   public dumpAll(): DumpItem[] {
@@ -235,7 +271,7 @@ export class ClirioHelper {
       .join(' ');
 
     return this.formatColumns(
-      [command, dumpItem.module.description ?? ''],
+      [command, dumpItem.action.description ?? ''],
       formatOptions,
     );
   }
