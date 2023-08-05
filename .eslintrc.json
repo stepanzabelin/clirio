@@ -147,9 +147,9 @@
     "prefer-exponentiation-operator": "warn",
     "no-extra-semi": "warn",
     "no-unsafe-finally": "warn",
-
-    "prettier/prettier": ["off"],
-
+    "prettier/prettier": [
+      "off"
+    ],
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unsafe-return": "off",
@@ -168,9 +168,7 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unnecessary-type-constraint": "off",
-
     "@typescript-eslint/no-unused-vars": "warn",
-
     "jest/no-focused-tests": "off",
     "jest/no-disabled-tests": "warn",
     "jest/prefer-to-have-length": "warn",
@@ -179,7 +177,9 @@
   },
   "overrides": [
     {
-      "files": ["./src/test-cli-app/**/*.ts"],
+      "files": [
+        "./src/test-cli-app/**/*.ts"
+      ],
       "rules": {
         "no-console": "off"
       }

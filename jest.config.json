@@ -1,14 +1,17 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": "./src",
-
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": "\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "^src/(.*)": ["<rootDir>/$1"]
+    "^@clirio$": "<rootDir>/src/index.ts"
   },
   "maxWorkers": 1
 }

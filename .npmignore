@@ -8,3 +8,5 @@
 /jest-spec.json
 /DEVELOPMENT.md
 /TODO.md
+/build/dev
+*.spec.js

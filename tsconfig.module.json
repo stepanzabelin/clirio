@@ -1,9 +1,12 @@
 {
   "extends": "./tsconfig",
   "compilerOptions": {
-    "target": "esnext",
+    "rootDir": "./src",
+    "target": "es2021",
     "outDir": "build/module",
     "module": "esnext"
   },
-  "exclude": ["node_modules/**", "**/*.spec.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
 }
