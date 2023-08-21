@@ -1665,7 +1665,7 @@ The `@Transform()` decorator [transforms](#transformation) input params and opti
 **Parameters:**
 
 - value: a function or an array of functions
-  - `(value: any) => boolean|null)`
+  - `(value: any) => boolean|null`
   - `(value: any) => boolean|null)[]`
 
 ### Validate decorator
