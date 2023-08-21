@@ -1,8 +1,6 @@
-type Options = {
-  errCode: string;
-};
-
 type Data = {
+  errCode?: string;
+  code?: string;
   [key: string]: any;
 };
 
@@ -11,11 +9,10 @@ export class ClirioCommonError extends Error {
 
   constructor(
     message: string,
-    options: Options,
     public readonly data: Data = {},
   ) {
     super(message);
     this.name = 'ClirioCommonError';
-    Object.assign(this, options);
+    Object.assign(this, data);
   }
 }
