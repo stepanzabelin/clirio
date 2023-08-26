@@ -4,6 +4,7 @@ import { GitModule } from './modules/git';
 import { HelloModule } from './modules/hello/hello.module';
 import { MigrationModule } from './modules/migration';
 import { PingModule } from './modules/ping';
+import { WeatherModule } from './modules/weather/weather.module';
 
 export const cliApp = async () => {
   const cli = new Clirio();
@@ -13,6 +14,7 @@ export const cliApp = async () => {
     new MigrationModule(),
     PingModule,
     CommonModule,
+    WeatherModule,
   ]);
   await cli.execute();
   return cli;

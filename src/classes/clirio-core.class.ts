@@ -18,6 +18,7 @@ import {
   moduleEntityMetadata,
   optionsArgMetadata,
   paramsArgMetadata,
+  envsArgMetadata,
 } from '../metadata';
 import { ClirioHelper } from './clirio-helper.class';
 import { ClirioHandler } from './clirio-handler.class';
@@ -94,6 +95,11 @@ export class ClirioCore {
           (linkedArg) => linkedArg.type === 'param',
         );
 
+        const paramsArgMap = paramsArgMetadata.getArgMap(
+          getPrototype(module),
+          actionName,
+        );
+
         const optionLinkedArgs = linkedArgs.filter(
           (linkedArg) => linkedArg.type === 'option',
         );
@@ -103,7 +109,7 @@ export class ClirioCore {
           actionName,
         );
 
-        const paramsArgMap = paramsArgMetadata.getArgMap(
+        const envsArgMap = envsArgMetadata.getArgMap(
           getPrototype(module),
           actionName,
         );
@@ -116,6 +122,7 @@ export class ClirioCore {
         const combinedArguments = [
           ...paramsArgMap,
           ...optionsArgMap,
+          ...envsArgMap,
           ...helperArgMap,
         ].sort((a, b) => a[0] - b[0]);
 
@@ -125,7 +132,7 @@ export class ClirioCore {
           optionLinkedArgs.length > 0
         ) {
           throw new ClirioCommonError('Invalid options received', {
-            errCode: 'INVALID_OPTIONS',
+            code: 'INVALID_OPTIONS',
           });
         }
 
@@ -146,6 +153,25 @@ export class ClirioCore {
 
         for (const [argumentIndex, input] of combinedArguments) {
           switch (input.type) {
+            case InputTypeEnum.Envs:
+              {
+                const handledEnvRows = this.handler.handleEnvs(
+                  input.entity,
+                  DataTypeEnum.Envs,
+                );
+
+                const pipedEnvs = await this.handler.passPipes(
+                  handledEnvRows,
+                  input.entity,
+                  DataTypeEnum.Envs,
+                  pipeScopeList,
+                );
+
+                transformedArguments[argumentIndex] = pipedEnvs;
+              }
+
+              break;
+
             case InputTypeEnum.Params:
               {
                 const handledParamRows = this.handler.handleParams(
@@ -298,7 +324,7 @@ export class ClirioCore {
 
     this.handler.handleFilters(
       new ClirioCommonError('Incorrect command specified', {
-        errCode: 'INCORRECT_COMMAND',
+        code: 'INCORRECT_COMMAND',
       }),
       filterScopeList,
     );

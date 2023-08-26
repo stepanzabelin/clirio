@@ -1,11 +1,10 @@
 type Data = {
-  errCode?: string;
   code?: string;
   [key: string]: any;
 };
 
 export class ClirioCommonError extends Error {
-  public readonly errCode!: string;
+  public readonly code?: string;
 
   constructor(
     message: string,

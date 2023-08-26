@@ -1098,7 +1098,7 @@ import { Module, Command, ClirioCommonError } from 'clirio';
 export class CommonModule {
   @Command('check')
   public check() {
-    throw new ClirioCommonError('Not working!', { errCode: 'CUSTOM_ERR_CODE' });
+    throw new ClirioCommonError('Not working!', { code: 'CUSTOM_ERR_CODE' });
   }
 }
 ```
@@ -1134,7 +1134,7 @@ export class PingModule {
   @Command('pong')
   @Filter(PingPongFilter)
   public pong() {
-    throw new ClirioCommonError('Not working!', { errCode: 'CUSTOM_ERR_CODE' });
+    throw new ClirioCommonError('Not working!', { code: 'CUSTOM_ERR_CODE' });
   }
 }
 ```
@@ -1665,8 +1665,8 @@ The `@Transform()` decorator [transforms](#transformation) input params and opti
 **Parameters:**
 
 - value: a function or an array of functions
-  - `(value: any) => boolean|null`
-  - `(value: any) => boolean|null)[]`
+  - `(value: any) => boolean | null`
+  - `(value: any) => (boolean | null)[]`
 
 ### Validate decorator
 

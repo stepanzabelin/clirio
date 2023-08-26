@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import { Clirio } from '@clirio';
-import { CommonModule } from '../test-cli-app/modules/common/common.module';
+import { CommonModule } from '../test-cli-app/modules/common';
 
 const buildCli = () => {
   const cli = new Clirio();

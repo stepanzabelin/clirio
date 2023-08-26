@@ -7,6 +7,8 @@ export * from './option.decorator';
 export * from './options.decorator';
 export * from './param.decorator';
 export * from './params.decorator';
+export * from './env.decorator';
+export * from './envs.decorator';
 export * from './transform.decorator';
 export * from './validate.decorator';
 export * from './pipe.decorator';

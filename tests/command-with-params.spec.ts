@@ -53,7 +53,7 @@ describe('Command with params', () => {
       .catch((err) => err);
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -76,7 +76,7 @@ describe('Command with params', () => {
       .catch((err) => err);
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -86,7 +86,7 @@ describe('Command with params', () => {
       .catch((err) => err);
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -96,7 +96,7 @@ describe('Command with params', () => {
       .catch((err) => err);
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 

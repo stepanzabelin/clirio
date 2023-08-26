@@ -6,10 +6,11 @@ import {
   MigrationUpParamsDto,
   MigrationUpPipe,
 } from '../test-cli-app/modules/migration';
+import { WeatherModule } from '../test-cli-app/modules/weather';
 
 const buildCli = () => {
   const cli = new Clirio();
-  cli.setModules([MigrationModule]);
+  cli.setModules([MigrationModule, WeatherModule]);
   return cli;
 };
 

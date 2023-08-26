@@ -1,7 +1,7 @@
 import { Clirio } from '@clirio';
 import sinon from 'sinon';
 import { MigrationModule } from '../test-cli-app/modules/migration';
-import { CommonModule } from '../test-cli-app/modules/common/common.module';
+import { CommonModule } from '../test-cli-app/modules/common';
 import { HelloModule } from '../test-cli-app/modules/hello';
 import { GitModule } from '../test-cli-app/modules/git';
 import { PingModule } from '../test-cli-app/modules/ping';

@@ -23,6 +23,7 @@ import {
   paramTargetMetadata,
   filterTargetMetadata,
   pipeTargetMetadata,
+  envTargetMetadata,
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
 import { getInstance, getPrototype, isConstructor } from '../utils';
@@ -204,6 +205,64 @@ export class ClirioHandler {
         }
       }
     }
+  }
+
+  public handleEnvs(entity: Constructor<any>, dataType: DataTypeEnum): Row[] {
+    const rows: Row[] = [];
+
+    const parsedLinkedArgs: any[] = Object.entries(process.env).map(
+      ([key, value]) => ({
+        key,
+        value,
+      }),
+    );
+
+    const envTargetDataList = isConstructor(entity)
+      ? [...envTargetMetadata.getMap(entity.prototype)]
+      : [];
+
+    for (const [propertyName, envData] of envTargetDataList) {
+      const key = envData.key ?? propertyName;
+
+      const index = parsedLinkedArgs.findIndex(
+        (linkedArg) => linkedArg.key === key,
+      );
+
+      if (index === -1) {
+        continue;
+      }
+
+      const linkedArg = parsedLinkedArgs[index];
+      parsedLinkedArgs.splice(index, 1);
+
+      const value = linkedArg.value;
+
+      rows.push({
+        type: 'env',
+        key: linkedArg.key,
+        definedKeys: [key],
+        value,
+        propertyName,
+        mapped: true,
+      });
+    }
+
+    for (const linkedArg of parsedLinkedArgs) {
+      rows.push({
+        type: 'env',
+        key: linkedArg.key,
+        definedKeys: [],
+        value: linkedArg.value,
+        propertyName: null,
+        mapped: false,
+      });
+    }
+
+    this.validate(rows, entity, dataType);
+
+    const transformRows = this.transform(rows, entity);
+
+    return transformRows;
   }
 
   public transform(rows: Row[], entity: Constructor<any>): Row[] {
