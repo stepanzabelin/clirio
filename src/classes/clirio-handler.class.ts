@@ -231,12 +231,12 @@ export class ClirioHandler {
     return transformedRows;
   }
 
-  public passPipes(
+  public async passPipes(
     rows: Row[],
     entity: Constructor<any>,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = [],
-  ) {
+  ): Promise<object> {
     let data = Object.fromEntries(
       rows.map((row) => [row.propertyName ?? row.key, row.value]),
     );
@@ -244,7 +244,7 @@ export class ClirioHandler {
     for (const { pipe, scope } of pipeList) {
       const pipeInst: ClirioPipe = getInstance(pipe);
 
-      data = pipeInst.transform.bind(pipeInst)(data, {
+      data = await pipeInst.transform.bind(pipeInst)(data, {
         dataType,
         scope,
         entity,

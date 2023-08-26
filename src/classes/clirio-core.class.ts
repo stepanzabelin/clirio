@@ -154,7 +154,7 @@ export class ClirioCore {
                   DataTypeEnum.Params,
                 );
 
-                const pipedParams = this.handler.passPipes(
+                const pipedParams = await this.handler.passPipes(
                   handledParamRows,
                   input.entity,
                   DataTypeEnum.Params,
@@ -173,7 +173,7 @@ export class ClirioCore {
                   DataTypeEnum.Options,
                 );
 
-                const pipedOptions = this.handler.passPipes(
+                const pipedOptions = await this.handler.passPipes(
                   handledOptionRows,
                   input.entity,
                   DataTypeEnum.Options,
