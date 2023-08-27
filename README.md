@@ -29,6 +29,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Data control](#data-control)
     - [Params](#params-data-control)
     - [Options](#options-data-control)
+    - [Envs](#envs-data-control)
   - [Input DTO](#input-dto)
     - [Validation](#validation)
     - [Transformation](#transformation)
@@ -54,6 +55,8 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#empty-decorator)
+    - [Env](#env-decorator)
+    - [Envs](#envs-decorator)
     - [Filter](#filter-decorator)
     - [Failure](#failure-decorator)
     - [Helper](#helper-decorator)
@@ -137,7 +140,7 @@ $ my-cli git status -b master --ignore-submodules  all --short
 The application will route the command `git status` with options to the `GitModule.status` method.
 
 ```console
-{ branch: 'master', ignoreSubmodules: 'all', short: true }
+{ branch: 'master', ignoreSubmodules: 'all', short: null }
 ```
 
 Then use the received data for its intended purpose
@@ -770,6 +773,10 @@ class SetLimitParamsDto {
   readonly limit: number;
 }
 ```
+
+### Envs data control
+
+TBD
 
 ### Validation
 
@@ -1578,6 +1585,14 @@ The `@Command()` decorator specifies [the command pattern](#command-patterns)
 ### "Empty" decorator
 
 The `@Empty()` decorator catches the case when [nothing is entered](#empty-command)
+
+### "Env" decorator
+
+TBD
+
+### "Envs" decorator
+
+TBD
 
 **Parameters:**
 no parameters
