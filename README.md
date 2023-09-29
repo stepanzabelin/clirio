@@ -776,7 +776,48 @@ class SetLimitParamsDto {
 
 ### Envs data control
 
-TBD
+The `@Envs()` decorator provided
+
+
+```ts
+
+import { Envs } from 'clirio';
+
+@Module('migration')
+export class MigrationModule {
+  @Command('test-connect')
+  public testConnect(@Envs() envs: TestConnectEnvsDto,) {
+    // ...
+  }
+}
+
+```
+
+
+### Envs DTO
+
+The `@Env()` decorator for dto properties provided
+
+```ts
+import { Env } from 'clirio';
+
+export class TestConnectEnvsDto {
+  @env('DB_HOST')
+  readonly host: string;
+
+  @env('DB_PORT')
+  @Transform((v) => Number(v))
+  readonly port: number;
+
+  @env('DB_USER')
+  readonly user: string;
+
+  @env('DB_PASSWORD')
+  readonly password: string;
+}
+
+```
+
 
 ### Validation
 
@@ -1588,11 +1629,13 @@ The `@Empty()` decorator catches the case when [nothing is entered](#empty-comma
 
 ### "Env" decorator
 
-TBD
+The `@Env()` decorator maps DTO properties in [Envs DTO](#envs-dto)
 
 ### "Envs" decorator
 
-TBD
+The `@Envs()` decorator controls [environments](#envs-data-control)
+
+
 
 **Parameters:**
 no parameters

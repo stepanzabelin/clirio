@@ -13,26 +13,19 @@ yarn dev hello --first-name=Alex --last-name=Smith --middle-name=123
 
 ## Git Flow
 
-Each library version is in a branch `release-v{X}`
-{X} - the latest major version (1,2,3...)
+##### New features flow, bug fixing flow for the latest version
 
-The most recent release will be merged into the master branch
+Contributor:
 
-##### New features flow
+- Checkout `master` branch
+- MR `feature` branch -> `master` branch
 
-Contributor
-checkout `feature-v{X}`
-MR `feature-v{X}` -> `release-v{X}`
+Maintainer:
 
-Maintainer
-MR `release-v{X}` -> `master` -> `tag`
-npm publish `release-v{X}`
+- Create tag for `master` branch -> `vX.X.X`
+- Build `master` branch locally
+- npm publish `master` branch -> `vX.X.X`
 
-##### Bug fixing flow
+##### Bug fixing flow for old versions
 
-Contributor
-checkout `release-v{Y}`
-MR `feature-v{Y}` -> `release-v{Y}`
-
-Maintainer request
-npm publish `release-v{Y}`
+in progress
