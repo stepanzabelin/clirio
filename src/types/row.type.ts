@@ -1,5 +1,5 @@
 export type Row = {
-  type: 'param' | 'option';
+  type: 'param' | 'option' | 'env';
   key: string;
   value: any;
   definedKeys: string[];

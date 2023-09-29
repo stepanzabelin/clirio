@@ -4,11 +4,13 @@ import {
   PipeTargetData,
   TransformTargetData,
   ValidateTargetData,
-  ParamTargetData,
-  OptionTargetData,
   CommandTargetData,
-  OptionsArgData,
+  ParamTargetData,
   ParamsArgData,
+  OptionTargetData,
+  OptionsArgData,
+  EnvTargetData,
+  EnvsArgData,
   HelperArgData,
   ModuleData,
 } from '../types';
@@ -23,11 +25,14 @@ export const validateTargetMetadata = new TargetMetadata<ValidateTargetData>(
 export const transformTargetMetadata = new TargetMetadata<TransformTargetData>(
   'transform',
 );
-
+export const paramsArgMetadata = new ArgMetadata<ParamsArgData>('params');
 export const paramTargetMetadata = new TargetMetadata<ParamTargetData>('param');
+export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');
 export const optionTargetMetadata = new TargetMetadata<OptionTargetData>(
   'option',
 );
+export const envsArgMetadata = new ArgMetadata<EnvsArgData>('envs');
+export const envTargetMetadata = new TargetMetadata<EnvTargetData>('env');
 export const commandTargetMetadata = new TargetMetadata<CommandTargetData>(
   'command',
 );
@@ -37,9 +42,5 @@ export const emptyTargetMetadata = new TargetMetadata<Record<string, never>>(
 export const failureTargetMetadata = new TargetMetadata<Record<string, never>>(
   'failure',
 );
-
-export const optionsArgMetadata = new ArgMetadata<OptionsArgData>('options');
-export const paramsArgMetadata = new ArgMetadata<ParamsArgData>('params');
 export const helperArgMetadata = new ArgMetadata<HelperArgData>('helper');
-
 export const moduleEntityMetadata = new EntityMetadata<ModuleData>('module');

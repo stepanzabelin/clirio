@@ -29,6 +29,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Data control](#data-control)
     - [Params](#params-data-control)
     - [Options](#options-data-control)
+    - [Envs](#envs-data-control)
   - [Input DTO](#input-dto)
     - [Validation](#validation)
     - [Transformation](#transformation)
@@ -54,6 +55,8 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#empty-decorator)
+    - [Env](#env-decorator)
+    - [Envs](#envs-decorator)
     - [Filter](#filter-decorator)
     - [Failure](#failure-decorator)
     - [Helper](#helper-decorator)
@@ -137,7 +140,7 @@ $ my-cli git status -b master --ignore-submodules  all --short
 The application will route the command `git status` with options to the `GitModule.status` method.
 
 ```console
-{ branch: 'master', ignoreSubmodules: 'all', short: true }
+{ branch: 'master', ignoreSubmodules: 'all', short: null }
 ```
 
 Then use the received data for its intended purpose
@@ -771,6 +774,10 @@ class SetLimitParamsDto {
 }
 ```
 
+### Envs data control
+
+TBD
+
 ### Validation
 
 The `@Validate()` decorator provided to check input params and options.
@@ -1098,7 +1105,7 @@ import { Module, Command, ClirioCommonError } from 'clirio';
 export class CommonModule {
   @Command('check')
   public check() {
-    throw new ClirioCommonError('Not working!', { errCode: 'CUSTOM_ERR_CODE' });
+    throw new ClirioCommonError('Not working!', { code: 'CUSTOM_ERR_CODE' });
   }
 }
 ```
@@ -1134,7 +1141,7 @@ export class PingModule {
   @Command('pong')
   @Filter(PingPongFilter)
   public pong() {
-    throw new ClirioCommonError('Not working!', { errCode: 'CUSTOM_ERR_CODE' });
+    throw new ClirioCommonError('Not working!', { code: 'CUSTOM_ERR_CODE' });
   }
 }
 ```
@@ -1579,6 +1586,14 @@ The `@Command()` decorator specifies [the command pattern](#command-patterns)
 
 The `@Empty()` decorator catches the case when [nothing is entered](#empty-command)
 
+### "Env" decorator
+
+TBD
+
+### "Envs" decorator
+
+TBD
+
 **Parameters:**
 no parameters
 
@@ -1665,8 +1680,8 @@ The `@Transform()` decorator [transforms](#transformation) input params and opti
 **Parameters:**
 
 - value: a function or an array of functions
-  - `(value: any) => boolean|null`
-  - `(value: any) => boolean|null)[]`
+  - `(value: any) => boolean | null`
+  - `(value: any) => (boolean | null)[]`
 
 ### Validate decorator
 

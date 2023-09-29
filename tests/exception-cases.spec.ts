@@ -32,7 +32,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -49,7 +49,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -66,7 +66,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
@@ -83,7 +83,7 @@ describe('Command with params', () => {
     const [err] = catchSpy.getCall(0).args;
 
     expect(
-      err instanceof ClirioCommonError && err.errCode === 'INCORRECT_COMMAND',
+      err instanceof ClirioCommonError && err.code === 'INCORRECT_COMMAND',
     ).toBeTruthy();
   });
 
