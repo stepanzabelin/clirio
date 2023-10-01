@@ -781,42 +781,87 @@ The `@Envs()` decorator provided
 
 ```ts
 
-import { Envs } from 'clirio';
+import { Module, Command, Envs } from 'clirio';
 
 @Module('migration')
 export class MigrationModule {
   @Command('test-connect')
-  public testConnect(@Envs() envs: TestConnectEnvsDto,) {
-    // ...
+  public async testConnect(@Envs() envs: TestConnectEnvsDto,) {
+    console.log(envs)
+    // await db.connect(envs)
+    // await db.ping()
   }
 }
 
 ```
 
-
 ### Envs DTO
 
-The `@Env()` decorator for dto properties provided
+The `@Env()` decorator for dto properties provided. It can take an environment variable name
 
 ```ts
 import { Env } from 'clirio';
 
 export class TestConnectEnvsDto {
-  @env('DB_HOST')
+  @Env('DB_HOST')
   readonly host: string;
 
-  @env('DB_PORT')
-  @Transform((v) => Number(v))
-  readonly port: number;
+  @Env('DB_PORT')
+  readonly port: number; 
 
-  @env('DB_USER')
+  @Env('DB_USER')
   readonly user: string;
 
-  @env('DB_PASSWORD')
+  @Env('DB_PASSWORD')
   readonly password: string;
 }
 
 ```
+
+
+```bash
+$ export DB_HOST=localhost
+$ export DB_PORT=9000
+$ export DB_USER=dbuser
+$ export DB_PASSWORD=dbpass
+```
+
+```bash
+$ my-cli migration test-connect
+```
+
+```console
+{ host: "localhost", port: "9000", user: "dbuser", password: "dbpass" }
+```
+
+
+The `@Env()` decorator can have no arguments. In this case DTO properties will map to input keys
+If the `@Env()` decorator is absent then there will be no mapping
+
+```ts
+export class TestConnectEnvsDto {
+  @Env()
+  readonly DB_HOST: string;
+
+  @Env()
+  readonly DB_PORT: number;
+
+  @Env()
+  readonly DB_USER: string;
+
+  @Env()
+  readonly DB_PASSWORD: string;
+}
+```
+
+```bash
+$ my-cli migration test-connect
+```
+
+```console
+{ DB_HOST: "localhost", DB_PORT: "9000", DB_USER: "dbuser", DB_PASSWORD: "dbpass" }
+```
+
 
 
 ### Validation
