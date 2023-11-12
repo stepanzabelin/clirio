@@ -57,7 +57,7 @@ describe('Composed of several modules', () => {
     expect(options).toStrictEqual({
       id: ['17'],
       d: '22.12.22',
-      format: 'A',
+      format: 'B',
       silent: null,
     });
   });

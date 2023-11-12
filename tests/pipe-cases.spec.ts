@@ -2,8 +2,6 @@ import { Clirio, ClirioHelper, ClirioValidationError } from '@clirio';
 import sinon from 'sinon';
 import {
   MigrationModule,
-  MigrationUpOptionsDto,
-  MigrationUpParamsDto,
   MigrationUpPipe,
 } from '../test-cli-app/modules/migration';
 import { WeatherModule } from '../test-cli-app/modules/weather';
@@ -57,29 +55,13 @@ describe('Pipe cases', () => {
 
     expect(params).toStrictEqual({ typeId: '15135', 'type-name': 'type-dbo' });
 
-    expect(input).toStrictEqual({
-      dataType: 'params',
-      scope: 'action',
-      entity: MigrationUpParamsDto,
-      rows: [
-        {
-          type: 'param',
-          key: 'type-id',
-          definedKeys: ['type-id'],
-          value: '15135',
-          propertyName: 'typeId',
-          mapped: true,
-        },
-        {
-          type: 'param',
-          key: 'type-name',
-          definedKeys: [],
-          value: 'type-dbo',
-          propertyName: null,
-          mapped: false,
-        },
-      ],
-    });
+    expect(
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'typeId'),
+    ).toEqual('<type-id>');
+
+    expect(
+      ClirioHelper.getFormattedParamKey(input.entity, 'typeName'),
+    ).toBeNull();
   });
 
   it('1.3', async () => {
@@ -102,61 +84,45 @@ describe('Pipe cases', () => {
       algorithm: 'a',
     });
 
-    expect(input).toStrictEqual({
-      dataType: 'options',
-      scope: 'action',
-      entity: MigrationUpOptionsDto,
-      rows: [
-        {
-          type: 'option',
-          key: 'e',
-          definedKeys: ['env', 'e'],
-          value: ['DB_NAME=db-name', 'DB_TABLE=db-table'],
-          propertyName: 'envs',
-          mapped: true,
-        },
-        {
-          type: 'option',
-          key: 's',
-          definedKeys: ['silent', 's'],
-          value: null,
-          propertyName: 'silent',
-          mapped: true,
-        },
-        {
-          type: 'option',
-          key: 'id',
-          definedKeys: ['id', 'i'],
-          value: '149542',
-          propertyName: 'id',
-          mapped: true,
-        },
-        {
-          type: 'option',
-          key: 'start-date',
-          definedKeys: ['start-date', 'b'],
-          value: '1',
-          propertyName: 'startDate',
-          mapped: true,
-        },
-        {
-          type: 'option',
-          key: 'end-date',
-          definedKeys: ['end-date', 'e'],
-          value: null,
-          propertyName: 'endDate',
-          mapped: true,
-        },
-        {
-          type: 'option',
-          key: 'algorithm',
-          definedKeys: ['algorithm', 'a'],
-          value: 'a',
-          propertyName: 'algorithm',
-          mapped: true,
-        },
-      ],
-    });
+    expect(
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'test'),
+    ).toBeNull();
+
+    expect(
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'envs'),
+    ).toEqual('--env, -e');
+
+    expect(
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'silent'),
+    ).toEqual('--silent, -s');
+
+    expect(
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'id'),
+    ).toEqual('--id, -i');
+
+    expect(
+      ClirioHelper.getFormattedInputKey(
+        input.entity,
+        input.dataType,
+        'startDate',
+      ),
+    ).toEqual('--start-date, -b');
+
+    expect(
+      ClirioHelper.getFormattedInputKey(
+        input.entity,
+        input.dataType,
+        'endDate',
+      ),
+    ).toEqual('--end-date, -e');
+
+    expect(
+      ClirioHelper.getFormattedOptionKey(input.entity, 'algorithm'),
+    ).toEqual('--algorithm, -a');
+
+    expect(
+      ClirioHelper.getFormattedEnvKey(input.entity, 'algorithm'),
+    ).toBeNull();
   });
 
   it('2.1', async () => {
@@ -240,31 +206,22 @@ describe('Pipe cases', () => {
       ),
     );
 
-    const [, inputParams] = pipeStub.getCall(0).args;
-    const [, inputOptions] = pipeStub.getCall(1).args;
+    const [, input] = pipeStub.getCall(1).args;
 
     expect(
-      ClirioHelper.formatKeysFromPipeContext(inputParams, 'typeId'),
-    ).toEqual('<type-id>');
-
-    expect(
-      ClirioHelper.formatKeysFromPipeContext(inputParams, 'type-name'),
-    ).toEqual('<type-name>');
-
-    expect(
-      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'envs'),
+      ClirioHelper.getFormattedInputKey(input.entity, input.dataType, 'envs'),
     ).toEqual('--env, -e');
 
-    expect(
-      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'silent'),
-    ).toEqual('--silent, -s');
+    expect(ClirioHelper.getFormattedOptionKey(input.entity, 'silent')).toEqual(
+      '--silent, -s',
+    );
 
-    expect(ClirioHelper.formatKeysFromPipeContext(inputOptions, 'id')).toEqual(
+    expect(ClirioHelper.getFormattedOptionKey(input.entity, 'id')).toEqual(
       '--id, -i',
     );
 
     expect(
-      ClirioHelper.formatKeysFromPipeContext(inputOptions, 'algorithm'),
+      ClirioHelper.getFormattedOptionKey(input.entity, 'algorithm'),
     ).toEqual('--algorithm, -a');
   });
 });

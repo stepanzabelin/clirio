@@ -8,7 +8,7 @@ export const Options = function () {
 
     optionsArgMetadata.setArgData(target, propertyName, argIndex, {
       entity,
-      type: InputTypeEnum.Options,
+      type: InputTypeEnum.options,
     });
   };
 };

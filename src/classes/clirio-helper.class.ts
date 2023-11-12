@@ -5,9 +5,10 @@ import {
   optionsArgMetadata,
   paramsArgMetadata,
   paramTargetMetadata,
+  envTargetMetadata,
+  envsArgMetadata,
 } from '../metadata';
-import { Constructor } from '../types';
-import { PipeContext } from '../types/pipe-context.type';
+import { Constructor, DataTypeEnum } from '../types';
 import { getPrototype, isConstructor } from '../utils';
 
 type ModuleData = {
@@ -25,16 +26,15 @@ type ActionData = {
 };
 
 type Field = {
+  formattedInputKey: string;
   keys: string[];
   propertyName: string;
   description: string | null;
   hidden: boolean;
 };
 
-type DataType = 'params' | 'options';
-
 type Input = {
-  type: DataType;
+  type: DataTypeEnum;
   entity: Constructor<any> | null;
   fields: Field[];
 };
@@ -76,12 +76,17 @@ export class ClirioHelper {
     const results: DumpItem[] = [];
 
     for (const [propertyKey, commandData] of commandMap) {
-      const optionsArgMap = optionsArgMetadata.getArgMap(
+      const envsArgMap = envsArgMetadata.getArgMap(
         getPrototype(module),
         propertyKey,
       );
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
+        getPrototype(module),
+        propertyKey,
+      );
+
+      const optionsArgMap = optionsArgMetadata.getArgMap(
         getPrototype(module),
         propertyKey,
       );
@@ -100,16 +105,23 @@ export class ClirioHelper {
           hidden: commandData.hidden,
         },
         inputs: [
+          ...[...envsArgMap.values()].map((data) => {
+            return {
+              type: DataTypeEnum.envs,
+              entity: isConstructor(data.entity) ? data.entity : null,
+              fields: ClirioHelper.dumpInputEnvs(data.entity),
+            };
+          }),
           ...[...paramsArgMap.values()].map((data) => {
             return {
-              type: 'params' as DataType,
+              type: DataTypeEnum.params,
               entity: isConstructor(data.entity) ? data.entity : null,
               fields: ClirioHelper.dumpInputParams(data.entity),
             };
           }),
           ...[...optionsArgMap.values()].map((data) => {
             return {
-              type: 'options' as DataType,
+              type: DataTypeEnum.options,
               entity: isConstructor(data.entity) ? data.entity : null,
               fields: ClirioHelper.dumpInputOptions(data.entity),
             };
@@ -121,9 +133,22 @@ export class ClirioHelper {
     return results;
   }
 
+  public static dumpInputEnvs(entity: Constructor<any>): Field[] {
+    return [...envTargetMetadata.getMap(getPrototype(entity))].map(
+      ([propertyName, data]) => ({
+        formattedInputKey: this.getFormattedEnvKey(entity, propertyName)!,
+        propertyName,
+        keys: data.key ? [data.key] : [],
+        description: data.description,
+        hidden: data.hidden,
+      }),
+    );
+  }
+
   public static dumpInputParams(entity: Constructor<any>): Field[] {
     return [...paramTargetMetadata.getMap(getPrototype(entity))].map(
       ([propertyName, data]) => ({
+        formattedInputKey: this.getFormattedParamKey(entity, propertyName)!,
         propertyName,
         keys: data.key ? [data.key] : [],
         description: data.description,
@@ -135,59 +160,83 @@ export class ClirioHelper {
   public static dumpInputOptions(entity: Constructor<any>): Field[] {
     return [...optionTargetMetadata.getMap(getPrototype(entity))].map(
       ([propertyName, data]) => ({
+        formattedInputKey: this.getFormattedOptionKey(entity, propertyName)!,
         propertyName,
-        keys: data.keys ?? [],
+        keys: data.keys ?? [propertyName],
         description: data.description,
         hidden: data.hidden,
       }),
     );
   }
 
-  public static formatKeysFromPipeContext = (
-    input: PipeContext,
+  public static getFormattedInputKey(
+    entity: Constructor<any>,
+    type: DataTypeEnum,
     propertyName: string,
-  ): string | null => {
-    const row = input.rows.find((row) =>
-      row.propertyName === null
-        ? row.key === propertyName
-        : row.propertyName === propertyName,
-    );
+  ) {
+    switch (type) {
+      case DataTypeEnum.envs:
+        return this.getFormattedEnvKey(entity, propertyName);
+      case DataTypeEnum.params:
+        return this.getFormattedParamKey(entity, propertyName);
+      case DataTypeEnum.options:
+        return this.getFormattedOptionKey(entity, propertyName);
+      default:
+        return null;
+    }
+  }
 
-    if (row?.type === 'param') {
-      return this.formatParamKeys(
-        row.definedKeys.length > 0 ? row.definedKeys : [row.key],
-      );
+  static getFormattedEnvKey(
+    entity: Constructor<any>,
+    propertyName: string,
+  ): string | null {
+    const data = envTargetMetadata.getData(entity.prototype, propertyName);
+
+    if (!data) {
+      return null;
     }
 
-    if (row?.type === 'option') {
-      return this.formatOptionKeys(
-        row.definedKeys.length > 0 ? row.definedKeys : [row.key],
-      );
+    return this.formatEnvKey(data.key ?? propertyName);
+  }
+
+  public static getFormattedParamKey(
+    entity: Constructor<any>,
+    propertyName: string,
+  ): string | null {
+    const data = paramTargetMetadata.getData(entity.prototype, propertyName);
+
+    if (!data) {
+      return null;
     }
 
-    return null;
-  };
+    return this.formatParamKey(data.key ?? propertyName);
+  }
 
-  public static formatOptionKeys(keys: string[]): string {
-    return keys
-      .map((key) => (key.length > 1 ? `--${key}` : `-${key}`))
+  public static getFormattedOptionKey(
+    entity: Constructor<any>,
+    propertyName: string,
+  ): string | null {
+    const data = optionTargetMetadata.getData(entity.prototype, propertyName);
+
+    if (!data) {
+      return null;
+    }
+
+    return (data.keys ?? [propertyName])
+      .map((key) => this.formatOptionKey(key))
       .join(', ');
   }
 
-  public static formatOptionField(field: Field): string {
-    return this.formatOptionKeys(
-      field.keys.length > 0 ? field.keys : [field.propertyName],
-    );
+  public static formatEnvKey(key: string): string {
+    return '$ ' + key;
   }
 
-  public static formatParamKeys(keys: string[]): string {
-    return '<' + keys.join(', ') + '>';
+  public static formatParamKey(key: string): string {
+    return '<' + key + '>';
   }
 
-  public static formatParamField(field: Field): string {
-    return this.formatParamKeys(
-      field.keys.length > 0 ? field.keys : [field.propertyName],
-    );
+  public static formatOptionKey(key: string): string {
+    return key.length > 1 ? `--${key}` : `-${key}`;
   }
 
   public dumpAll(): DumpItem[] {
@@ -202,7 +251,15 @@ export class ClirioHelper {
 
   public static formatDump(
     dump: DumpItem[],
-    { showParams = false }: { showParams?: boolean } = {},
+    {
+      displayEnvs = true,
+      displayParams = true,
+      displayOptions = true,
+    }: {
+      displayEnvs?: boolean;
+      displayParams?: boolean;
+      displayOptions?: boolean;
+    } = {},
   ): string {
     let content = '';
 
@@ -221,32 +278,37 @@ export class ClirioHelper {
           indent: 2,
         }) + `\n`;
 
-      if (showParams) {
-        for (const input of dumpItem.inputs) {
-          if (input.type === 'params') {
-            for (const field of input.fields) {
-              if (field.hidden) {
-                continue;
-              }
-              content +=
-                this.formatColumns(
-                  [this.formatParamField(field), field.description ?? ''],
-                  {
-                    firstColLen: 24,
-                    indent: 4,
-                  },
-                ) + `\n`;
-            }
-          }
-        }
+      const list: Input[][] = [];
+
+      if (displayParams) {
+        list.push(
+          dumpItem.inputs.filter((input) => input.type === DataTypeEnum.params),
+        );
       }
 
-      for (const input of dumpItem.inputs) {
-        if (input.type === 'options') {
+      if (displayOptions) {
+        list.push(
+          dumpItem.inputs.filter(
+            (input) => input.type === DataTypeEnum.options,
+          ),
+        );
+      }
+
+      if (displayEnvs) {
+        list.push(
+          dumpItem.inputs.filter((input) => input.type === DataTypeEnum.envs),
+        );
+      }
+
+      for (const inputs of list) {
+        for (const input of inputs) {
           for (const field of input.fields) {
+            if (field.hidden) {
+              continue;
+            }
             content +=
               this.formatColumns(
-                [this.formatOptionField(field), field.description ?? ''],
+                [field.formattedInputKey, field.description ?? ''],
                 {
                   firstColLen: 24,
                   indent: 4,

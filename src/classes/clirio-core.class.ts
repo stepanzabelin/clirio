@@ -2,13 +2,14 @@ import {
   Args,
   ArgType,
   InputTypeEnum,
-  LinkType,
+  ArgPatternType,
   ParsedArg,
   Pipe,
   Filter,
   Module,
   DataTypeEnum,
   ClirioConfig,
+  OptionArg,
 } from '../types';
 import {
   commandTargetMetadata,
@@ -75,8 +76,6 @@ export class ClirioCore {
   protected async execute(args?: Args): Promise<never | void> {
     const parsedArgs = ClirioCore.describe(args ?? Clirio.getProcessArgs());
 
-    // COMMAND ACTION
-
     for (const {
       module,
       moduleData,
@@ -84,24 +83,19 @@ export class ClirioCore {
       commandData,
     } of this.iterateCommandData()) {
       const links = [...moduleData.links, ...commandData.links];
-      const linkedArgs = this.handler.linkArgs(parsedArgs, links);
 
-      if (!linkedArgs) {
+      const matched = this.handler.matchArgs(parsedArgs, links);
+
+      if (!matched) {
         continue;
       }
 
-      try {
-        const paramLinkedArgs = linkedArgs.filter(
-          (linkedArg) => linkedArg.type === 'param',
-        );
+      const { params, options } = matched;
 
+      try {
         const paramsArgMap = paramsArgMetadata.getArgMap(
           getPrototype(module),
           actionName,
-        );
-
-        const optionLinkedArgs = linkedArgs.filter(
-          (linkedArg) => linkedArg.type === 'option',
         );
 
         const optionsArgMap = optionsArgMetadata.getArgMap(
@@ -129,7 +123,7 @@ export class ClirioCore {
         if (
           !this.config.allowUncontrolledOptions &&
           optionsArgMap.size === 0 &&
-          optionLinkedArgs.length > 0
+          Object.keys(options).length > 0
         ) {
           throw new ClirioCommonError('Invalid options received', {
             code: 'INVALID_OPTIONS',
@@ -142,81 +136,59 @@ export class ClirioCore {
           actionName,
         );
 
-        const maxIndex = combinedArguments.reduce((max, [argumentIndex]) => {
-          return argumentIndex > max ? argumentIndex : max;
-        }, 0);
+        const transformedArguments: any[] = [];
 
-        const transformedArguments: any[] = Array.from(
-          { length: maxIndex + 0 },
-          () => null,
-        );
-
-        for (const [argumentIndex, input] of combinedArguments) {
+        for (const [, input] of combinedArguments) {
           switch (input.type) {
-            case InputTypeEnum.Envs:
+            case InputTypeEnum.envs:
               {
-                const handledEnvRows = this.handler.handleEnvs(
-                  input.entity,
-                  DataTypeEnum.Envs,
-                );
-
                 const pipedEnvs = await this.handler.passPipes(
-                  handledEnvRows,
+                  this.handler.handleEnvs(process.env, input.entity),
                   input.entity,
-                  DataTypeEnum.Envs,
+                  DataTypeEnum.envs,
                   pipeScopeList,
                 );
 
-                transformedArguments[argumentIndex] = pipedEnvs;
+                transformedArguments.push(pipedEnvs);
               }
 
               break;
 
-            case InputTypeEnum.Params:
+            case InputTypeEnum.params:
               {
-                const handledParamRows = this.handler.handleParams(
-                  paramLinkedArgs,
-                  input.entity,
-                  DataTypeEnum.Params,
-                );
-
                 const pipedParams = await this.handler.passPipes(
-                  handledParamRows,
+                  this.handler.handleParams(params, input.entity),
                   input.entity,
-                  DataTypeEnum.Params,
+                  DataTypeEnum.params,
                   pipeScopeList,
                 );
 
-                transformedArguments[argumentIndex] = pipedParams;
+                transformedArguments.push(pipedParams);
               }
-
               break;
-            case InputTypeEnum.Options:
-              {
-                const handledOptionRows = this.handler.handleOptions(
-                  optionLinkedArgs,
-                  input.entity,
-                  DataTypeEnum.Options,
-                );
 
+            case InputTypeEnum.options:
+              {
                 const pipedOptions = await this.handler.passPipes(
-                  handledOptionRows,
+                  this.handler.handleOptions(options, input.entity),
                   input.entity,
-                  DataTypeEnum.Options,
+                  DataTypeEnum.options,
                   pipeScopeList,
                 );
 
-                transformedArguments[argumentIndex] = pipedOptions;
+                transformedArguments.push(pipedOptions);
               }
               break;
 
-            case InputTypeEnum.Helper:
+            case InputTypeEnum.helper:
               {
-                transformedArguments[argumentIndex] = new ClirioHelper({
+                const clirioHelper = new ClirioHelper({
                   scopedModule: getPrototype(module).constructor,
                   scopedActionName: actionName,
                   modules: this.modules,
                 });
+
+                transformedArguments.push(clirioHelper);
               }
               break;
             default:
@@ -246,7 +218,7 @@ export class ClirioCore {
     const empties = [];
 
     for (const { module, moduleData, actionName } of this.iterateEmptyData()) {
-      const data = this.handler.matchRoute(parsedArgs, moduleData.links);
+      const data = this.handler.matchArgs(parsedArgs, moduleData.links);
 
       if (data) {
         empties.push({
@@ -287,7 +259,7 @@ export class ClirioCore {
     } of this.iterateFailureData()) {
       const length = moduleData.links.length;
 
-      const data = this.handler.matchRoute(
+      const data = this.handler.matchArgs(
         parsedArgs.slice(0, length),
         moduleData.links,
       );
@@ -358,7 +330,7 @@ export class ClirioCore {
 
       const isActionMask =
         links.findIndex((link) =>
-          [LinkType.List, LinkType.Param].includes(link.type),
+          [ArgPatternType.list, ArgPatternType.param].includes(link.type),
         ) > -1;
 
       const paramsArgMap = paramsArgMetadata.getArgMap(
@@ -406,7 +378,7 @@ export class ClirioCore {
   public static describe = (args: Args): ParsedArg[] => {
     const rows: ParsedArg[] = [];
 
-    let nextData: Omit<ParsedArg, 'value'> | null = null;
+    let nextData: Omit<OptionArg, 'value'> | null = null;
     let actionCount = 0;
 
     for (const arg of args) {
@@ -434,7 +406,7 @@ export class ClirioCore {
       if (match) {
         const { optionKey, emptyKey, optionKeys, value } = match.groups!;
 
-        let data: Omit<ParsedArg, 'value'>;
+        let data: Omit<OptionArg, 'value'>;
 
         if (emptyKey) {
           rows.push({
@@ -479,7 +451,7 @@ export class ClirioCore {
       } else {
         rows.push({
           type: ArgType.Action,
-          key: actionCount.toString(),
+          key: Number(actionCount),
           value: arg,
         });
 

@@ -1,1 +1,3 @@
-export type RawOptions = Record<string, any>;
+export type RawOptions = {
+  [key: string]: string | null | (string | null)[];
+};

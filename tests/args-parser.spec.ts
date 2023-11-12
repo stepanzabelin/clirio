@@ -5,7 +5,7 @@ describe('Args Clirio.parser', () => {
     expect(Clirio.parse('hey')).toEqual([
       {
         type: 'action',
-        key: '0',
+        key: 0,
         value: 'hey',
       },
     ]);
@@ -18,19 +18,19 @@ describe('Args Clirio.parser', () => {
     expect(Clirio.parse('-a - b')).toEqual([
       { type: 'option', key: 'a', value: null },
       { type: 'option', key: '-', value: null },
-      { type: 'action', key: '0', value: 'b' },
+      { type: 'action', key: 0, value: 'b' },
     ]);
 
     expect(Clirio.parse('-a -- b')).toEqual([
       { type: 'option', key: 'a', value: null },
       { type: 'option', key: '--', value: null },
-      { type: 'action', key: '0', value: 'b' },
+      { type: 'action', key: 0, value: 'b' },
     ]);
 
     expect(Clirio.parse('-a -- b')).toEqual([
       { type: 'option', key: 'a', value: null },
       { type: 'option', key: '--', value: null },
-      { type: 'action', key: '0', value: 'b' },
+      { type: 'action', key: 0, value: 'b' },
     ]);
 
     expect(Clirio.parse('-abc d')).toEqual([
@@ -43,7 +43,7 @@ describe('Args Clirio.parser', () => {
       { type: 'option', key: 'a', value: null },
       { type: 'option', key: 'b', value: null },
       { type: 'option', key: 'c', value: 'd' },
-      { type: 'action', key: '0', value: 'e' },
+      { type: 'action', key: 0, value: 'e' },
     ]);
 
     expect(Clirio.parse('-abc d -f')).toEqual([
@@ -87,9 +87,9 @@ describe('Args Clirio.parser', () => {
     ]);
 
     expect(Clirio.parse('write file 1.TXT')).toEqual([
-      { type: 'action', key: '0', value: 'write' },
-      { type: 'action', key: '1', value: 'file' },
-      { type: 'action', key: '2', value: '1.TXT' },
+      { type: 'action', key: 0, value: 'write' },
+      { type: 'action', key: 1, value: 'file' },
+      { type: 'action', key: 2, value: '1.TXT' },
     ]);
 
     expect(Clirio.parse('--foo -ba -dce 15')).toEqual([
@@ -120,18 +120,39 @@ describe('Args Clirio.parser', () => {
     ]);
 
     expect(Clirio.parse('animal "moo moo" cow')).toEqual([
-      { type: 'action', key: '0', value: 'animal' },
-      { type: 'action', key: '1', value: 'moo moo' },
-      { type: 'action', key: '2', value: 'cow' },
+      { type: 'action', key: 0, value: 'animal' },
+      { type: 'action', key: 1, value: 'moo moo' },
+      { type: 'action', key: 2, value: 'cow' },
+    ]);
+
+    expect(
+      Clirio.parse(
+        'alias0 -1 --10="text" "alias-1" alias2 alias3 alias4 alias5 alias6 alias7 alias8 alias9 alias10 alias11',
+      ),
+    ).toEqual([
+      { type: 'action', key: 0, value: 'alias0' },
+      { type: 'option', key: '1', value: null },
+      { type: 'option', key: '10', value: 'text' },
+      { type: 'action', key: 1, value: 'alias-1' },
+      { type: 'action', key: 2, value: 'alias2' },
+      { type: 'action', key: 3, value: 'alias3' },
+      { type: 'action', key: 4, value: 'alias4' },
+      { type: 'action', key: 5, value: 'alias5' },
+      { type: 'action', key: 6, value: 'alias6' },
+      { type: 'action', key: 7, value: 'alias7' },
+      { type: 'action', key: 8, value: 'alias8' },
+      { type: 'action', key: 9, value: 'alias9' },
+      { type: 'action', key: 10, value: 'alias10' },
+      { type: 'action', key: 11, value: 'alias11' },
     ]);
 
     expect(
       Clirio.parse('moo --honk cow -p 55 66 --tacos=good --verbose --count 5'),
     ).toEqual([
-      { type: 'action', key: '0', value: 'moo' },
+      { type: 'action', key: 0, value: 'moo' },
       { type: 'option', key: 'honk', value: 'cow' },
       { type: 'option', key: 'p', value: '55' },
-      { type: 'action', key: '1', value: '66' },
+      { type: 'action', key: 1, value: '66' },
       { type: 'option', key: 'tacos', value: 'good' },
       { type: 'option', key: 'verbose', value: null },
       { type: 'option', key: 'count', value: '5' },

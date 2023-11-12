@@ -3,13 +3,12 @@ import {
   RawOptions,
   RawParams,
   PipeScope,
-  LinkedArg,
-  Row,
+  OptionArg,
   FilterScope,
   ClirioFilter,
-  Link,
+  ArgPattern,
   ParsedArg,
-  LinkType,
+  ArgPatternType,
   ArgType,
   Filter,
   Pipe,
@@ -59,142 +58,118 @@ export class ClirioHandler {
     );
   }
 
-  public handleParams(
-    linkedArgs: LinkedArg[],
-    entity: Constructor<any>,
-    dataType: DataTypeEnum,
-  ): Row[] {
-    const rows: Row[] = [];
-
-    const parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
+  public handleParams(rawParams: RawParams, entity: Constructor<any>): any {
+    const params: any = { ...rawParams };
 
     const paramTargetDataList = isConstructor(entity)
       ? [...paramTargetMetadata.getMap(entity.prototype)]
       : [];
 
     for (const [propertyName, paramData] of paramTargetDataList) {
-      const key = paramData.key ?? propertyName;
-
-      const index = parsedLinkedArgs.findIndex(
-        (linkedArg) => linkedArg.key === key,
-      );
-
-      if (index === -1) {
+      if (paramData.key === null || paramData.key === propertyName) {
         continue;
       }
 
-      const linkedArg = parsedLinkedArgs[index];
-      parsedLinkedArgs.splice(index, 1);
+      if (params.hasOwnProperty(paramData.key)) {
+        if (params.hasOwnProperty(propertyName)) {
+          if (Array.isArray(params[propertyName])) {
+            if (Array.isArray(params[paramData.key])) {
+              params[propertyName].push(...params[paramData.key]);
+            } else {
+              params[propertyName].push(params[paramData.key]);
+            }
+          } else {
+            if (Array.isArray(params[paramData.key])) {
+              params[propertyName] = [
+                params[propertyName],
+                ...params[paramData.key],
+              ];
+            } else {
+              params[propertyName] = [
+                params[propertyName],
+                params[paramData.key],
+              ];
+            }
+          }
+        } else {
+          params[propertyName] = params[paramData.key];
+        }
 
-      const value = linkedArg.value;
-
-      rows.push({
-        type: 'param',
-        key: linkedArg.key,
-        definedKeys: [key],
-        value,
-        propertyName,
-        mapped: true,
-      });
+        delete params[paramData.key];
+      }
     }
 
-    for (const linkedArg of parsedLinkedArgs) {
-      rows.push({
-        type: 'param',
-        key: linkedArg.key,
-        definedKeys: [],
-        value: linkedArg.value,
-        propertyName: null,
-        mapped: false,
-      });
-    }
+    this.validate(params, entity, DataTypeEnum.params);
 
-    this.validate(rows, entity, dataType);
-
-    const transformRows = this.transform(rows, entity);
-
-    return transformRows;
+    return this.transform(params, entity);
   }
 
-  public handleOptions(
-    linkedArgs: LinkedArg[],
-    entity: Constructor<any>,
-    dataType: DataTypeEnum,
-  ): Row[] {
-    const rows: Row[] = [];
-
-    let parsedLinkedArgs: LinkedArg[] = [...linkedArgs];
+  public handleOptions(rawOptions: RawOptions, entity: Constructor<any>): any {
+    const options: any = { ...rawOptions };
 
     const optionTargetDataList = isConstructor(entity)
       ? [...optionTargetMetadata.getMap(entity.prototype)]
       : [];
 
     for (const [propertyName, optionData] of optionTargetDataList) {
-      const keys = optionData.keys ?? [propertyName];
-
-      const filteredLinkedArgs = parsedLinkedArgs.filter((linkedArg) =>
-        keys.includes(linkedArg.key),
-      );
-
-      parsedLinkedArgs = parsedLinkedArgs.filter(
-        (linkedArg) => !keys.includes(linkedArg.key),
-      );
-
-      if (filteredLinkedArgs.length === 0) {
+      if (optionData.keys === null) {
         continue;
       }
 
-      const value =
-        filteredLinkedArgs.length > 1
-          ? filteredLinkedArgs.map((linkedArg) => linkedArg.value).flat()
-          : filteredLinkedArgs[0].value;
+      for (const key of optionData.keys) {
+        if (key === propertyName) {
+          continue;
+        }
 
-      rows.push({
-        type: 'option',
-        key: filteredLinkedArgs[0].key,
-        definedKeys: keys,
-        value,
-        propertyName,
-        mapped: true,
-      });
+        if (options.hasOwnProperty(key)) {
+          if (options.hasOwnProperty(propertyName)) {
+            if (Array.isArray(options[propertyName])) {
+              if (Array.isArray(options[key])) {
+                options[propertyName].push(...options[key]);
+              } else {
+                options[propertyName].push(options[key]);
+              }
+            } else {
+              if (Array.isArray(options[key])) {
+                options[propertyName] = [
+                  options[propertyName],
+                  ...options[key],
+                ];
+              } else {
+                options[propertyName] = [options[propertyName], options[key]];
+              }
+            }
+          } else {
+            options[propertyName] = options[key];
+          }
+
+          delete options[key];
+        }
+      }
     }
 
-    for (const linkedArg of parsedLinkedArgs) {
-      rows.push({
-        type: 'option',
-        key: linkedArg.key,
-        definedKeys: [],
-        value: linkedArg.value,
-        propertyName: null,
-        mapped: false,
-      });
-    }
+    this.validate(options, entity, DataTypeEnum.options);
 
-    this.validate(rows, entity, dataType);
-
-    const transformRows = this.transform(rows, entity);
-
-    return transformRows;
+    return this.transform(options, entity);
   }
 
   public validate(
-    rows: Row[],
+    data: any,
     entity: Constructor<any>,
     dataType: DataTypeEnum,
   ): void {
     const validationMap = validateTargetMetadata.getMap(entity.prototype);
 
-    for (const [propertyName, data] of validationMap) {
-      const row = rows.find((row) => row.propertyName === propertyName);
+    for (const [propertyName, { checks }] of validationMap) {
+      const value = data[propertyName];
 
-      for (const check of data.checks) {
-        const result = check(row?.value);
+      for (const check of checks) {
+        const result = check(value);
 
         if (result === false) {
-          const key = row?.key ?? propertyName;
-
+          // TODO GET KEY NAME
           throw new ClirioValidationError(
-            `The "${key}" ${dataType.toLowerCase()} is wrong`,
+            `The "${propertyName}" ${dataType.toLowerCase()} is wrong`,
             {
               dataType,
               propertyName,
@@ -207,107 +182,56 @@ export class ClirioHandler {
     }
   }
 
-  public handleEnvs(entity: Constructor<any>, dataType: DataTypeEnum): Row[] {
-    const rows: Row[] = [];
-
-    const parsedLinkedArgs: any[] = Object.entries(process.env).map(
-      ([key, value]) => ({
-        key,
-        value,
-      }),
-    );
+  public handleEnvs(
+    rawEnvs: NodeJS.Process['env'],
+    entity: Constructor<any>,
+  ): any {
+    const envs: any = { ...rawEnvs };
 
     const envTargetDataList = isConstructor(entity)
       ? [...envTargetMetadata.getMap(entity.prototype)]
       : [];
 
     for (const [propertyName, envData] of envTargetDataList) {
-      const key = envData.key ?? propertyName;
-
-      const index = parsedLinkedArgs.findIndex(
-        (linkedArg) => linkedArg.key === key,
-      );
-
-      if (index === -1) {
+      if (envData.key === null) {
         continue;
       }
 
-      const linkedArg = parsedLinkedArgs[index];
-      parsedLinkedArgs.splice(index, 1);
+      envs[propertyName] = envs[envData.key];
 
-      const value = linkedArg.value;
-
-      rows.push({
-        type: 'env',
-        key: linkedArg.key,
-        definedKeys: [key],
-        value,
-        propertyName,
-        mapped: true,
-      });
+      delete envs[envData.key];
     }
 
-    for (const linkedArg of parsedLinkedArgs) {
-      rows.push({
-        type: 'env',
-        key: linkedArg.key,
-        definedKeys: [],
-        value: linkedArg.value,
-        propertyName: null,
-        mapped: false,
-      });
-    }
+    this.validate(envs, entity, DataTypeEnum.envs);
 
-    this.validate(rows, entity, dataType);
-
-    const transformRows = this.transform(rows, entity);
-
-    return transformRows;
+    return this.transform(envs, entity);
   }
 
-  public transform(rows: Row[], entity: Constructor<any>): Row[] {
-    const transformedRows = [...rows];
-
+  public transform(data: any, entity: Constructor<any>): any {
     const transformMap = transformTargetMetadata.getMap(entity.prototype);
 
-    for (const [propertyName, data] of transformMap) {
-      const index = transformedRows.findIndex(
-        (row) => row.propertyName === propertyName,
-      );
-
-      if (index === -1) {
-        continue;
-      }
-
-      const transformedRow = transformedRows[index];
-
-      transformedRows[index] = {
-        ...transformedRow,
-        value: data.transform(transformedRow.value),
-      };
+    for (const [propertyName, { transform }] of transformMap) {
+      data[propertyName] = transform(data[propertyName]);
     }
 
-    return transformedRows;
+    return data;
   }
 
   public async passPipes(
-    rows: Row[],
+    rawData: any,
     entity: Constructor<any>,
     dataType: DataTypeEnum,
     pipeList: PipeScope[] = [],
-  ): Promise<object> {
-    let data = Object.fromEntries(
-      rows.map((row) => [row.propertyName ?? row.key, row.value]),
-    );
+  ): Promise<any> {
+    let data = rawData;
 
     for (const { pipe, scope } of pipeList) {
       const pipeInst: ClirioPipe = getInstance(pipe);
 
-      data = await pipeInst.transform.bind(pipeInst)(data, {
+      data = await pipeInst.transform.bind(pipeInst)(rawData, {
         dataType,
         scope,
         entity,
-        rows,
       });
     }
 
@@ -378,117 +302,24 @@ export class ClirioHandler {
     return filterScopeList;
   }
 
-  public linkArgs(parsedArgs: ParsedArg[], links: Link[]): null | LinkedArg[] {
-    const linkedArgs: LinkedArg[] = [];
-
-    let actionIndex = 0;
-
-    for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
-        return null;
-      }
-
-      const attributes = parsedArgs[actionIndex];
-
-      switch (true) {
-        case this.compareOption(link, attributes):
-          break;
-        case this.compareAction(link, attributes):
-          break;
-        case this.compareParam(link, attributes):
-          {
-            const [paramName] = link.values;
-
-            linkedArgs.push({
-              type: 'param',
-              key: paramName,
-              value: attributes.value,
-            });
-          }
-          break;
-        case this.compareParamList(link, attributes):
-          {
-            const values: string[] = [];
-
-            for (let index = actionIndex; index < parsedArgs.length; index++) {
-              const parsedArg = parsedArgs[index];
-              if (parsedArg.type === ArgType.Action) {
-                values.push(parsedArg.value!);
-                actionIndex = index;
-              } else {
-                break;
-              }
-            }
-
-            const [paramName] = link.values;
-
-            linkedArgs.push({
-              type: 'param',
-              key: paramName,
-              value: values,
-            });
-          }
-
-          break;
-        default:
-          return null;
-      }
-
-      actionIndex++;
-    }
-
-    const restParsedArgs = parsedArgs.slice(actionIndex);
-
-    if (
-      restParsedArgs.findIndex(
-        (attributes) => attributes.type === ArgType.Action,
-      ) > -1
-    ) {
-      return null;
-    }
-
-    const parsedOptions = restParsedArgs.filter(
-      (attributes) => attributes.type === ArgType.Option,
-    );
-
-    const optionMap = new Map<string, any>();
-
-    for (let index = 0; index < parsedOptions.length; index++) {
-      const attributes = parsedOptions[index];
-
-      const values = optionMap.get(attributes.key) ?? [];
-      values.push(attributes.value);
-      optionMap.set(attributes.key, values);
-    }
-
-    for (const [key, values] of optionMap) {
-      linkedArgs.push({
-        type: 'option',
-        key,
-        value: values.length > 1 ? values : values[0],
-      });
-    }
-
-    return linkedArgs;
-  }
-
-  public matchRoute(
-    parsedArgs: ParsedArg[],
-    links: Link[],
+  public matchArgs(
+    actionArgs: ParsedArg[],
+    links: ArgPattern[],
   ): null | {
     params: RawParams;
     options: RawOptions;
   } {
     const params: RawParams = {};
+    const options: RawOptions = {};
 
     let actionIndex = 0;
 
     for (const link of links) {
-      if (!parsedArgs.hasOwnProperty(actionIndex)) {
+      if (!actionArgs.hasOwnProperty(actionIndex)) {
         return null;
       }
 
-      const attributes = parsedArgs[actionIndex];
+      const attributes = actionArgs[actionIndex];
 
       switch (true) {
         case this.compareOption(link, attributes):
@@ -498,17 +329,17 @@ export class ClirioHandler {
         case this.compareParam(link, attributes):
           {
             const [paramName] = link.values;
-            params[paramName] = attributes.value!;
+            params[paramName] = attributes.value as string;
           }
           break;
         case this.compareParamList(link, attributes):
           {
             const values: string[] = [];
 
-            for (let index = actionIndex; index < parsedArgs.length; index++) {
-              const parsedArg = parsedArgs[index];
+            for (let index = actionIndex; index < actionArgs.length; index++) {
+              const parsedArg = actionArgs[index];
               if (parsedArg.type === ArgType.Action) {
-                values.push(parsedArg.value!);
+                values.push(parsedArg.value);
                 actionIndex = index;
               } else {
                 break;
@@ -526,7 +357,7 @@ export class ClirioHandler {
       actionIndex++;
     }
 
-    const restParsedArgs = parsedArgs.slice(actionIndex);
+    const restParsedArgs = actionArgs.slice(actionIndex);
 
     if (
       restParsedArgs.findIndex(
@@ -536,51 +367,59 @@ export class ClirioHandler {
       return null;
     }
 
-    const parsedOptions = restParsedArgs.filter(
-      (attributes) => attributes.type === ArgType.Option,
-    );
+    const optionArgList: OptionArg[] = restParsedArgs.filter(
+      (optionArg) => optionArg.type === ArgType.Option,
+    ) as OptionArg[];
 
-    const options: RawOptions = {};
-
-    for (let index = 0; index < parsedOptions.length; index++) {
-      const attributes = parsedOptions[index];
-
-      if (options.hasOwnProperty(attributes.key)) {
-        if (Array.isArray(options[attributes.key])) {
-          options[attributes.key].push(attributes.value);
+    for (const optionArg of optionArgList) {
+      if (options.hasOwnProperty(optionArg.key)) {
+        if (Array.isArray(options[optionArg.key])) {
+          (options[optionArg.key] as OptionArg['value'][]).push(
+            optionArg.value,
+          );
         } else {
-          options[attributes.key] = [options[attributes.key], attributes.value];
+          options[optionArg.key] = [
+            options[optionArg.key] as string | null,
+            optionArg.value,
+          ];
         }
       } else {
-        options[attributes.key] = attributes.value;
+        options[optionArg.key] = optionArg.value;
       }
     }
 
-    return { params, options };
+    return {
+      params,
+      options,
+    };
   }
 
-  private compareOption(link: Link, attributes: ParsedArg): boolean {
+  private compareOption(link: ArgPattern, attributes: ParsedArg): boolean {
     return (
-      link.type === LinkType.Option &&
+      link.type === ArgPatternType.option &&
       attributes.type === ArgType.Option &&
       link.values.includes(attributes.key) &&
       attributes.value === null
     );
   }
 
-  private compareAction(link: Link, attributes: ParsedArg): boolean {
+  private compareAction(link: ArgPattern, attributes: ParsedArg): boolean {
     return (
-      link.type === LinkType.Action &&
+      link.type === ArgPatternType.action &&
       attributes.type === ArgType.Action &&
-      link.values.includes(attributes.value!)
+      link.values.includes(attributes.value)
     );
   }
 
-  private compareParam(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.Param && attributes.type === ArgType.Action;
+  private compareParam(link: ArgPattern, attributes: ParsedArg): boolean {
+    return (
+      link.type === ArgPatternType.param && attributes.type === ArgType.Action
+    );
   }
 
-  private compareParamList(link: Link, attributes: ParsedArg): boolean {
-    return link.type === LinkType.List && attributes.type === ArgType.Action;
+  private compareParamList(link: ArgPattern, attributes: ParsedArg): boolean {
+    return (
+      link.type === ArgPatternType.list && attributes.type === ArgType.Action
+    );
   }
 }

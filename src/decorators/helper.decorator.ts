@@ -8,7 +8,7 @@ export const Helper = function () {
 
     helperArgMetadata.setArgData(target, propertyName, argIndex, {
       entity,
-      type: InputTypeEnum.Helper,
+      type: InputTypeEnum.helper,
     });
   };
 };

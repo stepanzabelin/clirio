@@ -8,7 +8,7 @@ export const Params = function () {
 
     paramsArgMetadata.setArgData(target, propertyName, argIndex, {
       entity,
-      type: InputTypeEnum.Params,
+      type: InputTypeEnum.params,
     });
   };
 };

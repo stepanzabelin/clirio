@@ -1,8 +1,7 @@
 import { moduleCommandReg } from '../constrains/regexp.constrains';
 import { ClirioDebugError } from '../exceptions';
-
 import { moduleEntityMetadata } from '../metadata';
-import { Constructor, Link, LinkType, ModuleData } from '../types';
+import { Constructor, ArgPattern, ArgPatternType, ModuleData } from '../types';
 
 export const Module = function (
   rawCommand?: string,
@@ -12,7 +11,7 @@ export const Module = function (
   }: Partial<Omit<ModuleData, 'command' | 'links'>> = {},
 ) {
   return function (constructor: Constructor<any>) {
-    const links: Link[] = [];
+    const links: ArgPattern[] = [];
 
     const command = rawCommand?.trim?.() ?? null;
 
@@ -34,7 +33,7 @@ export const Module = function (
       const { action } = commandMatch.groups!;
 
       links.push({
-        type: LinkType.Action,
+        type: ArgPatternType.action,
         values: [action],
       });
 

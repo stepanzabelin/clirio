@@ -8,7 +8,7 @@ export const Envs = function () {
 
     envsArgMetadata.setArgData(target, propertyName, argIndex, {
       entity,
-      type: InputTypeEnum.Envs,
+      type: InputTypeEnum.envs,
     });
   };
 };

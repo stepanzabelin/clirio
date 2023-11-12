@@ -1,7 +1,7 @@
-import { InputTypeEnum } from './input-type-enum.type';
 import { Constructor } from './constructor.type';
+import { InputTypeEnum } from './input-type-enum.type';
 
 export type ParamsArgData = {
-  type: InputTypeEnum.Params;
+  type: InputTypeEnum.params;
   entity: Constructor<any>;
 };

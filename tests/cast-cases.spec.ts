@@ -31,7 +31,7 @@ describe('Cast cases for Params and Options', () => {
     expect(options).toStrictEqual({
       id: ['15'],
       d: '22.12.22',
-      format: 'A',
+      format: 'B',
       silent: [null, null],
     });
   });

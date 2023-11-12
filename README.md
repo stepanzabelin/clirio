@@ -872,15 +872,15 @@ For any case of failed validation, the same error will be thrown `The "%KEY_NAME
 
 To have more flexible validations, use [Pipes](#pipes)
 
-It is possible to [configure](#config) throwing errors on unknown keys or in options
+It is possible to [configure](#setconfig) throwing errors on unknown keys or in options
 
-##### Validation of optional key
+##### Validation of an optional key
 
 ```ts
 class OptionsDto {
   @Option('--id')
   @Validate([(v) => v === undefined || null, /^[0-9]+$/.test(v)])
-  readonly ignoreSubmodules?: number;
+  readonly id?: number;
 }
 ```
 
@@ -1656,7 +1656,7 @@ no parameters
 
 ### "Helper" decorator
 
-The `@Helper()` decorator andles [the help mode](#displaying-help)
+The `@Helper()` decorator handles [the help mode](#displaying-help)
 
 **Parameters:**
 no parameters
