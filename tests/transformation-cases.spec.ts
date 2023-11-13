@@ -55,7 +55,7 @@ describe('Transformation cases', () => {
 
     const [options] = entryStub.getCall(0).args;
 
-    expect(options).toStrictEqual({ silent: null });
+    expect(options).toStrictEqual({ silent: null, envs: {} });
   });
 
   it('2.1', async () => {
@@ -75,9 +75,10 @@ describe('Transformation cases', () => {
     });
 
     expect(options).toStrictEqual({
-      envs: { DB_NAME: 'db-name', DB_TABLE: 'db-table' },
       id: 149542,
+      envs: { DB_NAME: 'db-name', DB_TABLE: 'db-table' },
       silent: true,
+      algorithm: null,
     });
   });
 
@@ -101,6 +102,7 @@ describe('Transformation cases', () => {
       envs: { DB_NAME: 'db-name', DB_TABLE: 'db-table' },
       id: 149542,
       silent: true,
+      algorithm: null,
     });
   });
 
@@ -130,6 +132,7 @@ describe('Transformation cases', () => {
       },
       id: 149542,
       silent: true,
+      algorithm: null,
     });
   });
 });

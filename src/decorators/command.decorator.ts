@@ -1,5 +1,10 @@
 import { argReg, optionReg } from '../constrains';
-import { CommandTargetData, Constructor, Link, LinkType } from '../types';
+import {
+  CommandTargetData,
+  Constructor,
+  ArgPattern,
+  ArgPatternType,
+} from '../types';
 import { commandTargetMetadata } from '../metadata';
 import { ClirioDebugError } from '../exceptions';
 
@@ -13,7 +18,7 @@ export const Command = function (
   return function (target: Constructor<any>['prototype'], propertyKey: string) {
     const command = rawCommand.trim();
 
-    const links: Link[] = [];
+    const links: ArgPattern[] = [];
 
     const devErrorData = {
       value: rawCommand,
@@ -47,14 +52,14 @@ export const Command = function (
         }
 
         links.push({
-          type: LinkType.Action,
+          type: ArgPatternType.action,
           values,
         });
       }
 
       if (param) {
         links.push({
-          type: rest ? LinkType.List : LinkType.Param,
+          type: rest ? ArgPatternType.list : ArgPatternType.param,
           values: [param],
         });
       }
@@ -79,7 +84,7 @@ export const Command = function (
         }
 
         links.push({
-          type: LinkType.Option,
+          type: ArgPatternType.option,
           values,
         });
       }

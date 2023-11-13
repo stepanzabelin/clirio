@@ -1,8 +1,8 @@
-import { Link } from './link.type';
+import { ArgPattern } from './arg-pattern.type';
 
 export type ModuleData = {
   command: string | null;
-  links: Link[];
+  links: ArgPattern[];
   description: string | null;
   hidden: boolean;
 };

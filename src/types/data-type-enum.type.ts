@@ -1,5 +1,5 @@
 export enum DataTypeEnum {
-  Options = 'options',
-  Params = 'params',
-  Envs = 'envs',
+  options = 'options',
+  params = 'params',
+  envs = 'envs',
 }

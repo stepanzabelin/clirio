@@ -37,7 +37,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Exceptions](#exceptions)
   - [Filters](#filter)
   - [Displaying help](#displaying-help)
-    - [Helper](#clirio-helper)
+    - [Clirio Helper](#clirio-helper)
     - [Hidden commands](#hidden-commands)
   - [Displaying Version](#displaying-version)
   - [Clirio API](#clirio-api)
@@ -219,7 +219,7 @@ Result
 
 ```json
 [
-  { "type": "action", "key": "0", "value": "test" },
+  { "type": "action", "key": 0, "value": "test" },
   { "type": "option", "key": "foo", "value": "15" },
   { "type": "option", "key": "b", "value": null },
   { "type": "option", "key": "a", "value": null },
@@ -233,19 +233,22 @@ The another example
 $ my-cli set-time 10:56 --format=AM -ei 15
 ```
 
-| type   | key    | value    |
-| ------ | ------ | -------- |
-| action | 0      | set-time |
-| action | 1      | 10:56    |
-| option | format | AM       |
-| option | e      | null     |
-| option | i      | 15       |
+| type   | key      | value      |
+| ------ | -------- | ---------- |
+| action | 0        | "set-time" |
+| action | 1        | "10:56"    |
+| option | "format" | "AM"       |
+| option | "e"      | null       |
+| option | "i"      | "15"       |
 
 ##### Summary
 
 - all parts of the command-line without a leading dash will be described as actions
-- an option with a missing value will be null
-- options starting with a single dash will be separated by letters
+- any action has keys as a numerical index in ascending order
+- any option with a missing value will be `null`
+- any option starting with a single dash will be separated by letters
+- all options will be parsed into key-value
+- the raw value of any options can be a `string` or `null`
 
 ## App configuration
 
@@ -778,21 +781,17 @@ class SetLimitParamsDto {
 
 The `@Envs()` decorator provided
 
-
 ```ts
-
 import { Envs } from 'clirio';
 
 @Module('migration')
 export class MigrationModule {
   @Command('test-connect')
-  public testConnect(@Envs() envs: TestConnectEnvsDto,) {
+  public testConnect(@Envs() envs: TestConnectEnvsDto) {
     // ...
   }
 }
-
 ```
-
 
 ### Envs DTO
 
@@ -802,22 +801,20 @@ The `@Env()` decorator for dto properties provided
 import { Env } from 'clirio';
 
 export class TestConnectEnvsDto {
-  @env('DB_HOST')
+  @Env('DB_HOST')
   readonly host: string;
 
-  @env('DB_PORT')
+  @Env('DB_PORT')
   @Transform((v) => Number(v))
   readonly port: number;
 
-  @env('DB_USER')
+  @Env('DB_USER')
   readonly user: string;
 
-  @env('DB_PASSWORD')
+  @Env('DB_PASSWORD')
   readonly password: string;
 }
-
 ```
-
 
 ### Validation
 
@@ -872,15 +869,15 @@ For any case of failed validation, the same error will be thrown `The "%KEY_NAME
 
 To have more flexible validations, use [Pipes](#pipes)
 
-It is possible to [configure](#config) throwing errors on unknown keys or in options
+It is possible to [configure](#setconfig) throwing errors on unknown keys or in options
 
-##### Validation of optional key
+##### Validation of an optional key
 
 ```ts
 class OptionsDto {
   @Option('--id')
   @Validate([(v) => v === undefined || null, /^[0-9]+$/.test(v)])
-  readonly ignoreSubmodules?: number;
+  readonly id?: number;
 }
 ```
 
@@ -1249,7 +1246,7 @@ $ my-cli --help
 Description of commands is here
 ```
 
-It is possible to use other commands
+It is possible to implement any other commands
 
 ```ts
 @Command('-m, --man')
@@ -1259,7 +1256,7 @@ It is possible to use other commands
 @Command('man <command>')
 ```
 
-### Clirio helper
+### Helper decorator
 
 The `@Helper()` decorator provided to handle the help mode
 
@@ -1635,8 +1632,6 @@ The `@Env()` decorator maps DTO properties in [Envs DTO](#envs-dto)
 
 The `@Envs()` decorator controls [environments](#envs-data-control)
 
-
-
 **Parameters:**
 no parameters
 
@@ -1656,7 +1651,7 @@ no parameters
 
 ### "Helper" decorator
 
-The `@Helper()` decorator andles [the help mode](#displaying-help)
+The `@Helper()` decorator handles [the help mode](#displaying-help)
 
 **Parameters:**
 no parameters

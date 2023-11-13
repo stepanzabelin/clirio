@@ -1,19 +1,19 @@
 import { keyValueReg } from '../constrains';
 
 export const form = {
-  NUMBER: (value: any) => {
+  NUMBER: (value: any): number => {
     return Number(value) || 0;
   },
 
-  STRING: (value: any) => {
+  STRING: (value: any): string => {
     return String(value ?? '');
   },
 
-  BOOLEAN: (value: any) => {
+  BOOLEAN: (value: any): boolean => {
     return Boolean(value);
   },
 
-  FLAG: (value: string | null): boolean => {
+  FLAG: (value: any): boolean => {
     switch (true) {
       case value === null: {
         return true;
@@ -27,9 +27,11 @@ export const form = {
     }
   },
 
-  KEY_VALUE: (
-    value: string | null | (string | null)[],
-  ): Record<string, string | null> => {
+  KEY_VALUE: (value: any): Record<string, string | null> => {
+    if (value === undefined) {
+      return {};
+    }
+
     const obj: Record<string, string | null> = {};
 
     const values = Array.isArray(value) ? value : [value];
@@ -46,11 +48,14 @@ export const form = {
     return obj;
   },
 
-  ARRAY: (values: string | null | (string | null)[]) => {
-    return Array.isArray(values) ? values : [values];
+  ARRAY: (value: any): (string | null)[] => {
+    if (value === undefined) {
+      return [];
+    }
+    return Array.isArray(value) ? value : [value];
   },
 
-  PLAIN: (values: string | null | (string | null)[]) => {
-    return Array.isArray(values) ? values[0] : values;
+  PLAIN: (value: any): undefined | string | null => {
+    return Array.isArray(value) ? value[0] : value;
   },
 };

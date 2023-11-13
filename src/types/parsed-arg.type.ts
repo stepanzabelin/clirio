@@ -1,7 +1,4 @@
-import { ArgType } from './arg-type.type';
+import { ActionArg } from './action-arg.type';
+import { OptionArg } from './option-arg.type';
 
-export type ParsedArg = {
-  type: ArgType;
-  key: string;
-  value: string | null;
-};
+export type ParsedArg = OptionArg | ActionArg;

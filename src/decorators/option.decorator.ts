@@ -1,7 +1,6 @@
 import { optionReg } from '../constrains';
 import { ClirioDebugError } from '../exceptions';
 import { optionTargetMetadata } from '../metadata';
-
 import { Constructor, OptionTargetData } from '../types';
 
 export const Option = function (
