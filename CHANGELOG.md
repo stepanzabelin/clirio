@@ -1,5 +1,12 @@
 # Changelog
 
+### [3.0.0] - November 14, 2023
+
+Improved args parser (integer types for actions added)
+Refactored and simplified core code
+Reworked ClirioHelper class
+Added method for obtaining the initial keys for DTO
+
 ### [2.0.0] - October 1, 2023
 
 Implemented @Envs, @Env decorators.
