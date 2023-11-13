@@ -26,6 +26,7 @@ import {
 } from '../metadata';
 import { ClirioValidationError } from '../exceptions';
 import { getInstance, getPrototype, isConstructor } from '../utils';
+import { ClirioHelper } from './clirio-helper.class';
 
 export class ClirioHandler {
   public handleFilters(rawErr: any, filterList: FilterScope[] = []) {
@@ -163,13 +164,18 @@ export class ClirioHandler {
     for (const [propertyName, { checks }] of validationMap) {
       const value = data[propertyName];
 
+      const key = ClirioHelper.getFormattedInputKey(
+        entity,
+        dataType,
+        propertyName,
+      );
+
       for (const check of checks) {
         const result = check(value);
 
         if (result === false) {
-          // TODO GET KEY NAME
           throw new ClirioValidationError(
-            `The "${propertyName}" ${dataType.toLowerCase()} is wrong`,
+            `The "${key}" ${dataType.toLowerCase()} is wrong`,
             {
               dataType,
               propertyName,

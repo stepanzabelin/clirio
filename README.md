@@ -37,7 +37,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
   - [Exceptions](#exceptions)
   - [Filters](#filter)
   - [Displaying help](#displaying-help)
-    - [Helper](#clirio-helper)
+    - [Clirio Helper](#clirio-helper)
     - [Hidden commands](#hidden-commands)
   - [Displaying Version](#displaying-version)
   - [Clirio API](#clirio-api)
@@ -1256,7 +1256,7 @@ It is possible to implement any other commands
 @Command('man <command>')
 ```
 
-### Clirio helper
+### Helper decorator
 
 The `@Helper()` decorator provided to handle the help mode
 
