@@ -219,7 +219,7 @@ Result
 
 ```json
 [
-  { "type": "action", "key": "0", "value": "test" },
+  { "type": "action", "key": 0, "value": "test" },
   { "type": "option", "key": "foo", "value": "15" },
   { "type": "option", "key": "b", "value": null },
   { "type": "option", "key": "a", "value": null },
@@ -233,19 +233,22 @@ The another example
 $ my-cli set-time 10:56 --format=AM -ei 15
 ```
 
-| type   | key    | value    |
-| ------ | ------ | -------- |
-| action | 0      | set-time |
-| action | 1      | 10:56    |
-| option | format | AM       |
-| option | e      | null     |
-| option | i      | 15       |
+| type   | key      | value      |
+| ------ | -------- | ---------- |
+| action | 0        | "set-time" |
+| action | 1        | "10:56"    |
+| option | "format" | "AM"       |
+| option | "e"      | null       |
+| option | "i"      | "15"       |
 
 ##### Summary
 
 - all parts of the command-line without a leading dash will be described as actions
-- an option with a missing value will be null
-- options starting with a single dash will be separated by letters
+- any action has keys as a numerical index in ascending order
+- any option with a missing value will be `null`
+- any option starting with a single dash will be separated by letters
+- all options will be parsed into key-value
+- the raw value of any options can be a `string` or `null`
 
 ## App configuration
 
@@ -778,21 +781,17 @@ class SetLimitParamsDto {
 
 The `@Envs()` decorator provided
 
-
 ```ts
-
 import { Envs } from 'clirio';
 
 @Module('migration')
 export class MigrationModule {
   @Command('test-connect')
-  public testConnect(@Envs() envs: TestConnectEnvsDto,) {
+  public testConnect(@Envs() envs: TestConnectEnvsDto) {
     // ...
   }
 }
-
 ```
-
 
 ### Envs DTO
 
@@ -802,22 +801,20 @@ The `@Env()` decorator for dto properties provided
 import { Env } from 'clirio';
 
 export class TestConnectEnvsDto {
-  @env('DB_HOST')
+  @Env('DB_HOST')
   readonly host: string;
 
-  @env('DB_PORT')
+  @Env('DB_PORT')
   @Transform((v) => Number(v))
   readonly port: number;
 
-  @env('DB_USER')
+  @Env('DB_USER')
   readonly user: string;
 
-  @env('DB_PASSWORD')
+  @Env('DB_PASSWORD')
   readonly password: string;
 }
-
 ```
-
 
 ### Validation
 
@@ -1249,7 +1246,7 @@ $ my-cli --help
 Description of commands is here
 ```
 
-It is possible to use other commands
+It is possible to implement any other commands
 
 ```ts
 @Command('-m, --man')
@@ -1634,8 +1631,6 @@ The `@Env()` decorator maps DTO properties in [Envs DTO](#envs-dto)
 ### "Envs" decorator
 
 The `@Envs()` decorator controls [environments](#envs-data-control)
-
-
 
 **Parameters:**
 no parameters

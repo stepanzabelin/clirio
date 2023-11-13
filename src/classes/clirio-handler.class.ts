@@ -183,7 +183,7 @@ export class ClirioHandler {
   }
 
   public handleEnvs(
-    rawEnvs: NodeJS.Process['env'],
+    rawEnvs: Record<string, string | undefined>,
     entity: Constructor<any>,
   ): any {
     const envs: any = { ...rawEnvs };
