@@ -1,7 +1,7 @@
 import { Constructor } from '../types';
 
-export const isConstructor = (entity: any) => {
-  return entity && entity !== Object && typeof entity === 'function';
+export const isConstructor = (entity: any): boolean => {
+  return Boolean(entity) && entity !== Object && typeof entity === 'function';
 };
 
 export const getPrototype = (
