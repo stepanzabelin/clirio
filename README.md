@@ -1572,11 +1572,18 @@ Arguments will be determined automatically but it is possible to set them manual
 **Returns:**
 
 ```ts
-Array<{
-  type: ArgType;
-  key: string;
-  value: string | null;
-}>;
+Array<
+  | {
+      type: 'option';
+      key: string;
+      value: string | null;
+    }
+  | {
+      type: 'action';
+      key: number;
+      value: string;
+    }
+>;
 ```
 
 ```ts
