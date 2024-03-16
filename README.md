@@ -100,8 +100,7 @@ class GitStatusDto {
   readonly ignoreSubmodules?: string;
 
   @Option('--short, -s')
-  @Transform(Clirio.form.FLAG)
-  readonly short?: boolean;
+  readonly short?: null;
 }
 ```
 
