@@ -14,17 +14,7 @@ export const form = {
   },
 
   FLAG: (value: any): boolean => {
-    switch (true) {
-      case value === null: {
-        return true;
-      }
-      case value === 'true': {
-        return true;
-      }
-
-      default:
-        return false;
-    }
+    return [null, 'true'].includes(value);
   },
 
   KEY_VALUE: (value: any): Record<string, string | null> => {
