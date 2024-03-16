@@ -97,9 +97,10 @@ class GitStatusDto {
   readonly branch?: string;
 
   @Option('--ignore-submodules')
-  readonly ignoreSubmodules?: 'none' | 'untracked' | 'dirty' | 'all';
+  readonly ignoreSubmodules?: string;
 
   @Option('--short, -s')
+  @Transform(Clirio.form.FLAG)
   readonly short?: boolean;
 }
 ```
@@ -132,10 +133,10 @@ clirio.execute();
 ##### Result
 
 ```bash
-
 $ my-cli git status -b master --ignore-submodules  all --short
-
 ```
+
+
 
 The application will route the command `git status` with options to the `GitModule.status` method.
 
@@ -143,9 +144,61 @@ The application will route the command `git status` with options to the `GitModu
 { branch: 'master', ignoreSubmodules: 'all', short: null }
 ```
 
+
 Then use the received data for its intended purpose
 
 The implementation of own cli prefix (like `my-cli`) is described in [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
+
+
+#### The way with typing, validation, transformation
+
+The `GitStatusOptionsDto` entity can be more typified with additional instructions
+
+
+```ts
+import { Clirio, Option, Validate, Transform } from 'clirio';
+
+class GitStatusOptionsDto {
+  @Option('--branch, -b')
+  @Validate(Clirio.valid.STRING)
+  readonly branch: string;
+
+  @Option('--ignore-submodules, -i')
+  @Validate((v) => ['none', 'untracked','dirty', 'all'].includes(v))
+  readonly ignoreSubmodules: 'none' | 'untracked' | 'dirty' | 'all';
+
+  @Option('--short, -s')
+  @Transform(Clirio.form.FLAG)
+  readonly short: boolean;
+}
+```
+
+```ts
+@Module()
+export class GitModule {
+  @Command('git status')
+  public status(@Options() options: GitStatusDto) {
+    // the "options" data has bean typified, validated, transformed here
+    console.log(`branch: ${options.branch}`);
+    console.log(`ignoreSubmodules: ${options.ignoreSubmodules}`);
+    console.log(`short: ${options.short}`);
+  }
+}
+```
+
+##### Result
+
+```bash
+$ my-cli git status -b master --ignore-submodules  all --short
+```
+
+```console
+  branch: master
+  ignoreSubmodules: all
+  short: true
+```
+
+All the details are described below
 
 ## Starter kit
 
@@ -704,9 +757,10 @@ class GitStatusOptionsDto {
   readonly branch?: string;
 
   @Option('--ignore-submodules, -i')
-  readonly ignoreSubmodules?: 'none' | 'untracked' | 'dirty' | 'all';
+  readonly ignoreSubmodules?: string;
 
   @Option('--short, -s')
+  @Transform(Clirio.form.FLAG)
   readonly short?: boolean;
 }
 ```

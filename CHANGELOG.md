@@ -19,7 +19,7 @@ Improved the app lifecycle.
 #### [1.1.0] - August 21, 2023
 
 Changed properties in Clirio exceptions to optional.
-
+    
 ### [1.0.0] - August 1, 2023
 
 The lib has been completely redone.
