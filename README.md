@@ -906,6 +906,7 @@ class GitStatusDto {
   readonly ignoreSubmodules?: 'none' | 'untracked' | 'dirty' | 'all';
 
   @Option('--short, -s')
+  @Transform(Clirio.form.FLAG)
   readonly short?: boolean;
 }
 ```
@@ -922,7 +923,7 @@ For any case of failed validation, the same error will be thrown `The "%KEY_NAME
 
 To have more flexible validations, use [Pipes](#pipes)
 
-It is possible to [configure](#setconfig) throwing errors on unknown keys or in options
+It is possible to [configure](#setconfig) throwing errors on unknown keys in options
 
 ##### Validation of an optional key
 
@@ -958,9 +959,9 @@ See [Clirio-made checks](#valid)
 
 ## Transformation
 
-The `@Transform()` decorator provided to transform input params and options.
+The `@Transform()` decorator provided to transform input data.
 
-It must be used for DTO properties in conjunction with `@Option()` or `@Param()` (this depends on the type of controlled data)
+It must be used for DTO properties in conjunction with `@Option()` or `@Param()` or `@Env()` (this depends on the type of controlled data)
 
 The `@Transform()` takes a transform function as an argument
 
@@ -1066,6 +1067,15 @@ $ my-cli sum 5 15
 
 ##### Using Clirio-made forms
 
+
+```ts
+class SumParamsDto {
+  @Param()
+  @Transform(Clirio.form.NUMBER)
+  readonly first: number;
+}
+```
+
 ```ts
 class SetAutoOptionsDto {
   @Option('--turbo')
@@ -1073,6 +1083,7 @@ class SetAutoOptionsDto {
   readonly turbo: boolean;
 }
 ```
+
 
 See [Clirio-made forms](#form)
 
@@ -1089,22 +1100,25 @@ export class CustomPipe implements ClirioPipe {
     // controlled params
     if (input.dataType === 'params') {
       // validation
-      if (check(data)) {
+      if (myCustomCheckName(data.name)) {
         throw new ClirioValidationError('error message', {
           dataType: input.dataType,
-          propertyName: 'typeId',
+          propertyName: 'name',
         });
       }
 
       // transformation
-      return { ...data };
+      return { 
+        ...data, 
+        name: String(data.name).toLowerCase() 
+      };
     }
 
     // controlled options
 
     if (input.dataType === 'options') {
       // validation
-      if (check(data)) {
+      if (myCustomCheckTypeId(data)) {
         throw new ClirioValidationError('error message', {
           dataType: input.dataType,
           propertyName: 'typeId',
@@ -1112,7 +1126,10 @@ export class CustomPipe implements ClirioPipe {
       }
 
       // transformation
-      return { ...data };
+      return {
+        ...data, 
+        typeId: Number(data.typeId) 
+      };
     }
 
     return data;
@@ -1156,7 +1173,7 @@ export class MigrationUpPipe implements ClirioPipe {
     if (input.dataType === 'params') {
       // validation
       if (/^[0-9]+$/.test(data.migrationId)) {
-        throw new ClirioValidationError('"migration-id" is not number', {
+        throw new ClirioValidationError('the "migration-id" param is not a number', {
           dataType: input.dataType,
           propertyName: 'migrationId',
         });
@@ -1602,10 +1619,12 @@ export class MigrationRunOptionsDto {
   @Transform(Clirio.form.KEY_VALUE)
   readonly envs: Record<string, string>;
 
+  // always an array
   @Option('--id, -i')
   @Transform(Clirio.form.ARRAY)
-  readonly id: string[];
+  readonly ids: string[];
 
+  // always a primitive type
   @Option('-f, --format')
   @Transform(Clirio.form.PLAIN)
   readonly format: string;
