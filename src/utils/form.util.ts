@@ -22,7 +22,7 @@ export const form = {
       return {};
     }
 
-    const obj: Record<string, string | null> = {};
+    const obj: Record<string, string | null> = Object.create(null);
 
     const values = Array.isArray(value) ? value : [value];
 
@@ -35,7 +35,7 @@ export const form = {
       }
     }
 
-    return obj;
+    return { ...obj };
   },
 
   ARRAY: (value: any): (string | null)[] => {

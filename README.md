@@ -1,14 +1,14 @@
 # Clirio
 
-A mini framework for node.js command-line interfaces based on TypeScript, decorators, DTOs
+A mini framework for Node.js command-line interfaces built around TypeScript, decorators, and DTOs
 
-Clirio is a library for routing terminal command-lines. Clirio promotes using SOLID and data typing (an alternative to [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and etc.).
+Clirio is a routing and data-control library for terminal commands. It helps you describe CLI commands as modules and actions, map raw input into typed DTOs, and keep validation and transformation close to the place where a command is handled. In that sense, it can be used as an alternative to tools like [commander](https://www.npmjs.com/package/commander), [args](https://www.npmjs.com/package/args), [argparse](https://www.npmjs.com/package/argparse) and others.
 
-The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular), [nestjs](https://github.com/nestjs/nest)
+The [author](https://github.com/stepanzabelin) is inspired by [angular](https://github.com/angular) and [nestjs](https://github.com/nestjs/nest)
 
-You can integrate Clirio with other interactive command-line libs (like [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk) and etc.)
+You can also combine Clirio with interactive command-line libraries such as [inquirer](https://www.npmjs.com/package/inquirer), [terminal-kit](https://www.npmjs.com/package/terminal-kit), [chalk](https://www.npmjs.com/package/chalk), and others.
 
-Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
+The Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit)
 
 ![Demo](./docs/demo.gif)
 
@@ -35,7 +35,7 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [Transformation](#transformation)
   - [Pipes](#pipes)
   - [Exceptions](#exceptions)
-  - [Filters](#filter)
+  - [Filters](#filters)
   - [Displaying help](#displaying-help)
     - [Clirio Helper](#clirio-helper)
     - [Hidden commands](#hidden-commands)
@@ -48,10 +48,10 @@ Clirio starter kit is [here](https://github.com/stepanzabelin/clirio-starter-kit
     - [setModules](#setmodules)
     - [execute](#execute)
   - [Clirio utils](#clirio-utils)
-    - [valid](#clirio-valid)
-    - [form](#clirio-form)
-    - [parse](#clirio-parse)
-    - [describe](#clirio-describe)
+    - [valid](#cliriovalid)
+    - [form](#clirioform)
+    - [parse](#clirioparse)
+    - [describe](#cliriodescribe)
   - [Decorators](#decorators)
     - [Command](#command-decorator)
     - [Empty](#empty-decorator)
@@ -83,11 +83,11 @@ yarn add clirio
 
 ## Quick Start
 
-There are 3 easy steps to build Clirio App.
+There are 3 easy steps to build a Clirio app.
 
-The example for emulating `git status` cli command with options
+The example below emulates the `git status` CLI command with options.
 
-1. Create DTO to define input options
+1. Create a DTO to describe input options
 
 ```ts
 import { Option } from 'clirio';
@@ -104,7 +104,7 @@ class GitStatusDto {
 }
 ```
 
-2. Create module to compose a set of commands
+2. Create a module to group related commands
 
 ```ts
 import { Module, Command, Options } from 'clirio';
@@ -113,7 +113,7 @@ import { Module, Command, Options } from 'clirio';
 export class GitModule {
   @Command('git status')
   public status(@Options() options: GitStatusDto) {
-    // use handled data here
+    // handled data is available here
     console.log(options);
   }
 }
@@ -137,21 +137,21 @@ $ my-cli git status -b master --ignore-submodules  all --short
 
 
 
-The application will route the command `git status` with options to the `GitModule.status` method.
+The command `git status` will be routed to the `GitModule.status` method.
 
 ```console
 { branch: 'master', ignoreSubmodules: 'all', short: null }
 ```
 
 
-Then use the received data for its intended purpose
+At this point you can use the received data in your own application logic.
 
-The implementation of own cli prefix (like `my-cli`) is described in [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
+The implementation of your own CLI entrypoint (for example `my-cli`) is described in the [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
 
 
 #### The way with typing, validation, transformation
 
-The `GitStatusOptionsDto` entity can be more typified with additional instructions
+The `GitStatusOptionsDto` entity can be made stricter with validation and transformation rules.
 
 
 ```ts
@@ -176,8 +176,8 @@ class GitStatusOptionsDto {
 @Module()
 export class GitModule {
   @Command('git status')
-  public status(@Options() options: GitStatusDto) {
-    // the "options" data has bean typified, validated, transformed here
+  public status(@Options() options: GitStatusOptionsDto) {
+    // "options" has already been typed, validated, and transformed here
     console.log(`branch: ${options.branch}`);
     console.log(`ignoreSubmodules: ${options.ignoreSubmodules}`);
     console.log(`short: ${options.short}`);
@@ -197,19 +197,19 @@ $ my-cli git status -b master --ignore-submodules  all --short
   short: true
 ```
 
-All the details are described below
+The details are described below.
 
 ## Starter kit
 
-Clirio is developed according to SOLID principles, so it is possible apply OOP, dependency injection and other programming patterns.
+Clirio is designed in a way that works well with SOLID-style architecture, OOP, dependency injection, and other common application patterns.
 
-**[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains the recommended assembly. But it is possible to integrate any other libraries and custom decorators.
+The **[Clirio starter kit](https://github.com/stepanzabelin/clirio-starter-kit)** contains a recommended project setup, but you can also integrate Clirio with your own libraries, containers, and custom decorators.
 
 ## Definitions
 
-Anatomy of a shell CLI is described in [wiki](https://en.wikipedia.org/wiki/Command-line_interface#Anatomy_of_a_shell_CLI)
+The anatomy of a shell CLI is described in [wiki](https://en.wikipedia.org/wiki/Command-line_interface#Anatomy_of_a_shell_CLI)
 
-The author suggests using the following definitions to describe the Clirio specification.
+The following definitions are used throughout the Clirio documentation.
 
 ##### Bash example
 
@@ -241,23 +241,23 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 ##### Command Definition
 
-"Command" are space-separated command-line parts without leading dashes
+"Command" is the space-separated part of the input without leading dashes
 
 ##### Params Definition
 
-"Params" are obtained values by matching the command in accordance with the given pattern
+"Params" are values obtained by matching a command against a command pattern
 
 ##### Options Definition
 
-"Options" are command-line parts using a leading dashes
+"Options" are command-line parts that start with one or more leading dashes
 
-Each option is either a key-value or a key. If in the beginning 2 dashes is a long key if one dash is a short key which must be 1 character long:
+Each option is either a key-value pair or a standalone key. If an option starts with two dashes it is treated as a long key; if it starts with one dash it is treated as a short key, which must be one character long:
 
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
 
 ## Parsing args
 
-Parsing the command-line (Clirio implementation)
+This is how Clirio parses a command-line:
 
 ```ts
 Clirio.parse('test --foo 15 -b -a -r 22');
@@ -267,7 +267,7 @@ Clirio.parse('test --foo 15 -b -a -r 22');
 Clirio.describe(['test', '--foo=15', '-b', '-a', '-r', '22']);
 ```
 
-Result
+Result:
 
 ```json
 [
@@ -279,7 +279,7 @@ Result
 ]
 ```
 
-The another example
+Another example:
 
 ```bash
 $ my-cli set-time 10:56 --format=AM -ei 15
@@ -304,13 +304,13 @@ $ my-cli set-time 10:56 --format=AM -ei 15
 
 ## App configuration
 
-The application structure should consist of the following parts:
+The application usually consists of the following parts:
 
-1. the main class - `Clirio`
-2. modules (custom classes or their instances)
-3. actions (methods in class-modules with decorators )
+1. the main class: `Clirio`
+2. modules: custom classes or their instances
+3. actions: methods in those modules decorated with Clirio decorators
 
-`Clirio` - is the main class which configures the application and links modules
+`Clirio` is the main class. It configures the application and links modules together.
 
 ```ts
 const cli = new Clirio();
@@ -318,7 +318,7 @@ cli.setModules([HelloModule, CommonModule, GitModule, MigrationModule]);
 cli.execute();
 ```
 
-Modules can be instantiated to apply dependency injection
+Modules can be instantiated manually if you want to plug in dependency injection.
 
 ```ts
 cli.setModules([
@@ -328,14 +328,14 @@ cli.setModules([
 ]);
 ```
 
-The example is [here](https://github.com/stepanzabelin/clirio-starter-kit)
+An example of that setup is available in the [starter kit](https://github.com/stepanzabelin/clirio-starter-kit)
 
 ## Modules
 
-Clirio modules are custom classes with the `@Module()` decorator (they can be considered as controllers).
-An application can have either one or many modules. Each module contains actions (patterns for commands)
+Clirio modules are custom classes marked with the `@Module()` decorator. You can think of them as controllers for your CLI.
+An application can have one module or many. Each module contains actions that describe command patterns.
 
-Using a common module
+Using a single common module:
 
 ```ts
 @Module()
@@ -352,14 +352,14 @@ export class CommonModule {
 }
 ```
 
-As a result 2 commands will be available:
+As a result, 2 commands will be available:
 
 ```bash
 $ my-cli hello there
 $ my-cli migration run
 ```
 
-Using multiple modules to separate unrelated commands and structure the code
+Using multiple modules helps separate unrelated commands and keep the code organized:
 
 ```ts
 @Module('hello')
@@ -381,7 +381,7 @@ export class MigrationModule {
 
 ## Actions
 
-Clirio actions are methods in class-modules with decorators
+Clirio actions are methods inside modules decorated with Clirio action decorators.
 
 ```ts
 @Module()
@@ -410,7 +410,7 @@ export class HelloModule {
 
 ### Command patterns
 
-The `@Command()` decorator is designed to specify the command pattern
+The `@Command()` decorator is used to define a command pattern.
 
 ```ts
 @Module()
@@ -432,13 +432,13 @@ export class MigrationModule {
 }
 ```
 
-The total pattern based on `@Module(...)` and `@Commands(...)` will be matched with the command-line
+The final pattern is built from `@Module(...)` and `@Command(...)`, then matched against the command-line.
 
-Pattern can consist of one or more space-separated arguments
+A pattern can consist of one or more space-separated arguments.
 
 ##### Case 1. Exact match
 
-The exact command will be matched
+The exact command will be matched.
 
 ```ts
   @Command('hello')
@@ -453,7 +453,7 @@ The exact command will be matched
 
 ##### Case 2. Match variants
 
-Using the `|` operator to set match variants for params. Multiple command-lines will be matched to one route. The number of space-separated parts of the command-line should be the same.
+Use the `|` operator to set match variants. Multiple command-lines can be routed to the same action. The number of space-separated parts must stay the same.
 
 ```ts
   @Command('migration run|up')
@@ -467,7 +467,7 @@ Using the `|` operator to set match variants for params. Multiple command-lines 
 
 ##### Case 3. Pattern with value masks
 
-Using the `< >` operator to specify a place for any value. The number of space-separated parts of the command-line should be the same
+Use the `< >` operator to mark a position that can contain any value. The number of space-separated parts must still match.
 
 ```ts
   @Command('hello <first-name> <last-name>')
@@ -479,12 +479,12 @@ Using the `< >` operator to specify a place for any value. The number of space-s
 | hello \<first-name\> \<last-name\> | hello Alex Smith<br>hello John Anderson<br> ... etc.                 |
 | set-time \<time\>                  | set-time 11:50<br> set-time now<br> set-time 1232343545<br> ... etc. |
 
-Use [Params data control](#params-data-control) to get the entered values
+Use [Params data control](#params-data-control) to receive those values in a DTO.
 
 ##### Case 4. Pattern with rest values mask
 
-Using the `<... >` operator to specify a place for array of values
-This kind of mask can be only one per command pattern and should be at the end
+Use the `<... >` operator to capture an array of values.
+Only one rest mask can appear in a command pattern, and it must be at the end.
 
 ```ts
   @Command('hello <...all-names>')
@@ -500,7 +500,7 @@ Use [Params data control](#params-data-control) to get the entered values
 
 ##### Case 5. Option match
 
-This pattern is designed for special cases like "help" and "version". This is an exact match of the option key and value. Match variants can be separated by comma
+This pattern is designed for special cases such as "help" and "version". It performs an exact match against an option-style command. Match variants can be separated by commas.
 
 ```ts
   @Command('--help, -h')
@@ -513,13 +513,13 @@ This pattern is designed for special cases like "help" and "version". This is an
 | --version, -v   | --version<br/> -v     |
 | --mode=check    | --mode=check          |
 
-Use [Options data control](#options-data-control) to add other options
-To avoid problems, do not mix this pattern with the rest ones
+Use [Options data control](#options-data-control) if you want that command to accept additional options.
+To avoid ambiguous matching, do not mix this pattern with other kinds of command patterns.
 
 ## Empty command
 
-The `@Empty()` action decorator is a way to catch the case when nothing is entered
-Each module can have its own `@Empty()` decorator in an action
+The `@Empty()` action decorator lets a module handle the case when nothing is entered.
+Each module can declare its own `@Empty()` action.
 
 ```ts
 @Module()
@@ -542,7 +542,7 @@ $ my-cli
 You haven't entered anything
 ```
 
-When a module has a command prefix, it will be matched and ranked
+When a module has a command prefix, empty handlers are matched and ranked by that prefix.
 
 ```ts
 @Module('migration')
@@ -569,11 +569,11 @@ The migration module requires additional instruction. Type --help
 
 ### Failure command
 
-The `@Failure()` action decorator is a way to catch the case when the specified command patterns don't match
+The `@Failure()` action decorator lets a module handle the case when command patterns do not match.
 
-Each module can have its own `@Failure()` decorator in an action
+Each module can declare its own `@Failure()` action.
 
-if this decorator is not specified, then a default error will be displayed
+If this decorator is not specified, Clirio throws a default error.
 
 ```ts
 @Module()
@@ -596,7 +596,7 @@ $ my-cli goodbye
 There is no such a command!
 ```
 
-When a module has a command prefix, it will be matched and ranked
+When a module has a command prefix, failure handlers are matched and ranked by that prefix.
 
 ```ts
 @Module('migration')
@@ -621,8 +621,8 @@ The migration module got the wrong instruction
 
 ## Data control
 
-Using [Parameter Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data
-The `@Params()` and `@Options()` decorators provided
+Clirio uses [parameter decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) to control input data.
+The `@Params()` and `@Options()` decorators are provided for this purpose.
 
 ```ts
 @Module()
@@ -641,16 +641,16 @@ $ my-cli get-location Prague --format=DMS --verbose
 
 ```console
 { city: "Prague" }
-{ format: "DMS", verbose: true }
+{ format: "DMS", verbose: null }
 ```
 
 ### Params data control
 
-To handle incoming data, use DTO (instead of unknown type)
+To handle incoming data in a typed way, use DTOs instead of `unknown`.
 
 ### Params DTO
 
-The `@Param()` decorator for dto properties provided. It can take a key in an param mask to map DTO properties
+The `@Param()` decorator is provided for DTO properties. It can take the name of a param mask and map it to a DTO property.
 
 ```ts
 export class HelloParamsDto {
@@ -672,8 +672,8 @@ export class HelloModule {
 }
 ```
 
-Here the second and third parts of the command-line are the masks for any values that the user enters
-The `hello` method will be called if the user enters a three-part command. The last 2 parts are passed to the params argument as keys and values
+Here the second and third parts of the command-line are value masks.
+The `hello` method will be called when the user enters a three-part command. The last two parts are passed into the params DTO.
 
 ```bash
 $ my-cli hello Alex Smith
@@ -683,8 +683,8 @@ $ my-cli hello Alex Smith
 { firstName: "Alex", lastName: "Smith" }
 ```
 
-The `@Param()` decorator can have no arguments. In this case DTO properties will map to input keys
-If the `@Param()` decorator is absent then there will be no mapping
+The `@Param()` decorator can be used without arguments. In that case, DTO properties are mapped to input keys with the same name.
+If the `@Param()` decorator is absent, no mapping is performed for that property.
 
 ```ts
 export class HelloParamsDto {
@@ -729,12 +729,12 @@ $ my-cli git add test.txt logo.png
 ```
 
 ```console
-['test.txt', 'logo.png']
+{ allFiles: ['test.txt', 'logo.png'] }
 ```
 
 ### Options data control
 
-The `@Options()` decorator provided
+The `@Options()` decorator is provided for command options.
 
 ```ts
 @Module()
@@ -748,7 +748,7 @@ export class GitModule {
 
 ### Options DTO
 
-The `@Option()` decorator for dto properties provided. It can accept comma-separated key aliases to map DTO properties
+The `@Option()` decorator is provided for DTO properties. It can accept comma-separated key aliases and map them to a DTO property.
 
 ```ts
 class GitStatusOptionsDto {
@@ -773,26 +773,26 @@ $ my-cli git status -b master -i all -s
 
 ```
 
-Each input data will lead to one result:
+Each of these inputs leads to the same result:
 
 ```console
 { branch: 'master', ignoreSubmodules: 'all', short: true }
 ```
 
-If the `@Option()` decorator is absent then there will be no mapping
+If the `@Option()` decorator is absent, no mapping is performed for that property.
 
 ```bash
 $ my-cli git status --branch=master --ignore-submodules=all --short
 ```
 
 ```console
-{ branch: 'master', "ignore-submodule": 'all', short: true }
+{ branch: 'master', 'ignore-submodules': 'all', short: null }
 ```
 
 ## Input DTO
 
-DTOs used to control inputs can have additional decorators, including custom ones
-All incoming key values can be `null` or `string` either an `array` of `null` or a `string`
+DTOs used to control input can have additional decorators, including custom ones.
+Before validation and transformation, every incoming value is one of the following raw forms:
 
 ```ts
 type Value = string | null | (string | null)[];
@@ -814,8 +814,8 @@ export class SomeModule {
 }
 ```
 
-Clirio provides the `@Validate()` and `@Transform()` decorators
-In this example it is possible use them for DTO properties `SetLimitParamsDto`, `SetLimitOptionDto`
+Clirio provides the `@Validate()` and `@Transform()` decorators.
+In this example they are used on DTO properties such as `SetLimitParamsDto` and `SetLimitOptionDto`.
 
 ```ts
 import { Option, Validate, Transform } from 'clirio';
@@ -823,16 +823,16 @@ import { MyCustomDecorator } from 'src/my-decorators';
 
 class SetLimitParamsDto {
   @Param('limit')
-  @Validate((v) => /^[0-9]+$/.test(v)) // checking for numbers only
-  @Transform((v) => Number(v)) // string to number
-  @MyCustomDecorator() // will be handled in "Pipe"
+  @Validate((v) => /^[0-9]+$/.test(String(v))) // accept digits only
+  @Transform((v) => Number(v)) // transform string to number
+  @MyCustomDecorator() // can be handled later in a pipe
   readonly limit: number;
 }
 ```
 
 ### Envs data control
 
-The `@Envs()` decorator provided
+The `@Envs()` decorator is provided for environment variables.
 
 ```ts
 import { Envs } from 'clirio';
@@ -848,7 +848,7 @@ export class MigrationModule {
 
 ### Envs DTO
 
-The `@Env()` decorator for dto properties provided
+The `@Env()` decorator is provided for DTO properties.
 
 ```ts
 import { Env } from 'clirio';
@@ -871,13 +871,15 @@ export class TestConnectEnvsDto {
 
 ### Validation
 
-The `@Validate()` decorator provided to check input params and options.
-It must be used for DTO properties in conjunction with `@Option()` or `@Param()` (this depends on the type of controlled data)
-The `@Validate()` takes a function or an array of functions as an argument. Each function must return `boolean` or `null`:
+The `@Validate()` decorator is provided to check input params, options, and envs.
+It should be used on DTO properties together with `@Option()`, `@Param()`, or `@Env()`, depending on the kind of controlled data.
+`@Validate()` accepts either a single function or an array of functions. The functions are executed from left to right, and each one must return `boolean` or `null`:
 
-- if `false` is returned then an error throws
-- if `null` is returned then the key validation clause skips
-- if `true` is returned then the key validation will complete successfully
+- if a function returns `false`, Clirio throws a validation error immediately
+- if a function returns `null`, Clirio moves on to the next validator in the chain
+- if a function returns `true`, the validation chain for that property stops successfully
+
+This makes validator order important. Guard validators such as `OPTIONAL` and `NULLABLE` should usually come before stricter validators such as `STRING` or `NUMBER`.
 
 ```ts
 import { Module, Command, Options } from 'clirio';
@@ -892,7 +894,7 @@ export class GitModule {
 ```
 
 ```ts
-import { Option, Validate } from 'clirio';
+import { Clirio, Option, Transform, Validate } from 'clirio';
 
 class GitStatusDto {
   @Option('--branch, -b')
@@ -919,18 +921,23 @@ $ my-cli git status --ignore-submodules
 The "branch" option is wrong
 ```
 
-For any case of failed validation, the same error will be thrown `The "%KEY_NAME%" %DATA_TYPE% is wrong`
+For every failed validation, Clirio throws the same error shape: `The "%KEY_NAME%" %DATA_TYPE% is wrong`
 
-To have more flexible validations, use [Pipes](#pipes)
+The error is thrown as a `ClirioValidationError` with `dataType` and `propertyName`, so filters and callers can distinguish whether the problem came from params, options, or envs.
 
-It is possible to [configure](#setconfig) throwing errors on unknown keys in options
+To have more flexible validations, use [Pipes](#pipes).
+
+You can [configure](#setconfig) unknown option handling. If `allowUncontrolledOptions` is set to `false`, any option key that is not declared in the DTO will cause an `INVALID_OPTIONS` error.
 
 ##### Validation of an optional key
 
 ```ts
 class OptionsDto {
   @Option('--id')
-  @Validate([(v) => v === undefined || null, /^[0-9]+$/.test(v)])
+  @Validate([
+    (v) => (v === undefined ? true : null),
+    (v) => /^[0-9]+$/.test(String(v)),
+  ])
   readonly id?: number;
 }
 ```
@@ -955,21 +962,31 @@ class OptionsDto {
 }
 ```
 
+##### Validation of a required key
+
+```ts
+class OptionsDto {
+  @Option('--name')
+  @Validate([Clirio.valid.REQUIRED, Clirio.valid.STRING])
+  readonly name!: string;
+}
+```
+
 See [Clirio-made checks](#valid)
 
 ## Transformation
 
-The `@Transform()` decorator provided to transform input data.
+The `@Transform()` decorator is provided to transform input data.
 
-It must be used for DTO properties in conjunction with `@Option()` or `@Param()` or `@Env()` (this depends on the type of controlled data)
+It should be used on DTO properties together with `@Option()`, `@Param()`, or `@Env()`, depending on the kind of controlled data.
 
-The `@Transform()` takes a transform function as an argument
+`@Transform()` takes a transform function as an argument.
 
 ```ts
-import { Option, Transform } from 'clirio';
+import { Option, Param, Transform } from 'clirio';
 
 class SetAutoParamsDto {
-  @Param();
+  @Param()
   @Transform((v) => v.toUpperCase())
   readonly model: string;
 
@@ -987,7 +1004,7 @@ class SetAutoOptionsDto {
 ```
 
 ```ts
-import { Module, Command, Options } from 'clirio';
+import { Module, Command, Options, Params } from 'clirio';
 
 @Module('auto')
 export class AutoModule {
@@ -1089,8 +1106,8 @@ See [Clirio-made forms](#form)
 
 ## Pipes
 
-Pipes are designed to [validate](#validation) and [transform](#transformation) controlled data (params and options).
-Using pipes is more functional than the `@Validate()` and `@Transform()` decorators and gives more flexibility
+Pipes are designed to [validate](#validation) and [transform](#transformation) controlled data such as params, options, and envs.
+Compared to `@Validate()` and `@Transform()`, pipes work at the whole-object level and give you more flexibility when validation depends on several fields at once.
 
 ```ts
 import { ClirioPipe, PipeContext, ClirioValidationError } from 'clirio';
@@ -1100,7 +1117,7 @@ export class CustomPipe implements ClirioPipe {
     // controlled params
     if (input.dataType === 'params') {
       // validation
-      if (myCustomCheckName(data.name)) {
+      if (!myCustomCheckName(data.name)) {
         throw new ClirioValidationError('error message', {
           dataType: input.dataType,
           propertyName: 'name',
@@ -1118,7 +1135,7 @@ export class CustomPipe implements ClirioPipe {
 
     if (input.dataType === 'options') {
       // validation
-      if (myCustomCheckTypeId(data)) {
+      if (!myCustomCheckTypeId(data)) {
         throw new ClirioValidationError('error message', {
           dataType: input.dataType,
           propertyName: 'typeId',
@@ -1137,9 +1154,9 @@ export class CustomPipe implements ClirioPipe {
 }
 ```
 
-The `input: PipeContext` argument contains the value input.entity (it is a DTO). It is possible to extract reflection data and use custom decorators.
+The `input: PipeContext` argument contains `input.entity` (the DTO class). This makes it possible to inspect reflection data and build your own advanced behavior around custom decorators.
 
-The `@Pipe()` decorator provided
+The `@Pipe()` decorator is provided for attaching pipes to an action.
 
 ##### Example
 
@@ -1172,7 +1189,7 @@ export class MigrationUpPipe implements ClirioPipe {
   transform(data: any, input: PipeContext): any | never {
     if (input.dataType === 'params') {
       // validation
-      if (/^[0-9]+$/.test(data.migrationId)) {
+      if (!/^[0-9]+$/.test(data.migrationId)) {
         throw new ClirioValidationError('the "migration-id" param is not a number', {
           dataType: input.dataType,
           propertyName: 'migrationId',
@@ -1188,7 +1205,9 @@ export class MigrationUpPipe implements ClirioPipe {
 }
 ```
 
-It is possible to add pipes for each action or globally for all at once
+You can add pipes to each action or apply them globally to all commands.
+If several pipes are applied, they run in sequence. The next pipe receives the result returned by the previous one.
+Global pipes run before action-level pipes. If needed, `@Pipe(SomePipe, { overwriteGlobal: true })` can be used to disable the global pipe for a specific action.
 
 ### Example of a global pipe
 
@@ -1201,7 +1220,7 @@ cli.execute();
 
 ## Exceptions
 
-Exceptions can be thrown in pipes or actions. Special exceptions designed to complete the script with the desired result
+Exceptions can be thrown in pipes or actions. Clirio also provides special exception classes that make it easier to communicate CLI-friendly errors.
 
 - ClirioValidationError
 - ClirioCommonError
@@ -1241,7 +1260,7 @@ cli.execute().catch((err) => {
 
 ## Filters
 
-Filters are designed to catch exceptions
+Filters are designed to catch exceptions raised by actions, pipes, validation, or explicit application logic.
 
 ```ts
 @Module('ping')
@@ -1283,7 +1302,9 @@ export class PingPongFilter implements ClirioFilter {
 }
 ```
 
-It is possible to add filters for each action or apply them globally to all actions at once
+You can add filters to each action or apply them globally to all actions at once.
+If both global and action-level filters are used, they run in sequence. A filter can handle the current error, rethrow it, or throw a different error.
+If needed, `@Filter(SomeFilter, { overwriteGlobal: true })` can be used to disable the global filter for a specific action.
 
 ### Example of a global filter
 
@@ -1296,7 +1317,7 @@ cli.execute();
 
 ## Displaying help
 
-Special case for the command as an option designed
+Clirio also supports special commands expressed as options, which is useful for things like help and version output.
 
 ```ts
 @Module()
@@ -1316,7 +1337,7 @@ $ my-cli --help
 Description of commands is here
 ```
 
-It is possible to implement any other commands
+You can implement other option-style commands in the same way.
 
 ```ts
 @Command('-m, --man')
@@ -1326,9 +1347,9 @@ It is possible to implement any other commands
 @Command('man <command>')
 ```
 
-### Helper decorator
+### Clirio Helper
 
-The `@Helper()` decorator provided to handle the help mode
+The `@Helper()` decorator is provided to handle help mode.
 
 ```ts
 import { Module, Command, Helper, ClirioHelper } from 'clirio';
@@ -1354,13 +1375,13 @@ export class CommonModule {
 $ my-cli --help
 ```
 
-The `ClirioHelper` class provides api for getting descriptions of actions and methods for formatting it
+The `ClirioHelper` class provides an API for collecting command descriptions and formatting them.
 
-The `dumpAll` method returns description for all commands. It is possible to do custom formatting
+The `dumpAll` method returns descriptions for all commands. You can format that data yourself or pass it to `ClirioHelper.formatDump`.
 
 ### Displaying help in a particular module
 
-The `dumpThisModule` method returns description for the current module.
+The `dumpThisModule` method returns the description for the current module.
 
 ```ts
 @Module('ping')
@@ -1384,10 +1405,10 @@ $ my-cli ping --help
 
 ### Hidden commands
 
-The `hidden` option in the `Command()` decorator lets hide description of the command in displaying help
+The `hidden` option in the `Command()` decorator hides a command from generated help output.
 
 ```ts
-import { Module, Command, Hidden } from 'clirio';
+import { Module, Command } from 'clirio';
 
 @Module()
 export class Module {
@@ -1405,9 +1426,9 @@ export class Module {
 }
 ```
 
-The `ClirioHelper.formatDump` will ignore description of the `debug` command in this case
+In this case, `ClirioHelper.formatDump` will omit the `debug` command from help output.
 
-## Version
+## Displaying Version
 
 ```ts
 import { Module, Command } from 'clirio';
@@ -1433,7 +1454,7 @@ $ my-cli --version
 
 ### setConfig
 
-Setting the global configuration
+Sets the global configuration.
 
 **Parameters:**
 
@@ -1451,11 +1472,11 @@ cli.setConfig({
 
 | Param                    |                                            Description                                             | Default |
 | ------------------------ | :------------------------------------------------------------------------------------------------: | ------: |
-| allowUncontrolledOptions | Clirio can throw Error if DTO are not specified for options but it will be got in the command-line |    true |
+| allowUncontrolledOptions | If `false`, any option key that is not declared in the DTO causes an `INVALID_OPTIONS` error |    true |
 
 ### setGlobalPipe
 
-sets global pipe
+Sets a global pipe.
 
 **Parameters:**
 
@@ -1471,7 +1492,7 @@ cli.setGlobalPipe(CommonPipe);
 
 ### setGlobalFilter
 
-sets global filter
+Sets a global filter.
 
 **Parameters:**
 
@@ -1487,7 +1508,7 @@ cli.setGlobalFilter(CommonFilter);
 
 ### addModule
 
-adds one module
+Adds one module.
 
 **Parameters:**
 
@@ -1504,7 +1525,7 @@ cli.addModule(new MigrationModule());
 
 ### setModules
 
-sets several modules
+Sets several modules at once.
 
 **Parameters:**
 
@@ -1520,9 +1541,9 @@ cli.setModules([HelloModule, new MigrationModule()]);
 
 ### setArgs
 
-sets arguments of the command-line
+There is no separate `setArgs()` method. To pass arguments manually, call `execute(args)`.
 
-Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
+By default Clirio reads arguments from `process.argv.slice(2)`, but for testing and debugging you can pass them directly.
 
 **Parameters:**
 
@@ -1533,16 +1554,16 @@ Arguments will be determined automatically but it is possible to set them manual
 - Clirio
 
 ```ts
-cli.setArgs(['git', 'add', 'test.txt', 'logo.png']);
+await cli.execute(['git', 'add', 'test.txt', 'logo.png']);
 ```
 
 ### execute
 
-launches Clirio App
+Launches the Clirio app.
 
 **Parameters:**
 
-no parameters
+`args?: string[]`
 
 **Returns:**
 
@@ -1554,29 +1575,31 @@ await cli.execute();
 
 ## Clirio utils
 
-Clirio class has static methods and values
+The `Clirio` class also exposes static methods and helpers.
 
 ### Clirio.valid
 
-an object of check functions for [validation](#validation)
+An object of built-in check functions for [validation](#validation).
 
 ```ts
 Clirio.valid.BOOLEAN;
 Clirio.valid.NUMBER;
 ```
 
-| Key       | Checks if the value is                                                       |
-| --------- | ---------------------------------------------------------------------------- |
-| OPTIONAL  | `undefined` then it returns `true` otherwise it returns `null`               |
-| REQUIRED  | `undefined` then it returns `false` otherwise it returns `null`              |
-| NULLABLE  | `null` then it returns true otherwise it returns `null`                      |
-| NULL      | `null`                                                                       |
-| NUMBER    | `null`                                                                       |
-| INTEGER   | `number` (integer) or a string that resembles an integer                     |
-| STRING    | `string`                                                                     |
-| BOOLEAN   | `boolean` or `string` that resembles boolean (`"true"`or`"false"`)           |
-| FLAG      | `null` or `string` that resembles boolean (`"true"` or `"false"`)            |
-| KEY_VALUE | `string` or `array` of `string` in the `key=value` format (`"DB_USER=user"`) |
+| Key       | Checks if the value is                                                                               |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| OPTIONAL  | `undefined`; returns `true` for `undefined`, otherwise returns `null` so the next validator can run |
+| REQUIRED  | present; returns `false` for `undefined` or `null`, otherwise returns `null`                         |
+| NULLABLE  | `null`; returns `true` for `null`, otherwise returns `null`                                          |
+| NULL      | exactly `null`                                                                                        |
+| NUMBER    | a number or a string that can be converted to a number                                               |
+| INTEGER   | an integer number                                                                                    |
+| STRING    | `string`                                                                                             |
+| BOOLEAN   | `boolean` or a string that looks like `true` or `false`                                              |
+| FLAG      | `null` or a string that looks like `true` or `false`                                                 |
+| KEY_VALUE | a `string` or array of strings in the `key=value` format (`"DB_USER=user"`)                         |
+
+`OPTIONAL`, `REQUIRED`, and `NULLABLE` are especially useful as guard validators at the start of a validation chain.
 
 ##### example
 
@@ -1599,17 +1622,19 @@ Clirio.form.BOOLEAN;
 Clirio.form.NUMBER;
 ```
 
-an object of functions for [transformation](#transformation)
+An object of built-in functions for [transformation](#transformation).
 
-| Key       | transforms into                                                                              |
-| --------- | -------------------------------------------------------------------------------------------- |
-| NUMBER    | `number`                                                                                     |
-| STRING    | `string`                                                                                     |
-| BOOLEAN   | `boolean`                                                                                    |
-| FLAG      | `boolean` (from `null` or `"true"` or `"false"`)                                             |
-| KEY_VALUE | `object` from the `key=value` format or array of ones (`"DB_USER=user"`)                     |
-| ARRAY     | `array` (if the value is originally an array, that array will be returned)                   |
-| PLAIN     | `string` or `null` (if the value is originally an array, the first element will be returned) |
+| Key       | transforms into                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| NUMBER    | `number` using `Number(value)`                                                                               |
+| STRING    | `string` using `String(value ?? '')`                                                                         |
+| BOOLEAN   | JavaScript boolean coercion using `Boolean(value)`                                                           |
+| FLAG      | `boolean` from CLI-style flag values (`null`, `"true"`, `"false"`)                                          |
+| KEY_VALUE | an `object` built from one or more `key=value` entries (`"DB_USER=user"`)                                   |
+| ARRAY     | `array` (if the value is already an array, that same array is returned)                                      |
+| PLAIN     | `string` or `null` (if the value is an array, the first element is returned)                                 |
+
+For CLI flags, prefer `Clirio.form.FLAG`. `Clirio.form.BOOLEAN` uses normal JavaScript coercion, so for example `"false"` becomes `true`.
 
 ##### example
 
@@ -1633,9 +1658,9 @@ export class MigrationRunOptionsDto {
 
 ### Clirio.parse
 
-parses and describes the command-line
+Parses and describes the command-line.
 
-Arguments will be determined automatically but it is possible to set them manually. This option is useful for testing and debugging the application
+Use `Clirio.parse()` when you have the raw command line as a string and want the parsed structure shown above.
 
 **Parameters:**
 
@@ -1664,7 +1689,7 @@ Clirio.parse('foo -a --bbb');
 
 ### Clirio.describe
 
-describes arguments of the command-line
+Describes already-split arguments of the command-line.
 
 **Parameters:**
 
@@ -1686,11 +1711,11 @@ Clirio.describe(['foo', '-a', '--bbb']);
 
 ## Decorators
 
-Clirio works with decorators. More about [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+Clirio works with decorators. You can read more about TypeScript decorators [here](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
 ### "Command" decorator
 
-The `@Command()` decorator specifies [the command pattern](#command-patterns)
+The `@Command()` decorator specifies [the command pattern](#command-patterns).
 
 **Parameters:**
 
@@ -1701,43 +1726,45 @@ The `@Command()` decorator specifies [the command pattern](#command-patterns)
 
 ### "Empty" decorator
 
-The `@Empty()` decorator catches the case when [nothing is entered](#empty-command)
+The `@Empty()` decorator catches the case when [nothing is entered](#empty-command).
 
 ### "Env" decorator
 
-The `@Env()` decorator maps DTO properties in [Envs DTO](#envs-dto)
+The `@Env()` decorator maps DTO properties in an [Envs DTO](#envs-dto).
 
 ### "Envs" decorator
 
-The `@Envs()` decorator controls [environments](#envs-data-control)
+The `@Envs()` decorator controls [environment variables](#envs-data-control).
 
 **Parameters:**
 no parameters
 
 ### "Filter" decorator
 
-The `@Filter()` decorator catches [exceptions](#exceptions) in [actions or pipe](#filtres)
+The `@Filter()` decorator catches [exceptions](#exceptions) raised by actions or pipes.
 
 **Parameters:**
-no parameters
+- filter: ClirioFilter
+- options: object [optional]
+  - options.overwriteGlobal: boolean [optional] - disables the global filter for this action
 
 ### "Failure" decorator
 
-The `@Failure()` decorator catches the case when the specified command patterns [don't match](#failure-command)
+The `@Failure()` decorator catches the case when the specified command patterns [don't match](#failure-command).
 
 **Parameters:**
 no parameters
 
 ### "Helper" decorator
 
-The `@Helper()` decorator handles [the help mode](#displaying-help)
+The `@Helper()` decorator handles [help mode](#displaying-help).
 
 **Parameters:**
 no parameters
 
 ### "Module" decorator
 
-The `@Module()` decorator makes [classes as controllers](#modules) in to [configure Clirio app](#app-configuration)
+The `@Module()` decorator turns a class into a module used to [configure a Clirio app](#app-configuration).
 
 **Parameters:**
 
@@ -1748,7 +1775,7 @@ The `@Module()` decorator makes [classes as controllers](#modules) in to [config
 
 ### "Option" decorator
 
-The `@Option()` decorator maps DTO properties in [options DTO](#options-dto)
+The `@Option()` decorator maps DTO properties in an [options DTO](#options-dto).
 
 **Parameters:**
 
@@ -1759,52 +1786,53 @@ The `@Option()` decorator maps DTO properties in [options DTO](#options-dto)
 
 ### "Options" decorator
 
-The `@Options()` decorator controls [input options](#options-data-control)
+The `@Options()` decorator controls [input options](#options-data-control).
 
 **Parameters:**
 no parameters
 
 ### "Param" decorator
 
-The `@Param()` decorator maps DTO properties in [params DTO](#params-dto)
+The `@Param()` decorator maps DTO properties in a [params DTO](#params-dto).
 
 **Parameters:**
 
-- key: string [optional] - comma separated key aliases
+- key: string [optional] - param mask key
 - options: object [optional] - extra options
   - options.description: string [optional] - description for the help mode
   - options.hidden: boolean [optional] - hiding the param in the help mode
 
 ### "Params" decorator
 
-The `@Params()` decorator controls [input params](#params-data-control)
+The `@Params()` decorator controls [input params](#params-data-control).
 
 **Parameters:**
 no parameters
 
 ### "Pipe" decorator
 
-The `@Pipe()` decorator [validates and transforms](#pipes) controlled data (params and options).
+The `@Pipe()` decorator [validates and transforms](#pipes) controlled data.
 
 **Parameters:**
 
 - pipe: ClirioPipe
+- options: object [optional]
+  - options.overwriteGlobal: boolean [optional] - disables the global pipe for this action
 
 ### "Transform" decorator
 
-The `@Transform()` decorator [transforms](#transformation) input params and options
-
-**Parameters:**
-
-- value: a function or an array of functions
-  - `(value: any) => boolean | null`
-  - `(value: any) => (boolean | null)[]`
-
-### Validate decorator
-
-The `@Validate()` decorator [validates](#validation) input params and options
+The `@Transform()` decorator [transforms](#transformation) input data.
 
 **Parameters:**
 
 - value: a transform function
   - `(value: any) => any`
+
+### Validate decorator
+
+The `@Validate()` decorator [validates](#validation) input data.
+
+**Parameters:**
+
+- value: a validation function or an array of validation functions
+  - `(value: any) => boolean | null`

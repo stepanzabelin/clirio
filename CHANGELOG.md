@@ -1,5 +1,13 @@
 # Changelog
 
+### [3.1.0] - April 11, 2026
+
+Improved strict option handling for DTO-defined aliases and property-name fallbacks
+Fixed pipe chaining so each next pipe receives the transformed result of the previous one
+Hardened raw input handling for reserved keys such as `hasOwnProperty` and `__proto__`
+Expanded regression coverage for option safety, pipe context, and validation helpers
+Refined README examples and clarified validation, pipe, filter, and error-handling behavior
+
 ### [3.0.0] - November 14, 2023
 
 Improved args parser (integer types for actions added)
