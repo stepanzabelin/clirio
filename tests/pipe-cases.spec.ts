@@ -224,4 +224,88 @@ describe('Pipe cases', () => {
       ClirioHelper.getFormattedOptionKey(input.entity, 'algorithm'),
     ).toEqual('--algorithm, -a');
   });
+
+  it('5.1', async () => {
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'up');
+
+    sandbox
+      .stub(MigrationUpPipe.prototype, 'transform')
+      .callsFake((data, input) => {
+        if (input.dataType === 'params') {
+          return {
+            ...data,
+            typeId: `${data.typeId}:action`,
+          };
+        }
+
+        return data;
+      });
+
+    const globalPipe = {
+      transform(data: any, input: any) {
+        if (input.dataType === 'params') {
+          return {
+            ...data,
+            typeId: `global:${data.typeId}`,
+          };
+        }
+
+        return data;
+      },
+    };
+
+    await buildCli()
+      .setGlobalPipe(globalPipe)
+      .execute(
+        Clirio.split(
+          'migration up type-dbo 15135 -e DB_NAME=db-name -e DB_TABLE=db-table --id=149542 -s --start-date=1 --end-date --algorithm=a',
+        ),
+      );
+
+    const [params] = entryStub.getCall(0).args;
+
+    expect(params).toMatchObject({
+      typeId: 'global:15135:action',
+    });
+  });
+
+  it('5.2', async () => {
+    const pipeContexts: unknown[] = [];
+
+    sandbox.stub(MigrationUpPipe.prototype, 'transform').callsFake(function (
+      this: MigrationUpPipe,
+      data: any,
+      input: any,
+    ) {
+      pipeContexts.push(this);
+
+      if (input.dataType === 'params') {
+        return {
+          ...data,
+          typeId: `ctx:${data.typeId}`,
+        };
+      }
+
+      return data;
+    });
+
+    const entryStub = sandbox.stub(MigrationModule.prototype, 'up');
+
+    await buildCli().execute(
+      Clirio.split(
+        'migration up type-dbo 15135 -e DB_NAME=db-name -e DB_TABLE=db-table --id=149542 -s --start-date=1 --end-date --algorithm=a',
+      ),
+    );
+
+    const [params] = entryStub.getCall(0).args;
+
+    expect(params).toMatchObject({
+      typeId: 'ctx:15135',
+    });
+
+    expect(pipeContexts.length).toBeGreaterThan(0);
+    expect(
+      pipeContexts.every((context) => context instanceof MigrationUpPipe),
+    ).toBeTruthy();
+  });
 });

@@ -17,6 +17,7 @@ import {
   failureTargetMetadata,
   helperArgMetadata,
   moduleEntityMetadata,
+  optionTargetMetadata,
   optionsArgMetadata,
   paramsArgMetadata,
   envsArgMetadata,
@@ -25,7 +26,7 @@ import { ClirioHelper } from './clirio-helper.class';
 import { ClirioHandler } from './clirio-handler.class';
 import { ClirioCommonError, ClirioDebugError } from '../exceptions';
 import { Clirio } from './clirio.class';
-import { getPrototype } from '../utils';
+import { getPrototype, isConstructor } from '../utils';
 
 export class ClirioCore {
   protected modules: Module[] = [];
@@ -120,10 +121,27 @@ export class ClirioCore {
           ...helperArgMap,
         ].sort((a, b) => a[0] - b[0]);
 
+        // In strict mode we should allow every key declared in DTOs,
+        // including aliases like "--help, -h" and property-name fallbacks.
+        const controlledOptionKeys = new Set<string>();
+
+        for (const [, input] of optionsArgMap) {
+          if (!isConstructor(input.entity)) {
+            continue;
+          }
+
+          for (const [propertyName, optionData] of optionTargetMetadata.getMap(
+            input.entity.prototype,
+          )) {
+            for (const key of optionData.keys ?? [propertyName]) {
+              controlledOptionKeys.add(key);
+            }
+          }
+        }
+
         if (
           !this.config.allowUncontrolledOptions &&
-          optionsArgMap.size === 0 &&
-          Object.keys(options).length > 0
+          Object.keys(options).some((key) => !controlledOptionKeys.has(key))
         ) {
           throw new ClirioCommonError('Invalid options received', {
             code: 'INVALID_OPTIONS',

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { Clirio } from '@clirio';
+import { Clirio, ClirioCommonError } from '@clirio';
 import { HelloModule } from '../test-cli-app/modules/hello';
 
 const buildCli = () => {
@@ -266,5 +266,36 @@ describe('Command with options without handlers', () => {
       lastName: 'John',
       verbose: ['', null],
     });
+  });
+
+  it('5.1', async () => {
+    const entryStub = sandbox.stub(HelloModule.prototype, 'hello');
+
+    await buildCli().execute(
+      Clirio.split(
+        'hello --first-name Alex --hasOwnProperty --last-name Smith',
+      ),
+    );
+
+    const [options] = entryStub.getCall(0).args;
+
+    expect(options).toStrictEqual({
+      firstName: 'Alex',
+      hasOwnProperty: null,
+      lastName: 'Smith',
+    });
+  });
+
+  it('5.2', async () => {
+    const err = await buildCli()
+      .setConfig({
+        allowUncontrolledOptions: false,
+      })
+      .execute(Clirio.split('hello --first-name Alex --unknown'))
+      .catch((err) => err);
+
+    expect(
+      err instanceof ClirioCommonError && err.code === 'INVALID_OPTIONS',
+    ).toBeTruthy();
   });
 });

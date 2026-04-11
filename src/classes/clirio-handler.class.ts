@@ -29,6 +29,14 @@ import { getInstance, getPrototype, isConstructor } from '../utils';
 import { ClirioHelper } from './clirio-helper.class';
 
 export class ClirioHandler {
+  private static hasOwn(value: object, key: string | number | symbol): boolean {
+    return Object.prototype.hasOwnProperty.call(value, key);
+  }
+
+  private static createRecord<T extends Record<string, any>>(): T {
+    return Object.create(null) as T;
+  }
+
   public handleFilters(rawErr: any, filterList: FilterScope[] = []) {
     let currentErr = rawErr;
 
@@ -71,8 +79,8 @@ export class ClirioHandler {
         continue;
       }
 
-      if (params.hasOwnProperty(paramData.key)) {
-        if (params.hasOwnProperty(propertyName)) {
+      if (ClirioHandler.hasOwn(params, paramData.key)) {
+        if (ClirioHandler.hasOwn(params, propertyName)) {
           if (Array.isArray(params[propertyName])) {
             if (Array.isArray(params[paramData.key])) {
               params[propertyName].push(...params[paramData.key]);
@@ -122,8 +130,8 @@ export class ClirioHandler {
           continue;
         }
 
-        if (options.hasOwnProperty(key)) {
-          if (options.hasOwnProperty(propertyName)) {
+        if (ClirioHandler.hasOwn(options, key)) {
+          if (ClirioHandler.hasOwn(options, propertyName)) {
             if (Array.isArray(options[propertyName])) {
               if (Array.isArray(options[key])) {
                 options[propertyName].push(...options[key]);
@@ -234,7 +242,7 @@ export class ClirioHandler {
     for (const { pipe, scope } of pipeList) {
       const pipeInst: ClirioPipe = getInstance(pipe);
 
-      data = await pipeInst.transform.bind(pipeInst)(rawData, {
+      data = await pipeInst.transform(data, {
         dataType,
         scope,
         entity,
@@ -315,13 +323,13 @@ export class ClirioHandler {
     params: RawParams;
     options: RawOptions;
   } {
-    const params: RawParams = {};
-    const options: RawOptions = {};
+    const params = ClirioHandler.createRecord<RawParams>();
+    const options = ClirioHandler.createRecord<RawOptions>();
 
     let actionIndex = 0;
 
     for (const link of links) {
-      if (!actionArgs.hasOwnProperty(actionIndex)) {
+      if (actionIndex >= actionArgs.length) {
         return null;
       }
 
@@ -378,7 +386,7 @@ export class ClirioHandler {
     ) as OptionArg[];
 
     for (const optionArg of optionArgList) {
-      if (options.hasOwnProperty(optionArg.key)) {
+      if (ClirioHandler.hasOwn(options, optionArg.key)) {
         if (Array.isArray(options[optionArg.key])) {
           (options[optionArg.key] as OptionArg['value'][]).push(
             optionArg.value,

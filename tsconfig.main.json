@@ -1,12 +1,19 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2019",
     "rootDir": "./src",
     "outDir": "build/main",
     "module": "CommonJS",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src/**/*.ts"
   ],
+  "exclude": [
+    "build/**",
+    "node_modules/**"
+  ]
 }

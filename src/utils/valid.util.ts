@@ -8,7 +8,7 @@ export const valid = {
   },
 
   REQUIRED: (value: any): ReturnType<Check> => {
-    return value === undefined && null;
+    return value === undefined || value === null ? false : null;
   },
 
   NULLABLE: (value: any): ReturnType<Check> => {
