@@ -3,8 +3,7 @@ import { Constructor, ValidateTargetData } from '../types';
 
 export const Validate = function (
   checkOrChecks:
-    | ValidateTargetData['checks'][number]
-    | ValidateTargetData['checks'],
+    ValidateTargetData['checks'][number] | ValidateTargetData['checks'],
 ) {
   return function (
     target: Constructor<any>['prototype'],

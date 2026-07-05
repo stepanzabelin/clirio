@@ -1,7 +1,8 @@
+import { fixupPluginRules } from '@eslint/compat';
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import jestPlugin from 'eslint-plugin-jest';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
@@ -194,7 +195,7 @@ export default [
       '@typescript-eslint': tseslint.plugin,
       jest: jestPlugin,
       prettier: prettierPlugin,
-      'eslint-comments': eslintComments,
+      'eslint-comments': fixupPluginRules(eslintComments),
     },
     rules: sharedRules,
   },

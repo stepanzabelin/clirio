@@ -13,13 +13,13 @@
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "ES2021"
     ],
-    "baseUrl": ".",
     "paths": {
       "@clirio": [
         "./src/index.ts"

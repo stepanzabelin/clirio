@@ -1,5 +1,14 @@
 # Changelog
 
+### [4.0.0] - July 5, 2026
+
+Moved to Yarn 4 and refreshed the toolchain
+Raised the Node.js baseline
+Regenerated the lockfile and kept audit clean
+Fixed package archives and declarations
+Covered the built CommonJS entrypoint
+Clarified README docs for parsing, validation, transforms, pipes, and helpers
+
 ### [3.1.0] - April 11, 2026
 
 Improved strict option handling for DTO-defined aliases and property-name fallbacks
