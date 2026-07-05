@@ -135,14 +135,11 @@ clirio.execute();
 $ my-cli git status -b master --ignore-submodules  all --short
 ```
 
-
-
 The command `git status` will be routed to the `GitModule.status` method.
 
 ```console
 { branch: 'master', ignoreSubmodules: 'all', short: null }
 ```
-
 
 At this point you can use the received data in your own application logic.
 
@@ -163,7 +160,7 @@ class GitStatusOptionsDto {
   readonly branch: string;
 
   @Option('--ignore-submodules, -i')
-  @Validate((v) => ['none', 'untracked','dirty', 'all'].includes(v))
+  @Validate((v) => ['none', 'untracked', 'dirty', 'all'].includes(v))
   readonly ignoreSubmodules: 'none' | 'untracked' | 'dirty' | 'all';
 
   @Option('--short, -s')
@@ -249,11 +246,31 @@ $  node migration-cli.js run 123556 -u user -p pass --db="db-name"
 
 ##### Options Definition
 
-"Options" are command-line parts that start with one or more leading dashes
+"Options" are named command-line inputs that start with one or more leading dashes.
 
-Each option is either a key-value pair or a standalone key. If an option starts with two dashes it is treated as a long key; if it starts with one dash it is treated as a short key, which must be one character long:
+An option can be a key-value pair or a standalone key:
 
 `--name=Alex`, `--name Alex`, `-n Alex`, `--version`, `-v`
+
+A long option starts with `--` and keeps the full key, for example `--ignore-submodules`. A short option starts with `-` and uses one-character keys, for example `-v`.
+
+##### Grouped short options
+
+Short options can be grouped.
+
+`-abc` is parsed as three short options: `-a`, `-b`, and `-c`.
+
+If a grouped short option is followed by a value, that value belongs to the last key in the group:
+
+```bash
+$ my-cli run -abc value
+```
+
+| option | value   |
+| ------ | ------- |
+| `a`    | `null`  |
+| `b`    | `null`  |
+| `c`    | `value` |
 
 ## Parsing args
 
@@ -297,9 +314,10 @@ $ my-cli set-time 10:56 --format=AM -ei 15
 
 - all parts of the command-line without a leading dash will be described as actions
 - any action has keys as a numerical index in ascending order
-- any option with a missing value will be `null`
-- any option starting with a single dash will be separated by letters
-- all options will be parsed into key-value
+- any standalone option has the raw value `null`
+- any option starting with a single dash is split into one-character short options
+- a value after grouped short options belongs to the last short option
+- all options are parsed into key-value entries
 - the raw value of any options can be a `string` or `null`
 
 ## App configuration
@@ -751,6 +769,8 @@ export class GitModule {
 The `@Option()` decorator is provided for DTO properties. It can accept comma-separated key aliases and map them to a DTO property.
 
 ```ts
+import { Clirio, Option, Transform } from 'clirio';
+
 class GitStatusOptionsDto {
   @Option('--branch, -b')
   readonly branch?: string;
@@ -791,12 +811,20 @@ $ my-cli git status --branch=master --ignore-submodules=all --short
 
 ## Input DTO
 
-DTOs used to control input can have additional decorators, including custom ones.
+DTOs used to control input can have Clirio decorators such as `@Param()`, `@Option()`, `@Env()`, `@Validate()`, and `@Transform()`. You can also add your own metadata decorators if a pipe needs to read that metadata later.
 Before validation and transformation, every incoming value is one of the following raw forms:
 
 ```ts
 type Value = string | null | (string | null)[];
 ```
+
+For every matched command, Clirio prepares controlled input in this order:
+
+1. Raw params, options, and envs are mapped to DTO property names.
+2. `@Validate()` checks run on the raw property value.
+3. `@Transform()` runs and replaces the property value with the returned value.
+4. Pipes receive the transformed DTO object.
+5. The action receives the values returned by the pipes.
 
 ##### example of data control (options and params)
 
@@ -873,6 +901,8 @@ export class TestConnectEnvsDto {
 
 The `@Validate()` decorator is provided to check input params, options, and envs.
 It should be used on DTO properties together with `@Option()`, `@Param()`, or `@Env()`, depending on the kind of controlled data.
+Validation runs before transformation, so validators receive raw CLI values such as strings, `null`, `undefined`, or arrays.
+Validation never changes the value. For example, `Clirio.valid.NUMBER` can accept `"15"`, but the action still receives `"15"` unless you also add a transform.
 `@Validate()` accepts either a single function or an array of functions. The functions are executed from left to right, and each one must return `boolean` or `null`:
 
 - if a function returns `false`, Clirio throws a validation error immediately
@@ -938,17 +968,17 @@ class OptionsDto {
     (v) => (v === undefined ? true : null),
     (v) => /^[0-9]+$/.test(String(v)),
   ])
-  readonly id?: number;
+  readonly id?: string;
 }
 ```
 
-##### Using Clirio-made checks
+##### Using built-in checks
 
 ```ts
 class OptionsDto {
   @Option('--id')
   @Validate([Clirio.valid.OPTIONAL, Clirio.valid.NUMBER])
-  readonly id?: number;
+  readonly id?: string;
 }
 ```
 
@@ -972,7 +1002,7 @@ class OptionsDto {
 }
 ```
 
-See [Clirio-made checks](#valid)
+See [Clirio.valid](#cliriovalid)
 
 ## Transformation
 
@@ -981,6 +1011,9 @@ The `@Transform()` decorator is provided to transform input data.
 It should be used on DTO properties together with `@Option()`, `@Param()`, or `@Env()`, depending on the kind of controlled data.
 
 `@Transform()` takes a transform function as an argument.
+Transformation runs after validation. The transform function receives the validated raw value for that property, and its return value becomes the value passed to pipes and actions.
+
+Use one `@Transform()` per property. If a value needs several transformation steps, compose them in one function or move the logic into a [pipe](#pipes).
 
 ```ts
 import { Option, Param, Transform } from 'clirio';
@@ -1082,8 +1115,7 @@ $ my-cli sum 5 15
 20
 ```
 
-##### Using Clirio-made forms
-
+##### Using built-in forms
 
 ```ts
 class SumParamsDto {
@@ -1101,86 +1133,22 @@ class SetAutoOptionsDto {
 }
 ```
 
-
-See [Clirio-made forms](#form)
+See [Clirio.form](#clirioform)
 
 ## Pipes
 
-Pipes are designed to [validate](#validation) and [transform](#transformation) controlled data such as params, options, and envs.
-Compared to `@Validate()` and `@Transform()`, pipes work at the whole-object level and give you more flexibility when validation depends on several fields at once.
+Pipes are processors for controlled data: params, options, and envs. They are useful when property-level `@Validate()` or `@Transform()` is too small for the job.
 
-```ts
-import { ClirioPipe, PipeContext, ClirioValidationError } from 'clirio';
+Use a pipe when:
 
-export class CustomPipe implements ClirioPipe {
-  transform(data: any, input: PipeContext): any | never {
-    // controlled params
-    if (input.dataType === 'params') {
-      // validation
-      if (!myCustomCheckName(data.name)) {
-        throw new ClirioValidationError('error message', {
-          dataType: input.dataType,
-          propertyName: 'name',
-        });
-      }
+- a rule depends on several fields, for example `--force` cannot be used together with `--dry-run`
+- you need to normalize the whole DTO object
+- you want to read metadata from your own decorators
+- the same validation or transformation should be reused for many commands
 
-      // transformation
-      return { 
-        ...data, 
-        name: String(data.name).toLowerCase() 
-      };
-    }
+A pipe runs after DTO property validation and transformation. If an action receives both `@Params()` and `@Options()`, the same pipe can be called once for params and once for options. Use `input.dataType` to know which object is being processed.
 
-    // controlled options
-
-    if (input.dataType === 'options') {
-      // validation
-      if (!myCustomCheckTypeId(data)) {
-        throw new ClirioValidationError('error message', {
-          dataType: input.dataType,
-          propertyName: 'typeId',
-        });
-      }
-
-      // transformation
-      return {
-        ...data, 
-        typeId: Number(data.typeId) 
-      };
-    }
-
-    return data;
-  }
-}
-```
-
-The `input: PipeContext` argument contains `input.entity` (the DTO class). This makes it possible to inspect reflection data and build your own advanced behavior around custom decorators.
-
-The `@Pipe()` decorator is provided for attaching pipes to an action.
-
-##### Example
-
-```ts
-@Module()
-export class MigrationModule {
-  @Command('migration up <migration-id>')
-  @Pipe(MigrationUpPipe)
-  public up(
-    @Params() params: MigrationUpParamsDto,
-    @Options() options: MigrationUpOptionsDto,
-  ) {
-    console.log('transformed params after pipes:', params);
-    console.log('transformed options after pipes:', options);
-  }
-}
-```
-
-```ts
-export class MigrationUpParamsDto {
-  @Param('migration-id')
-  readonly migrationId: number;
-}
-```
+The `transform()` method receives the current DTO object and must return the object that should be passed to the action. Throw an error to stop command execution.
 
 ```ts
 import { ClirioPipe, PipeContext, ClirioValidationError } from 'clirio';
@@ -1204,6 +1172,103 @@ export class MigrationUpPipe implements ClirioPipe {
   }
 }
 ```
+
+The `PipeContext` argument contains:
+
+| Field      | Meaning                                                             |
+| ---------- | ------------------------------------------------------------------- |
+| `dataType` | `params`, `options`, or `envs`                                      |
+| `entity`   | the DTO class being processed                                       |
+| `scope`    | `global` or `action`, depending on where the pipe was attached      |
+
+`input.entity` is useful for advanced pipes that read reflection data from the DTO class, including metadata from your own decorators.
+
+The `@Pipe()` decorator is provided for attaching pipes to an action.
+
+##### Example
+
+```ts
+import { Param } from 'clirio';
+
+export class MigrationUpParamsDto {
+  @Param('migration-id')
+  readonly migrationId!: string;
+}
+```
+
+```ts
+import { Command, Module, Params, Pipe } from 'clirio';
+
+@Module()
+export class MigrationModule {
+  @Command('migration up <migration-id>')
+  @Pipe(MigrationUpPipe)
+  public up(@Params() params: MigrationUpParamsDto) {
+    console.log(params);
+  }
+}
+```
+
+```bash
+$ my-cli migration up 15
+```
+
+```console
+{ migrationId: 15 }
+```
+
+##### Processing several input types
+
+The same pipe can process params, options, and envs. Clirio calls the pipe separately for each controlled input object, and `input.dataType` tells the pipe which object it is handling now.
+
+```ts
+import { ClirioPipe, PipeContext, ClirioValidationError } from 'clirio';
+
+export class MigrationPipe implements ClirioPipe {
+  transform(data: any, input: PipeContext): any | never {
+    // controlled params
+    if (input.dataType === 'params') {
+      // validation
+      if (!/^[0-9]+$/.test(data.migrationId)) {
+        throw new ClirioValidationError('the "migration-id" param is not a number', {
+          dataType: input.dataType,
+          propertyName: 'migrationId',
+        });
+      }
+
+      // transformation
+      return {
+        ...data,
+        migrationId: Number(data.migrationId),
+      };
+    }
+
+    // controlled options
+    if (input.dataType === 'options') {
+      // validation
+      if (data.force && data.dryRun) {
+        throw new ClirioValidationError(
+          'options "--force" and "--dry-run" cannot be used together',
+          {
+            dataType: input.dataType,
+            propertyName: 'force',
+          },
+        );
+      }
+
+      // transformation
+      return {
+        ...data,
+        env: String(data.env ?? 'local').toLowerCase(),
+      };
+    }
+
+    return data;
+  }
+}
+```
+
+If a method receives both `@Params()` and `@Options()`, the pipe result for params is passed to the params argument, and the pipe result for options is passed to the options argument.
 
 You can add pipes to each action or apply them globally to all commands.
 If several pipes are applied, they run in sequence. The next pipe receives the result returned by the previous one.
@@ -1586,18 +1651,18 @@ Clirio.valid.BOOLEAN;
 Clirio.valid.NUMBER;
 ```
 
-| Key       | Checks if the value is                                                                               |
-| --------- | ---------------------------------------------------------------------------------------------------- |
-| OPTIONAL  | `undefined`; returns `true` for `undefined`, otherwise returns `null` so the next validator can run |
-| REQUIRED  | present; returns `false` for `undefined` or `null`, otherwise returns `null`                         |
-| NULLABLE  | `null`; returns `true` for `null`, otherwise returns `null`                                          |
-| NULL      | exactly `null`                                                                                        |
-| NUMBER    | a number or a string that can be converted to a number                                               |
-| INTEGER   | an integer number                                                                                    |
-| STRING    | `string`                                                                                             |
-| BOOLEAN   | `boolean` or a string that looks like `true` or `false`                                              |
-| FLAG      | `null` or a string that looks like `true` or `false`                                                 |
-| KEY_VALUE | a `string` or array of strings in the `key=value` format (`"DB_USER=user"`)                         |
+| Key       | Checks if the value is                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| OPTIONAL  | `undefined`; returns `true` for `undefined`, otherwise returns `null` so the next validator can run     |
+| REQUIRED  | present; returns `false` for `undefined` or `null`, otherwise returns `null`                           |
+| NULLABLE  | `null`; returns `true` for `null`, otherwise returns `null`                                            |
+| NULL      | exactly `null`                                                                                         |
+| NUMBER    | a number that is not `NaN`, or a string that `Number(value)` can convert to a non-`NaN` number         |
+| INTEGER   | an integer number; numeric strings such as `"15"` are not accepted                                     |
+| STRING    | `string`                                                                                               |
+| BOOLEAN   | `boolean`, `"true"`, or `"false"`                                                                      |
+| FLAG      | `null`, `"true"`, or `"false"`                                                                         |
+| KEY_VALUE | a `key` or `key=value` string, `null`, or an array of those values; empty strings are not accepted      |
 
 `OPTIONAL`, `REQUIRED`, and `NULLABLE` are especially useful as guard validators at the start of a validation chain.
 
@@ -1607,11 +1672,11 @@ Clirio.valid.NUMBER;
 export class MigrationRunOptionsDto {
   @Option('--id')
   @Validate(Clirio.valid.NUMBER)
-  readonly id: number;
+  readonly id: string;
 
   @Option('--start-date, -b')
   @Validate([Clirio.valid.NULLABLE, Clirio.valid.STRING])
-  readonly startDate: string;
+  readonly startDate: string | null;
 }
 ```
 
@@ -1624,17 +1689,31 @@ Clirio.form.NUMBER;
 
 An object of built-in functions for [transformation](#transformation).
 
-| Key       | transforms into                                                                                              |
-| --------- | ------------------------------------------------------------------------------------------------------------ |
-| NUMBER    | `number` using `Number(value)`                                                                               |
-| STRING    | `string` using `String(value ?? '')`                                                                         |
-| BOOLEAN   | JavaScript boolean coercion using `Boolean(value)`                                                           |
-| FLAG      | `boolean` from CLI-style flag values (`null`, `"true"`, `"false"`)                                          |
-| KEY_VALUE | an `object` built from one or more `key=value` entries (`"DB_USER=user"`)                                   |
-| ARRAY     | `array` (if the value is already an array, that same array is returned)                                      |
-| PLAIN     | `string` or `null` (if the value is an array, the first element is returned)                                 |
+| Key       | transforms into                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------------- |
+| NUMBER    | `number` using `Number(value) || 0`; invalid and empty values become `0`                                |
+| STRING    | `string` using `String(value ?? '')`                                                                    |
+| BOOLEAN   | JavaScript boolean coercion using `Boolean(value)`                                                      |
+| FLAG      | `true` for `null` and `"true"`, `false` for every other value                                           |
+| KEY_VALUE | an `object` built from one or more `key` or `key=value` entries; missing values become `null`           |
+| ARRAY     | `[]` for `undefined`, the same array for arrays, or a one-item array for any other value                |
+| PLAIN     | the first item for arrays, otherwise the original `string`, `null`, or `undefined` value                |
 
-For CLI flags, prefer `Clirio.form.FLAG`. `Clirio.form.BOOLEAN` uses normal JavaScript coercion, so for example `"false"` becomes `true`.
+##### Flag values
+
+A standalone option is parsed as raw `null`, not as raw `true`:
+
+```bash
+$ my-cli git status --short
+```
+
+```console
+{ short: null }
+```
+
+Use `Clirio.form.FLAG` when the command handler should receive a boolean flag. It converts raw `null` and `"true"` into `true`; every other value, including `"false"` and `undefined`, becomes `false`.
+
+`Clirio.form.BOOLEAN` uses normal JavaScript coercion, so for example `"false"` becomes `true`.
 
 ##### example
 

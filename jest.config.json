@@ -8,8 +8,12 @@
   "testEnvironment": "node",
   "testRegex": "\\.spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.ts$": "ts-jest"
   },
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "/build/"
+  ],
   "moduleNameMapper": {
     "^@clirio$": "<rootDir>/src/index.ts"
   },
